@@ -1,11 +1,9 @@
-package frontend;
-
-import frontend.Lexer.TokenType;
+package token;
 
 public class Token {
     private TokenType type;
     private String word;
-    Token(TokenType type, String word) {
+    public Token(TokenType type, String word) {
         this.type = type;
         this.word = word;
     }

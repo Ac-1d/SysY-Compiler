@@ -1,5 +1,6 @@
-import frontend.Config;
+import config.Config;
 import frontend.Lexer;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -10,9 +11,8 @@ public class Compiler {
         String source;
         try {
             source = Files.readString(Paths.get(Config.fileInPath));
-        } catch (Exception e) {
+        } catch (IOException e) {
             source = null;
-            e.printStackTrace();
         }
         boolean success = !instance.lexerParse(source + "\n");
         if(success) {

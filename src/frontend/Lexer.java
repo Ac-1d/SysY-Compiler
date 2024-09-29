@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import error.Error;
+import token.Token;
+import token.TokenType;
+
 public class Lexer {
     private static final Lexer instance = new Lexer();
     public static Lexer getInstace() {
@@ -14,10 +18,10 @@ public class Lexer {
     private int curPos = 0;
     private int maxPos;
     private String source;
-    private ArrayList<Token> tokens = new ArrayList<>();
+    private final ArrayList<Token> tokens = new ArrayList<>();
     private boolean parseActivate = true;
     private boolean errorState = false;
-    private ArrayList<Error> errors = new ArrayList<>();
+    private final ArrayList<Error> errors = new ArrayList<>();
 
     public void printTokens() {
         for (Token token : tokens) {
@@ -31,50 +35,50 @@ public class Lexer {
         }
     }
 
-    public enum TokenType {
-        IDENFR,
-        INTCON,
-        STRCON,
-        CHRCON,
-        MAINTK,
-        CONSTTK,
-        INTTK,
-        CHARTK,
-        VOIDTK,
-        BREAKTK,
-        CONTINUETK,
-        IFTK,
-        ELSETK,
-        NOT,
-        AND,
-        OR,
-        FORTK,
-        GETINTTK,
-        GETCHARTK,
-        PRINTFTK,
-        RETURNTK,
-        PLUS,
-        MINU,
-        BOIDTK,
-        MULT,
-        DIV,
-        MOD,
-        LSS,
-        LEQ,
-        GRE,
-        GEQ,
-        EQL,
-        NEQ,
-        ASSIGN,
-        SEMICN,
-        COMMA,
-        LPARENT,
-        RPARENT,
-        LBRACK,
-        RBRACK,
-        LBRACE,
-        RBRACE,
-    }
+    // public enum TokenType {
+    //     IDENFR,
+    //     INTCON,
+    //     STRCON,
+    //     CHRCON,
+    //     MAINTK,
+    //     CONSTTK,
+    //     INTTK,
+    //     CHARTK,
+    //     VOIDTK,
+    //     BREAKTK,
+    //     CONTINUETK,
+    //     IFTK,
+    //     ELSETK,
+    //     NOT,
+    //     AND,
+    //     OR,
+    //     FORTK,
+    //     GETINTTK,
+    //     GETCHARTK,
+    //     PRINTFTK,
+    //     RETURNTK,
+    //     PLUS,
+    //     MINU,
+    //     BOIDTK,
+    //     MULT,
+    //     DIV,
+    //     MOD,
+    //     LSS,
+    //     LEQ,
+    //     GRE,
+    //     GEQ,
+    //     EQL,
+    //     NEQ,
+    //     ASSIGN,
+    //     SEMICN,
+    //     COMMA,
+    //     LPARENT,
+    //     RPARENT,
+    //     LBRACK,
+    //     RBRACK,
+    //     LBRACE,
+    //     RBRACE,
+    // }
     //stolen from 🌸🍃
     private final Map<String, TokenType> reserveWords = new HashMap<String, TokenType>() {{
         put("main", TokenType.MAINTK);
@@ -113,7 +117,7 @@ public class Lexer {
         put("=", TokenType.ASSIGN);
         put("!", TokenType.NOT);
     }};
-    private Map<String, TokenType> equalTokens = new HashMap<String, TokenType>() {{
+    private final Map<String, TokenType> equalTokens = new HashMap<String, TokenType>() {{
         put("<", TokenType.LEQ);
         put(">", TokenType.GEQ);
         put("=", TokenType.EQL);

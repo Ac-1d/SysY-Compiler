@@ -1,4 +1,4 @@
-import frontend.Config;
+import config.Config;
 import frontend.Lexer;
 import java.io.File;
 import java.io.FileReader;

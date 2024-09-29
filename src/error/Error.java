@@ -1,10 +1,10 @@
-package frontend;
+package error;
 
 public class Error {
     private String stage;
     private int position;
     private char errorCode;
-    Error(String stage, int position, char errorCode) {
+    public Error(String stage, int position, char errorCode) {
         this.stage = stage;
         this.position = position;
         this.errorCode = errorCode;
