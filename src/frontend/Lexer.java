@@ -1,5 +1,6 @@
 package frontend;
 
+import config.Config;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class Lexer {
     private int maxPos;
     private String source;
     private final ArrayList<Token> tokens = new ArrayList<>();
-    private boolean parseActivate = true;
+    private boolean analyseActivate = true;
     private boolean errorState = false;
     private final ArrayList<Error> errors = new ArrayList<>();
 
@@ -34,51 +35,6 @@ public class Lexer {
             System.out.println(error.toString());
         }
     }
-
-    // public enum TokenType {
-    //     IDENFR,
-    //     INTCON,
-    //     STRCON,
-    //     CHRCON,
-    //     MAINTK,
-    //     CONSTTK,
-    //     INTTK,
-    //     CHARTK,
-    //     VOIDTK,
-    //     BREAKTK,
-    //     CONTINUETK,
-    //     IFTK,
-    //     ELSETK,
-    //     NOT,
-    //     AND,
-    //     OR,
-    //     FORTK,
-    //     GETINTTK,
-    //     GETCHARTK,
-    //     PRINTFTK,
-    //     RETURNTK,
-    //     PLUS,
-    //     MINU,
-    //     BOIDTK,
-    //     MULT,
-    //     DIV,
-    //     MOD,
-    //     LSS,
-    //     LEQ,
-    //     GRE,
-    //     GEQ,
-    //     EQL,
-    //     NEQ,
-    //     ASSIGN,
-    //     SEMICN,
-    //     COMMA,
-    //     LPARENT,
-    //     RPARENT,
-    //     LBRACK,
-    //     RBRACK,
-    //     LBRACE,
-    //     RBRACE,
-    // }
     //stolen from 🌸🍃
     private final Map<String, TokenType> reserveWords = new HashMap<String, TokenType>() {{
         put("main", TokenType.MAINTK);
@@ -125,7 +81,8 @@ public class Lexer {
     }};
 
     private void init() {
-        this.parseActivate = true;
+        Config.compileState = "lexer";
+        this.analyseActivate = true;
         this.maxPos = source.length();
         this.curPos = 0;
         this.lineNum = 1;
@@ -133,10 +90,10 @@ public class Lexer {
         this.errors.clear();
     }
 
-    public boolean lexerParse(String source) {
+    public boolean lexerAnalyse(String source) {
         this.source = source;
         this.init();
-        while(this.parseActivate) {
+        while(this.analyseActivate) {
             //getNextToken
             Token token = getNextToken();
             if(token != null) {
@@ -158,7 +115,7 @@ public class Lexer {
         }
         curPos++;
         if(curPos >= maxPos) {
-            parseActivate = false;
+            analyseActivate = false;
         }
         return curPos >= maxPos;
     }
@@ -179,7 +136,7 @@ public class Lexer {
             }
         }
         boolean finish = false;
-        while(!finish && parseActivate) {
+        while(!finish && analyseActivate) {
             char curChar = peekNextChar();
             switch (state) {
                 case 0://初始状态

@@ -28,7 +28,7 @@ public class Test {
                 String testCasePath = testCaseFolder.getPath();
                 String source = Files.readString(Paths.get(testCasePath + sourcePath)) + "\n";
                 try {
-                    instance.lexerParse(source);
+                    instance.lexerAnalyse(source);
                     System.setOut(new PrintStream(testCasePath + lexerPath));
                     instance.printTokens();
                     Scanner scLexer = new Scanner(new FileReader(testCasePath + lexerPath));

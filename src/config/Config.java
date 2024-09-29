@@ -15,7 +15,7 @@ public class Config {
     /**
      * stages of compilation
      */
-    public static boolean lexer = true;
+    public static String compileState;
 
     public static PrintStream originalStream;
 
