@@ -14,7 +14,7 @@ public class ConstDefNode {
     public static ConstDefNode ConstDef() {
         Parse instance = Parse.getInstance();
         ConstDefNode constDefNode = new ConstDefNode();
-        constDefNode.identToken = instance.getNextToken();
+        constDefNode.identToken = instance.peekNextToken();//TODO: change
         if(instance.peekNextToken().getType().equals(TokenType.LBRACK)) {// 下一个符号是'['
             constDefNode.defArrayNode = DefArrayNode.DefArray();
         }

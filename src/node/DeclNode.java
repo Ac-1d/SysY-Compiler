@@ -1,17 +1,36 @@
 package node;
 
+import frontend.Parse;
+
 public class DeclNode {
     //Decl → ConstDecl | VarDecl
+    private ConstDeclNode constDeclNode;
+    private VarDeclNode varDeclNode;
     
-    
-    public static DeclNode Decl() {
+    public static DeclNode Decl() {//finish
+        Parse instance = Parse.getInstance();
         DeclNode decl = new DeclNode();
-
-        return decl;
+        ConstDeclNode constDeclNode;
+        VarDeclNode varDeclNode;
+        int tmpIndex;
+        tmpIndex = instance.getPeekIndex();
+        constDeclNode = ConstDeclNode.constDecl();
+        if(constDeclNode != null) {//识别成功
+            decl.constDeclNode = constDeclNode;
+            return decl;
+        }
+        //(否则识别失败)，应回溯
+        instance.setPeekIndex(tmpIndex);
+        varDeclNode = VarDeclNode.VarDecl();
+        if(varDeclNode != null) {
+            decl.varDeclNode = varDeclNode;
+            return decl;
+        }
+        //同上
+        instance.setPeekIndex(tmpIndex);
+        return null;
     }
 
-    public void foo() {
-        
-    }
+    private DeclNode() {}
 
 }

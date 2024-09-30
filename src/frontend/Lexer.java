@@ -19,21 +19,29 @@ public class Lexer {
     private int curPos = 0;
     private int maxPos;
     private String source;
-    private final ArrayList<Token> tokens = new ArrayList<>();
+    private final ArrayList<Token> tokensList = new ArrayList<>();
     private boolean analyseActivate = true;
     private boolean errorState = false;
-    private final ArrayList<Error> errors = new ArrayList<>();
+    private final ArrayList<Error> errorsList = new ArrayList<>();
 
     public void printTokens() {
-        for (Token token : tokens) {
+        for (Token token : tokensList) {
             System.out.println(token.toString());
         }
     }
 
     public void printErrors() {
-        for (Error error : errors) {
+        for (Error error : errorsList) {
             System.out.println(error.toString());
         }
+    }
+
+    public ArrayList<Token> getTokensList() {
+        return this.tokensList;
+    }
+
+    public ArrayList<Error> getErrorsList() {
+        return this.errorsList;
     }
     //stolen from 🌸🍃
     private final Map<String, TokenType> reserveWords = new HashMap<String, TokenType>() {{
@@ -86,8 +94,8 @@ public class Lexer {
         this.maxPos = source.length();
         this.curPos = 0;
         this.lineNum = 1;
-        this.tokens.clear();
-        this.errors.clear();
+        this.tokensList.clear();
+        this.errorsList.clear();
     }
 
     public boolean lexerAnalyse(String source) {
@@ -97,7 +105,7 @@ public class Lexer {
             //getNextToken
             Token token = getNextToken();
             if(token != null) {
-                tokens.add(token);
+                tokensList.add(token);
                 // System.out.println(token.toString());
             }
             //错误处理
@@ -254,9 +262,9 @@ public class Lexer {
                     }
                     else {
                         //错误处理
-                        errors.add(new Error("LEX", lineNum, 'a'));
+                        errorsList.add(new Error("LEX", lineNum, 'a'));
                         this.errorState = true;
-                        return new Token(TokenType.OR, "||");
+                        return new Token(TokenType.OR, "||", lineNum);
                     }
                     break;
                 case 10:// &&
@@ -268,9 +276,9 @@ public class Lexer {
                     }
                     else {
                         //错误处理
-                        errors.add(new Error("LEX", lineNum, 'a'));
+                        errorsList.add(new Error("LEX", lineNum, 'a'));
                         this.errorState = true;
-                        return new Token(TokenType.AND, "&&");
+                        return new Token(TokenType.AND, "&&", lineNum);
                     }
                     break;
                 case 11:// <>=!与=
@@ -354,7 +362,7 @@ public class Lexer {
                     break;
             }
         }
-        token = new Token(type, word.toString());
+        token = new Token(type, word.toString(), lineNum);
         return token;
     }
 

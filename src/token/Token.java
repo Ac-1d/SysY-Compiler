@@ -3,9 +3,15 @@ package token;
 public class Token {
     private TokenType type;
     private String word;
+    private int lineNum;
     public Token(TokenType type, String word) {
         this.type = type;
         this.word = word;
+    }
+    public Token(TokenType type, String word, int lineNum) {
+        this.type = type;
+        this.word = word;
+        this.lineNum = lineNum;
     }
     public TokenType getType() {
         return type;
@@ -25,5 +31,13 @@ public class Token {
 
     public void setType(TokenType type) {
         this.type = type;
+    }
+
+    public void setLineNum(int lineNum) {
+        this.lineNum = lineNum;
+    }
+
+    public int getLineNum() {
+        return this.lineNum;
     }
 }

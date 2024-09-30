@@ -2,30 +2,26 @@ package node;
 
 import frontend.Parse;
 import token.Token;
+import token.TokenType;
 
 public class BTypeNode {
     //BType → 'int' | 'char'
-    Token token;
-    Parse instance = Parse.getInstance();
-
-    public static BTypeNode BType() {
+    Token intOrCharToken;
+    
+    public static BTypeNode BType() {//finish
+        Parse instance = Parse.getInstance();
         BTypeNode bTypeNode = new BTypeNode();
-        if(check()){
-            bTypeNode.token = bTypeNode.instance.getNextToken();
+        Token token;
+        token = instance.peekNextToken();
+        bTypeNode.intOrCharToken.setLineNum(token.getLineNum());
+        if(token.getType().equals(TokenType.INTTK) == false && token.getType().equals(TokenType.CHARTK)) {
+            return null;
         }
-        else {//不会出现的错误
-
-        }
-
         return bTypeNode;
     }
 
-    private static boolean check() {
-        return true;
-    }
-
     public void print() {
-        System.out.println(token.toString());
+        System.out.println(intOrCharToken.toString());
     }
     
 }
