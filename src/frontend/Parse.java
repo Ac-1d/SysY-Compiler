@@ -67,4 +67,9 @@ public class Parse {
     public void setPeekIndex(int peekIndex) {
         this.peekIndex = peekIndex;
     }
+
+    /**由于使用时不会寻找第一个token前一个的行号，故不对其进行特判 */
+    public int getPreTokenLineNum(Token token) {
+        return tokensList.get((tokensList.indexOf(token) - 1)).getLineNum();
+    }
 }

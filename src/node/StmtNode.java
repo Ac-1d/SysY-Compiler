@@ -13,5 +13,11 @@ public class StmtNode {
         | LVal '=' 'getchar''('')'';'
         | 'printf''('StringConst {','Exp}')'';' // 1.有Exp 2.无Exp
     */
+
+    public static StmtNode Stmt() {
+        StmtNode stmtNode = new StmtNode();
+
+        return stmtNode;
+    }
     
 }

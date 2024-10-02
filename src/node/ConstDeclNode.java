@@ -52,7 +52,7 @@ public class ConstDeclNode {//finish
         if(token.getType().equals(TokenType.SEMICN) == false) {
             //错误处理 && 回溯
             instance.setPeekIndex(tmpIndex);
-            instance.errorsList.add(new Error("Parse", token.getLineNum(), 'i'));
+            instance.errorsList.add(new Error("Parse", instance.getPreTokenLineNum(token), 'i'));
         }
         return constDeclNode;
     }

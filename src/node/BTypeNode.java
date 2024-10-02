@@ -4,11 +4,11 @@ import frontend.Parse;
 import token.Token;
 import token.TokenType;
 
-public class BTypeNode {
+public class BTypeNode {//finish
     //BType → 'int' | 'char'
     Token intOrCharToken;
     
-    public static BTypeNode BType() {//finish
+    public static BTypeNode BType() {
         Parse instance = Parse.getInstance();
         BTypeNode bTypeNode = new BTypeNode();
         Token token;

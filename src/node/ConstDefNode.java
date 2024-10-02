@@ -1,11 +1,13 @@
 package node;
 
+import error.Error;
 import frontend.Parse;
 import token.Token;
 import token.TokenType;
 
-public class ConstDefNode {
-    //ConstDef → Ident [ '[' ConstExp ']' ] '=' ConstInitVal
+public class ConstDefNode {//finish
+    // ConstDef → Ident [ '[' ConstExp ']' ] '=' ConstInitVal
+    // 此处不检查数组/变量声明与数组/变量初始化是否匹配
     Token identToken;
     DefArrayNode defArrayNode;
     Token eqlToken;
@@ -14,35 +16,69 @@ public class ConstDefNode {
     public static ConstDefNode ConstDef() {
         Parse instance = Parse.getInstance();
         ConstDefNode constDefNode = new ConstDefNode();
-        constDefNode.identToken = instance.peekNextToken();//TODO: change
-        if(instance.peekNextToken().getType().equals(TokenType.LBRACK)) {// 下一个符号是'['
-            constDefNode.defArrayNode = DefArrayNode.DefArray();
+        ConstDefNode.DefArrayNode defArrayNode;
+        ConstInitValNode constInitValNode;
+        Token token;
+        int tmpIndex;
+        token = instance.peekNextToken();
+        constDefNode.identToken.setLineNum(token.getLineNum());
+        if(token.getType().equals(TokenType.IDENFR) == false) {
+            return null;
         }
-        // 下一个符号是'='
-        constDefNode.constInitValNode = ConstInitValNode.ConstInitVal();
+        tmpIndex = instance.getPeekIndex();
+        defArrayNode = ConstDefNode.DefArrayNode.DefArray();
+        constDefNode.defArrayNode = defArrayNode;
+        if(defArrayNode == null) {
+            instance.setPeekIndex(tmpIndex);
+            return null;
+        }
+        token = instance.peekNextToken();
+        constDefNode.eqlToken.setLineNum(token.getLineNum());
+        if(token.getType().equals(TokenType.EQL)) {
+            return null;
+        }
+        constInitValNode = ConstInitValNode.ConstInitVal();
+        constDefNode.constInitValNode = constInitValNode;
+        if(constInitValNode == null) {
+            return null;
+        }
+        
         return constDefNode;
     }
 
-    class DefArrayNode {
+    class DefArrayNode {//finish
         Token LBRACK;
         ConstExpNode constExpNode;
         Token RBRACK;
 
         public static DefArrayNode DefArray() {
-            ConstDefNode constDefNode = new ConstDefNode();
-            DefArrayNode defArrayNode = constDefNode.new DefArrayNode();
-            //第一个token一定是'['
-
-
+            Parse instance = Parse.getInstance();
+            DefArrayNode defArrayNode = (new ConstDefNode()).new DefArrayNode();
+            ConstExpNode constExpNode;
+            Token token;
+            int tmpIndex;
+            token = instance.peekNextToken();
+            defArrayNode.LBRACK.setLineNum(token.getLineNum());
+            if(token.getType().equals(TokenType.LBRACK) == false) {
+                return null;
+            }
+            constExpNode = ConstExpNode.ConstExp();
+            defArrayNode.constExpNode = constExpNode;
+            if(constExpNode == null) {
+                return null;
+            }
+            token = instance.peekNextToken();
+            defArrayNode.RBRACK.setLineNum(token.getLineNum());
+            tmpIndex = instance.getPeekIndex();
+            if(token.getType().equals(TokenType.RBRACK) == false) {//未识别到']'
+                instance.errorsList.add(new Error("Parse", instance.getPreTokenLineNum(token), 'k'));
+                instance.setPeekIndex(tmpIndex);
+            }
+            else {
+                defArrayNode.RBRACK.setLineNum(token.getLineNum());
+            }
             return defArrayNode;
-        } 
-
-        private boolean check() {
-            return true;
         }
 
-        private void next() {
-
-        }
     }
 }

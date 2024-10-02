@@ -16,7 +16,7 @@ public class Token {
     public TokenType getType() {
         return type;
     }
-    public String word() {
+    public String getWord() {
         return word;
     }
 
