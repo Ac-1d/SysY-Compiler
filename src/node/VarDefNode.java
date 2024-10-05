@@ -1,49 +1,53 @@
 package node;
 
-import error.Error;
 import frontend.Parse;
 import token.Token;
 import token.TokenType;
+import error.Error;
 
-public class ConstDefNode {//finish
-    // ConstDef → Ident [ '[' ConstExp ']' ] '=' ConstInitVal
-    // 此处不检查数组/变量声明与数组/变量初始化是否匹配
+public class VarDefNode {//finish
+    // VarDef → Ident [ '[' ConstExp ']' ] | Ident [ '[' ConstExp ']' ] '=' InitVal
+
     Token identToken;
     DefArrayNode defArrayNode;
     Token assignToken;
-    ConstInitValNode constInitValNode;
-    
-    public static ConstDefNode ConstDef() {
+    InitValNode initValNode;
+
+    public static VarDefNode VarDef() {
         Parse instance = Parse.getInstance();
-        ConstDefNode constDefNode = new ConstDefNode();
-        ConstDefNode.DefArrayNode defArrayNode;
-        ConstInitValNode constInitValNode;
-        Token token;
+        VarDefNode varDefNode = new VarDefNode();
+        Token indentToken;
+        DefArrayNode defArrayNode;
+        Token assignToken;
+        InitValNode initValNode;
         int tmpIndex;
-        token = instance.peekNextToken();
-        constDefNode.identToken.setLineNum(token.getLineNum());
-        if(token.getType().equals(TokenType.IDENFR) == false) {
+        indentToken = instance.peekNextToken();
+        if(indentToken.getType().equals(TokenType.IDENFR) == false) {
             return null;
         }
+        varDefNode.identToken = indentToken;
         tmpIndex = instance.getPeekIndex();
-        defArrayNode = ConstDefNode.DefArrayNode.DefArray();
-        constDefNode.defArrayNode = defArrayNode;
+        defArrayNode = DefArrayNode.DefArray();
         if(defArrayNode == null) {
             instance.setPeekIndex(tmpIndex);
+        }
+        tmpIndex = instance.getPeekIndex();
+        assignToken = instance.peekNextToken();
+        if(assignToken.getType().equals(TokenType.ASSIGN) == false) {
+            instance.setPeekIndex(tmpIndex);
+            return varDefNode;
+        }
+        varDefNode.assignToken.setLineNum(assignToken.getLineNum());
+        initValNode = InitValNode.InitVal();
+        if(initValNode == null) {
             return null;
         }
-        token = instance.peekNextToken();
-        constDefNode.assignToken.setLineNum(token.getLineNum());
-        if(token.getType().equals(TokenType.ASSIGN)) {
-            return null;
-        }
-        constInitValNode = ConstInitValNode.ConstInitVal();
-        constDefNode.constInitValNode = constInitValNode;
-        if(constInitValNode == null) {
-            return null;
-        }
-        
-        return constDefNode;
+        varDefNode.initValNode = initValNode;
+        return varDefNode;
+    }
+
+    private VarDefNode() {
+        assignToken = new Token(TokenType.ASSIGN, "=");
     }
 
     class DefArrayNode {//finish
@@ -53,7 +57,7 @@ public class ConstDefNode {//finish
 
         public static DefArrayNode DefArray() {
             Parse instance = Parse.getInstance();
-            DefArrayNode defArrayNode = (new ConstDefNode()).new DefArrayNode();
+            DefArrayNode defArrayNode = (new VarDefNode()).new DefArrayNode();
             ConstExpNode constExpNode;
             Token token;
             int tmpIndex;
@@ -81,4 +85,5 @@ public class ConstDefNode {//finish
         }
 
     }
+
 }

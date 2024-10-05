@@ -1,11 +1,83 @@
 package node;
 
-public class VarDeclNode {
+import token.Token;
+import token.TokenType;
+
+import java.util.ArrayList;
+
+import error.Error;
+import frontend.Parse;
+
+public class VarDeclNode {//finish
     //VarDecl → BType VarDef { ',' VarDef } ';'
 
+    BTypeNode bTypeNode;
+    VarDefNode varDefNode;
+    ArrayList<MultifyVarDefNode> multifyVarDefNodesList = new ArrayList<>();
+    Token semicnToken;
+
     public static VarDeclNode VarDecl() {
+        Parse instance = Parse.getInstance();
         VarDeclNode varDeclNode = new VarDeclNode();
-        
+        BTypeNode bTypeNode;
+        VarDefNode varDefNode;
+        MultifyVarDefNode multifyVarDefNode;
+        Token semicnToken;
+        int tmpIndex;
+        bTypeNode = BTypeNode.BType();
+        if(bTypeNode == null) {
+            return null;
+        }
+        varDeclNode.bTypeNode = bTypeNode;
+        varDefNode = VarDefNode.VarDef();
+        if(varDefNode == null) {
+            return null;
+        }
+        varDeclNode.varDefNode = varDefNode;
+        tmpIndex = instance.getPeekIndex();
+        while((multifyVarDefNode = MultifyVarDefNode.MultifyVarDef()) != null) {
+            tmpIndex = instance.getPeekIndex();
+            varDeclNode.multifyVarDefNodesList.add(multifyVarDefNode);
+        }
+        instance.setPeekIndex(tmpIndex);
+        semicnToken = instance.peekNextToken();
+        if(semicnToken.getType().equals(TokenType.SEMICN) == false) {
+            instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(semicnToken), 'i'));
+        }
+        varDeclNode.semicnToken.setLineNum(instance.getPreTokenLineNum(semicnToken));
         return varDeclNode;
+    }
+
+    private VarDeclNode() {
+        semicnToken = new Token(TokenType.SEMICN, ";");
+    }
+
+    class MultifyVarDefNode {
+        // MultifyVarDefNode → ',' VarDef
+
+        Token commaToken;
+        VarDefNode varDefNode;
+
+        public static MultifyVarDefNode MultifyVarDef() {
+            Parse instance = Parse.getInstance();
+            MultifyVarDefNode multifyVarDefNode = (new VarDeclNode()).new MultifyVarDefNode();
+            Token commaToken;
+            VarDefNode varDefNode;
+            commaToken = instance.peekNextToken();
+            if(commaToken.getType().equals(TokenType.COMMA) == false) {
+                return null;
+            }
+            multifyVarDefNode.commaToken.setLineNum(commaToken.getLineNum());
+            varDefNode = VarDefNode.VarDef();
+            if(varDefNode == null) {
+                return null;
+            }
+            multifyVarDefNode.varDefNode = varDefNode;
+            return multifyVarDefNode;
+        }
+
+        private MultifyVarDefNode() {
+            commaToken = new Token(TokenType.COMMA, ",");
+        }
     }
 }
