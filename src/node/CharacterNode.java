@@ -1,6 +1,6 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
@@ -10,7 +10,7 @@ public class CharacterNode {
     Token charConstToken;
 
     public static CharacterNode Character() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         CharacterNode characterNode = new CharacterNode();
         Token charConstToken;
         charConstToken = instance.peekNextToken();

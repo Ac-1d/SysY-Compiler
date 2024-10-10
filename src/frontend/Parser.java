@@ -6,13 +6,13 @@ import token.Token;
 import error.Error;
 import node.CompUnitNode;
 
-public class Parse {
-    private static final Parse instance = new Parse();
+public class Parser {
+    private static final Parser instance = new Parser();
     private ArrayList<Token> tokensList;
     public ArrayList<Error> errorsList;
     private int index;
     private int peekIndex;
-    public static Parse getInstance() {
+    public static Parser getInstance() {
         return instance;
     }
 

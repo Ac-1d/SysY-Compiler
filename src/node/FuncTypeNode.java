@@ -1,23 +1,24 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
-public class FuncTypeNode {
+public class FuncTypeNode {//finish
     // FuncType → 'void' | 'int' | 'char'
 
     Token funcTypeToken;
 
     public static FuncTypeNode FuncType() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         FuncTypeNode funcTypeNode = new FuncTypeNode();
         Token token;
         token = instance.peekNextToken();
         TokenType tokenType = token.getType();
         if(tokenType.equals(TokenType.VOIDTK) == false && tokenType.equals(TokenType.INTTK) == false && tokenType.equals(TokenType.CHARTK) == false) {
-            
+            return null;
         }
+        funcTypeNode.funcTypeToken = token;
         return funcTypeNode;
     }
 }

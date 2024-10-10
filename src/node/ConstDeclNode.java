@@ -1,6 +1,6 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 import error.Error;
@@ -16,7 +16,7 @@ public class ConstDeclNode {//finish
     Token semicnToken;
 
     public static ConstDeclNode constDecl() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         ConstDeclNode constDeclNode = new ConstDeclNode();
         BTypeNode bTypeNode;
         ConstDefNode constDefNode;
@@ -68,7 +68,7 @@ public class ConstDeclNode {//finish
         ConstDefNode constDefNode;
 
         public static MultipleDeclNode MultipleDecl() {
-            Parse instance = Parse.getInstance();
+            Parser instance = Parser.getInstance();
             MultipleDeclNode multipleDeclNode = (new ConstDeclNode()).new MultipleDeclNode();
             ConstDefNode constDefNode;
             if(instance.peekNextToken().getType().equals(TokenType.COMMA) == false) {

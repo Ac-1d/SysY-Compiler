@@ -1,6 +1,6 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
@@ -10,7 +10,7 @@ public class NumberNode {//finish
     Token intConstToken;
 
     public static NumberNode Number() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         NumberNode numberNode = new NumberNode();
         Token intConstToken;
         intConstToken = instance.peekNextToken();

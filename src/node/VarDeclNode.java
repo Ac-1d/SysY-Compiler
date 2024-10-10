@@ -6,7 +6,7 @@ import token.TokenType;
 import java.util.ArrayList;
 
 import error.Error;
-import frontend.Parse;
+import frontend.Parser;
 
 public class VarDeclNode {//finish
     //VarDecl → BType VarDef { ',' VarDef } ';'
@@ -17,7 +17,7 @@ public class VarDeclNode {//finish
     Token semicnToken;
 
     public static VarDeclNode VarDecl() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         VarDeclNode varDeclNode = new VarDeclNode();
         BTypeNode bTypeNode;
         VarDefNode varDefNode;
@@ -59,7 +59,7 @@ public class VarDeclNode {//finish
         VarDefNode varDefNode;
 
         public static MultifyVarDefNode MultifyVarDef() {
-            Parse instance = Parse.getInstance();
+            Parser instance = Parser.getInstance();
             MultifyVarDefNode multifyVarDefNode = (new VarDeclNode()).new MultifyVarDefNode();
             Token commaToken;
             VarDefNode varDefNode;

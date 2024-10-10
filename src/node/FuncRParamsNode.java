@@ -1,6 +1,6 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class FuncRParamsNode {//finish
     ArrayList<ParamNode> paramNodesList = new ArrayList<>();
 
     public static FuncRParamsNode FuncRParams() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         FuncRParamsNode funcRParamsNode = new FuncRParamsNode();
         ExpNode expNode;
         ParamNode paramNode;
@@ -40,7 +40,7 @@ public class FuncRParamsNode {//finish
         ExpNode expNode;
 
         public static ParamNode Param() {
-            Parse instance = Parse.getInstance();
+            Parser instance = Parser.getInstance();
             ParamNode paramNode = (new FuncRParamsNode()).new ParamNode();
             Token commaToken;
             ExpNode expNode;

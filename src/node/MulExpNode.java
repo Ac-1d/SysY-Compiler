@@ -1,6 +1,6 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
@@ -13,7 +13,7 @@ public class MulExpNode {//finish
     MulExpNode shorterMulExpNode;
 
     public static MulExpNode MulExp() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         MulExpNode mulExpNode = new MulExpNode();
         UnaryExpNode unaryExpNode;
         Token mulToken;

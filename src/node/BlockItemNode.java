@@ -1,6 +1,6 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 
 public class BlockItemNode {//finish
     // BlockItem → Decl | Stmt
@@ -9,7 +9,7 @@ public class BlockItemNode {//finish
     StmtNode stmtNode;
 
     public static BlockItemNode BlockItem() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         BlockItemNode blockItemNode = new BlockItemNode();
         DeclNode declNode;
         StmtNode stmtNode;

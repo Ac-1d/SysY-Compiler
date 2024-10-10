@@ -1,6 +1,6 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
@@ -17,7 +17,7 @@ public class InitValNode {//finish maybe some mistake
     Token stringConstToken;
     
     public static InitValNode InitVal() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         InitValNode initValNode = new InitValNode();
         ExpNode expNode;
         InitArrayNode initArrayNode;
@@ -75,7 +75,7 @@ public class InitValNode {//finish maybe some mistake
         Token commaToken;
         ConstExpNode constExpNode;
         public static InitArrayNode InitArray() {
-            Parse instance = Parse.getInstance();
+            Parser instance = Parser.getInstance();
             InitArrayNode initArrayNode = (new InitValNode()).new InitArrayNode();
             ConstExpNode constExpNode;
             Token token;

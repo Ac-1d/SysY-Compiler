@@ -1,6 +1,6 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 import error.Error;
@@ -14,7 +14,7 @@ public class VarDefNode {//finish
     InitValNode initValNode;
 
     public static VarDefNode VarDef() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         VarDefNode varDefNode = new VarDefNode();
         Token indentToken;
         DefArrayNode defArrayNode;
@@ -56,7 +56,7 @@ public class VarDefNode {//finish
         Token RBRACK;
 
         public static DefArrayNode DefArray() {
-            Parse instance = Parse.getInstance();
+            Parser instance = Parser.getInstance();
             DefArrayNode defArrayNode = (new VarDefNode()).new DefArrayNode();
             ConstExpNode constExpNode;
             Token token;

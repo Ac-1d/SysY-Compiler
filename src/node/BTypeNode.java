@@ -1,6 +1,6 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
@@ -9,7 +9,7 @@ public class BTypeNode {//finish
     Token intOrCharToken;
     
     public static BTypeNode BType() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         BTypeNode bTypeNode = new BTypeNode();
         Token token;
         token = instance.peekNextToken();

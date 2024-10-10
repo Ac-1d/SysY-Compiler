@@ -1,6 +1,6 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
@@ -14,7 +14,7 @@ public class BlockNode {//finish
     Token rbraceToken;
 
     public static BlockNode Block() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         BlockNode blockNode = new BlockNode();
         Token lbraceToken;
         BlockItemNode blockItemNode;

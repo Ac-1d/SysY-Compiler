@@ -2,7 +2,7 @@ package node;
 
 import java.util.ArrayList;
 
-import frontend.Parse;
+import frontend.Parser;
 
 public class CompUnitNode {
     // CompUnit → {Decl} {FuncDef} MainFuncDef
@@ -11,7 +11,7 @@ public class CompUnitNode {
     private MainFuncDefNode mainFuncDefNode;
 
     public static CompUnitNode CompUnit() {//finish
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         CompUnitNode compUnit = new CompUnitNode();
         DeclNode declNode;
         FuncDefNode funcDefNode;

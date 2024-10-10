@@ -1,6 +1,6 @@
 import config.Config;
 import frontend.Lexer;
-import frontend.Parse;
+import frontend.Parser;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,7 +20,7 @@ public class Compiler {
             Config.error();
             lexer.printErrors();
         }
-        Parse parse = Parse.getInstance();
+        Parser parse = Parser.getInstance();
         parse.parseAnalyse();
     }
 }

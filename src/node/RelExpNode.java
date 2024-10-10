@@ -1,11 +1,39 @@
 package node;
 
-public class RelExpNode {
+import frontend.Parser;
+import token.Token;
+import token.TokenType;
+
+public class RelExpNode {//finish
     // RelExp → AddExp | RelExp ('<' | '>' | '<=' | '>=') AddExp
 
-    public static RelExpNode RelExp() {
-        RelExpNode relExpNode = new RelExpNode();
+    AddExpNode addExpNode;
+    Token token;
+    RelExpNode shorterRelExpNode;
 
+    public static RelExpNode RelExp() {
+        Parser instance = Parser.getInstance();
+        RelExpNode relExpNode = new RelExpNode();
+        AddExpNode addExpNode;
+        Token token;
+        RelExpNode shorterRelExpNode;
+        int tmpIndex;
+        addExpNode = AddExpNode.AddExp();
+        if(addExpNode == null) {
+            return null;
+        }
+        relExpNode.addExpNode = addExpNode;
+        tmpIndex = instance.getPeekIndex();
+        token = instance.peekNextToken();
+        if(token.getType().equals(TokenType.LSS) == false && token.getType().equals(TokenType.GRE) == false && token.getType().equals(TokenType.LEQ) == false && token.getType().equals(TokenType.GEQ) == false) {
+            instance.setPeekIndex(tmpIndex);
+            return relExpNode;
+        }
+        shorterRelExpNode = RelExpNode.RelExp();
+        if(shorterRelExpNode == null) {
+            return null;
+        }
+        relExpNode.shorterRelExpNode = shorterRelExpNode;
         return relExpNode;
     }
 }

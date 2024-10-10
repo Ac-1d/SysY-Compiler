@@ -1,7 +1,7 @@
 package node;
 
 import error.Error;
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
@@ -14,7 +14,7 @@ public class ConstDefNode {//finish
     ConstInitValNode constInitValNode;
     
     public static ConstDefNode ConstDef() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         ConstDefNode constDefNode = new ConstDefNode();
         ConstDefNode.DefArrayNode defArrayNode;
         ConstInitValNode constInitValNode;
@@ -52,7 +52,7 @@ public class ConstDefNode {//finish
         Token RBRACK;
 
         public static DefArrayNode DefArray() {
-            Parse instance = Parse.getInstance();
+            Parser instance = Parser.getInstance();
             DefArrayNode defArrayNode = (new ConstDefNode()).new DefArrayNode();
             ConstExpNode constExpNode;
             Token token;

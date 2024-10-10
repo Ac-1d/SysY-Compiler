@@ -1,7 +1,7 @@
 package node;
 
 import error.Error;
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
@@ -17,7 +17,7 @@ public class UnaryExpNode {//finish
     UnaryExpNode shortreUnaryExpNode;
 
     public static UnaryExpNode UnaryExp() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         UnaryExpNode unaryExpNode = new UnaryExpNode();
         PrimaryExpNode primaryExpNode;
         Token identToken;

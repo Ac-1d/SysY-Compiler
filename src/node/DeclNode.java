@@ -1,6 +1,6 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 
 public class DeclNode {//finish
     //Decl → ConstDecl | VarDecl
@@ -8,7 +8,7 @@ public class DeclNode {//finish
     private VarDeclNode varDeclNode;
     
     public static DeclNode Decl() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         DeclNode decl = new DeclNode();
         ConstDeclNode constDeclNode;
         VarDeclNode varDeclNode;

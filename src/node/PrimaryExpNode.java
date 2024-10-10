@@ -1,7 +1,7 @@
 package node;
 
 import error.Error;
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
@@ -16,7 +16,7 @@ public class PrimaryExpNode {//finish
     CharacterNode characterNode;
 
     public static PrimaryExpNode primaryExp() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         PrimaryExpNode primaryExpNode = new PrimaryExpNode();
         Token lparentToken;
         ExpNode expNode;

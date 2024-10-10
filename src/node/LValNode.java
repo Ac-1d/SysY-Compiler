@@ -1,7 +1,7 @@
 package node;
 
 import error.Error;
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ public class LValNode {//finish
     ArrayList<ArrayNode> arrayNodeslList = new ArrayList<>();
 
     public static LValNode LVal() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         LValNode lValNode = new LValNode();
         Token identToken;
         ArrayNode arrayNode;
@@ -40,7 +40,7 @@ public class LValNode {//finish
         Token rbrackToken;
 
         public static ArrayNode Array() {
-            Parse instance = Parse.getInstance();
+            Parser instance = Parser.getInstance();
             ArrayNode arrayNode = (new LValNode()).new ArrayNode();
             Token lbrackToken;
             ExpNode expNode;

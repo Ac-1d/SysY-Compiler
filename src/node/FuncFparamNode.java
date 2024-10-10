@@ -1,11 +1,53 @@
 package node;
 
-public class FuncFparamNode {
+import error.Error;
+import frontend.Parser;
+import token.Token;
+import token.TokenType;
+
+public class FuncFParamNode {
     // FuncFParam → BType Ident ['[' ']']
 
-    public static FuncFparamNode FuncFParam() {
-        FuncFparamNode funcFparamNode = new FuncFparamNode();
+    BTypeNode bTypeNode;
+    Token identToken;
+    Token lbrackToken;
+    Token rbrackToken;
 
-        return funcFparamNode;
+    public static FuncFParamNode FuncFParam() {
+        Parser instance = Parser.getInstance();
+        FuncFParamNode funcFParamNode = new FuncFParamNode();
+        Token token;
+        BTypeNode bTypeNode;
+        int tmpIndex;
+        bTypeNode = BTypeNode.BType();
+        if(bTypeNode == null) {
+            return null;
+        }
+        funcFParamNode.bTypeNode = bTypeNode;
+        token = instance.peekNextToken();
+        if(token.getType().equals(TokenType.IDENFR) == false) {
+            return null;
+        }
+        funcFParamNode.identToken = token;
+        tmpIndex = instance.getPeekIndex();
+        token = instance.peekNextToken();
+        if(token.getType().equals(TokenType.LBRACK) == false) {
+            instance.setPeekIndex(tmpIndex);
+            return funcFParamNode;
+        }
+        funcFParamNode.lbrackToken = token;
+        tmpIndex = instance.getPeekIndex();
+        token = instance.peekNextToken();
+        if(token.getType().equals(TokenType.RBRACK) == false) {//error
+            instance.setPeekIndex(tmpIndex);
+            instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'k'));
+        }
+        funcFParamNode.rbrackToken.setLineNum(instance.getPreTokenLineNum(token));
+
+        return funcFParamNode;
+    }
+
+    private FuncFParamNode() {
+        rbrackToken = new Token(TokenType.RBRACK, "]");
     }
 }

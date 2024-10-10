@@ -1,6 +1,6 @@
 package node;
 
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
@@ -9,7 +9,7 @@ public class UnaryOpNode {//finish
     Token unaryOpToken;
 
     public static UnaryOpNode UnaryOp() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         UnaryOpNode unaryOpNode = new UnaryOpNode();
         Token unaryOpToken;
         int tmpIndex;

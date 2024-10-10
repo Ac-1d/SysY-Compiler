@@ -2,7 +2,7 @@ package node;
 
 import java.util.ArrayList;
 
-import frontend.Parse;
+import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
@@ -16,7 +16,7 @@ public class ConstInitValNode {//finish
     Token stringConstToken;
     
     public static ConstInitValNode ConstInitVal() {
-        Parse instance = Parse.getInstance();
+        Parser instance = Parser.getInstance();
         ConstInitValNode constInitValNode = new ConstInitValNode();
         ConstExpNode constExpNode;
         InitArrayNode initArrayNode;
@@ -74,7 +74,7 @@ public class ConstInitValNode {//finish
         Token commaToken;
         ConstExpNode constExpNode;
         public static InitArrayNode InitArray() {
-            Parse instance = Parse.getInstance();
+            Parser instance = Parser.getInstance();
             InitArrayNode initArrayNode = (new ConstInitValNode()).new InitArrayNode();
             ConstExpNode constExpNode;
             Token token;
