@@ -57,6 +57,22 @@ public class ConstDeclNode {//finish
         return constDeclNode;
     }
 
+    void print() {
+        constToken.print();
+        bTypeNode.print();
+        constDefNode.print();
+        for (MultipleDeclNode multipleDeclNode : multipleDeclNodesList) {
+            multipleDeclNode.commaToken.print();
+            multipleDeclNode.commaToken.print();
+        }
+        semicnToken.print();
+        System.out.println(toString());
+    }
+
+    public String toString() {
+        return "<ConstDeclNode>";
+    }
+
     private ConstDeclNode() {
         constToken = new Token(TokenType.CONSTTK, "const");
         semicnToken = new Token(TokenType.SEMICN, ";");

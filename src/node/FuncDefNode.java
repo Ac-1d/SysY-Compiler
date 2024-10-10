@@ -63,6 +63,22 @@ public class FuncDefNode {//finish
         return funcDefNode;
     }
 
+    void print() {
+        funcTypeNode.print();
+        identToken.print();
+        lparentToken.print();
+        if(funcFParamsNode != null) {
+            funcFParamsNode.print();
+        }
+        blockNode.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<FuncDefNode>";
+    }
+
     private FuncDefNode() {
         rparentToken = new Token(TokenType.RPARENT, ")");
         

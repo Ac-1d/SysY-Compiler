@@ -15,6 +15,7 @@ public class UnaryExpNode {//finish
     Token rparentToken;
     UnaryOpNode unaryOpNode;
     UnaryExpNode shortreUnaryExpNode;
+    int state;
 
     public static UnaryExpNode UnaryExp() {
         Parser instance = Parser.getInstance();
@@ -31,6 +32,7 @@ public class UnaryExpNode {//finish
         primaryExpNode = PrimaryExpNode.primaryExp();
         if(primaryExpNode != null) {//case 1
             unaryExpNode.primaryExpNode = primaryExpNode;
+            unaryExpNode.state = 1;
             return unaryExpNode;
         }
         instance.setPeekIndex(tmpIndex);
@@ -51,17 +53,47 @@ public class UnaryExpNode {//finish
                 instance.setPeekIndex(tmpIndex);
             }
             unaryExpNode.rparentToken.setLineNum(instance.getPreTokenLineNum(rparentToken));
+            unaryExpNode.state = 2;
             return unaryExpNode;
         }
         instance.setPeekIndex(tmpIndex);
         unaryOpNode = UnaryOpNode.UnaryOp();
-        if(unaryOpNode != null) {
+        if(unaryOpNode != null) {//case 3
             shorterUnaryExpNode = UnaryExpNode.UnaryExp();
             unaryExpNode.shortreUnaryExpNode = shorterUnaryExpNode;
+            unaryExpNode.state = 3;
             return unaryExpNode;
         }
         instance.setPeekIndex(tmpIndex);
         return null;
+    }
+
+    void print() {
+        switch (state) {
+            case 1:
+                primaryExpNode.print();
+                break;
+            case 2:
+                identToken.print();
+                lparentToken.print();
+                if(funcRParamsNode != null) {
+                    funcRParamsNode.print();
+                }
+                rparentToken.print();
+                break;
+            case 3:
+                unaryOpNode.print();
+                shortreUnaryExpNode.print();
+                break;
+            default:
+                break;
+        }
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<UnaryExpNode>";
     }
 
     private UnaryExpNode() {}

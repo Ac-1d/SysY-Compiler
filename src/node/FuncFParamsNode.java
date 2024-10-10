@@ -32,6 +32,22 @@ public class FuncFParamsNode {//finish
         return funcFparamsNode;
     }
 
+    void print() {
+        funcFParamNode.print();
+        for (FuncFParamWithCommaNode funcFParamWithCommaNode : funcFParamWithCommaNodesList) {
+            funcFParamWithCommaNode.commaToken.print();
+            funcFParamWithCommaNode.funcFParamNode.print();
+        }
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<FuncFParamsNode>";
+    }
+
+    private FuncFParamsNode() {}
+
     class FuncFParamWithCommaNode {
         // FuncFParamWithComma → ',' FuncFParam
 

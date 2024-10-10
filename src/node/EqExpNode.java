@@ -41,4 +41,20 @@ public class EqExpNode {//finish
         }
         return eqExpNode;
     }
+
+    void print() {
+        if(shorterEqExpNode != null) {
+            eqlOrNeqToken.print();
+            eqlOrNeqToken.print();
+        }
+        relExpNode.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<EqExpNode>";
+    }
+
+    private EqExpNode() {}
 }

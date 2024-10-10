@@ -4,13 +4,12 @@ import error.Error;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
-import java.util.ArrayList;
 
 public class LValNode {//finish
     // LVal → Ident ['[' Exp ']'] 
 
     Token identToken;
-    ArrayList<ArrayNode> arrayNodeslList = new ArrayList<>();
+    ArrayNode arrayNode;
 
     public static LValNode LVal() {
         Parser instance = Parser.getInstance();
@@ -24,13 +23,32 @@ public class LValNode {//finish
         }
         lValNode.identToken = identToken;
         tmpIndex = instance.getPeekIndex();
-        while((arrayNode = ArrayNode.Array()) != null) {
-            tmpIndex = instance.getPeekIndex();
-            lValNode.arrayNodeslList.add(arrayNode);
+        arrayNode = ArrayNode.Array();
+        if(arrayNode == null) {
+            instance.setPeekIndex(tmpIndex);
         }
-        instance.setPeekIndex(tmpIndex);
+        else {
+            lValNode.arrayNode = arrayNode;
+        }
         return lValNode;
     }
+
+    void print() {
+        identToken.print();
+        if(arrayNode != null) {
+            arrayNode.lbrackToken.print();
+            arrayNode.expNode.print();
+            arrayNode.rbrackToken.print();
+        }
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<LValNode>";
+    }
+
+    private LValNode() {}
 
     class ArrayNode {
         // ArrayNode → '[' Exp ']'

@@ -24,5 +24,15 @@ public class UnaryOpNode {//finish
         return unaryOpNode;
     }
 
+    void print() {
+        unaryOpToken.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<UnaryOpNode>";
+    }
+
     private UnaryOpNode() {}
 }

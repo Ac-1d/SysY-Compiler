@@ -31,6 +31,20 @@ public class FuncRParamsNode {//finish
         return funcRParamsNode;
     }
 
+    void print() {
+        expNode.print();
+        for (ParamNode paramNode : paramNodesList) {
+            paramNode.commaToken.print();
+            paramNode.expNode.print();
+        }
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<FuncRParamsNode";
+    }
+
     private FuncRParamsNode() {}
 
     class ParamNode {

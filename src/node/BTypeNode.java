@@ -6,6 +6,8 @@ import token.TokenType;
 
 public class BTypeNode {//finish
     //BType → 'int' | 'char'
+    // dont print
+
     Token intOrCharToken;
     
     public static BTypeNode BType() {
@@ -21,7 +23,9 @@ public class BTypeNode {//finish
     }
 
     public void print() {
-        System.out.println(intOrCharToken.toString());
+        intOrCharToken.print();
     }
+
+    private BTypeNode() {}
     
 }

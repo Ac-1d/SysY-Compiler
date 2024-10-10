@@ -41,5 +41,18 @@ public class AddExpNode {//finish
         return addExpNode;
     }
 
+    void print() {
+        if(shorterAddExpNode != null) {
+            shorterAddExpNode.print();
+            addToken.print();
+        }
+        mulExpNode.print();
+        System.out.println(this.toString());
+    }
+
+    public String toString() {
+        return "<AddExpNode>";
+    }
+
     private AddExpNode() {}
 }

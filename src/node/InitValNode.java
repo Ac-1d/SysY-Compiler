@@ -6,7 +6,7 @@ import token.TokenType;
 
 import java.util.ArrayList;
 
-//TODO: 发现一些类可以进一步抽象，尝试使用多态来实现，等待后续的重构吧😪
+//发现一些类可以进一步抽象，尝试使用多态来实现，等待后续的重构吧😪
 public class InitValNode {//finish maybe some mistake
     // InitVal → Exp | '{' [ Exp { ',' Exp } ] '}' | StringConst
     /**in case 1 or 2 */
@@ -15,6 +15,7 @@ public class InitValNode {//finish maybe some mistake
     ArrayList<InitArrayNode> initArrayNodesList = new ArrayList<>();
     Token rbraceToken;
     Token stringConstToken;
+    int state;
     
     public static InitValNode InitVal() {
         Parser instance = Parser.getInstance();
@@ -28,6 +29,7 @@ public class InitValNode {//finish maybe some mistake
         expNode = ExpNode.Exp();
         if(expNode != null) {
             initValNode.expNode = expNode;
+            initValNode.state = 1;
             return initValNode;
         }
         instance.setPeekIndex(tmpIndex);
@@ -51,6 +53,7 @@ public class InitValNode {//finish maybe some mistake
             }
             token = instance.peekNextToken();
             initValNode.rbraceToken.setLineNum(token.getLineNum());//不存在右花括号缺失的情况
+            initValNode.state = 2;
             return initValNode;
         }
         //case 3
@@ -59,9 +62,40 @@ public class InitValNode {//finish maybe some mistake
         initValNode.stringConstToken.setLineNum(token.getLineNum());
         initValNode.stringConstToken.setWord(token.getWord());
         if(token.getType().equals(TokenType.STRCON) == true) {
+            initValNode.state = 3;
             return initValNode;
         }
         return null;
+    }
+
+    void print() {
+        switch (state) {
+            case 1:
+                expNode.print();
+                break;
+            case 2:
+                lbraceToken.print();
+                if(expNode != null) {
+                    expNode.print();
+                    for (InitArrayNode initArrayNode : initArrayNodesList) {
+                        initArrayNode.commaToken.print();
+                        initArrayNode.expNode.print();
+                    }
+                }
+                rbraceToken.print();
+                break;
+            case 3:
+                stringConstToken.print();
+                break;
+            default:
+                break;
+        }
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<InitValNode>";
     }
 
     private InitValNode() {
@@ -73,22 +107,22 @@ public class InitValNode {//finish maybe some mistake
     class InitArrayNode {//finish
         // InitArray → ',' ConstExp
         Token commaToken;
-        ConstExpNode constExpNode;
+        ExpNode expNode;
         public static InitArrayNode InitArray() {
             Parser instance = Parser.getInstance();
             InitArrayNode initArrayNode = (new InitValNode()).new InitArrayNode();
-            ConstExpNode constExpNode;
+            ExpNode expNode;
             Token token;
             token = instance.peekNextToken();
             initArrayNode.commaToken.setLineNum(token.getLineNum());
             if(token.getType().equals(TokenType.COMMA) == false) {
                 return null;
             }
-            constExpNode = ConstExpNode.ConstExp();
-            if(constExpNode == null) {
+            expNode = ExpNode.Exp();
+            if(expNode == null) {
                 return null;
             }
-            initArrayNode.constExpNode = constExpNode;
+            initArrayNode.expNode = expNode;
             return initArrayNode;
         }
     }

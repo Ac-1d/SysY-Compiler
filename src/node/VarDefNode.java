@@ -46,19 +46,38 @@ public class VarDefNode {//finish
         return varDefNode;
     }
 
+    void print() {
+        identToken.print();
+        if(defArrayNode != null) {
+            defArrayNode.LBRACK.print();
+            defArrayNode.constExpNode.print();
+            defArrayNode.RBRACK.print();
+        }
+        if(initValNode != null) {
+            assignToken.print();
+            initValNode.print();
+        }
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<VarDefNode>";
+    }
+
     private VarDefNode() {
         assignToken = new Token(TokenType.ASSIGN, "=");
     }
 
     class DefArrayNode {//finish
         Token LBRACK;
-        ConstExpNode constExpNode;
+        expNode constExpNode;
         Token RBRACK;
 
         public static DefArrayNode DefArray() {
             Parser instance = Parser.getInstance();
             DefArrayNode defArrayNode = (new VarDefNode()).new DefArrayNode();
-            ConstExpNode constExpNode;
+            expNode constExpNode;
             Token token;
             int tmpIndex;
             token = instance.peekNextToken();
@@ -66,7 +85,7 @@ public class VarDefNode {//finish
             if(token.getType().equals(TokenType.LBRACK) == false) {
                 return null;
             }
-            constExpNode = ConstExpNode.ConstExp();
+            constExpNode = expNode.ConstExp();
             defArrayNode.constExpNode = constExpNode;
             if(constExpNode == null) {
                 return null;

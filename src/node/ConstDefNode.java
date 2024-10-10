@@ -46,15 +46,34 @@ public class ConstDefNode {//finish
         return constDefNode;
     }
 
+    void print() {
+        identToken.print();
+        if(defArrayNode != null) {
+            defArrayNode.LBRACK.print();
+            defArrayNode.constExpNode.print();
+            defArrayNode.RBRACK.print();
+        }
+        assignToken.print();
+        constInitValNode.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<ConstDefNode>";
+    }
+
+    private ConstDefNode() {}
+
     class DefArrayNode {//finish
         Token LBRACK;
-        ConstExpNode constExpNode;
+        expNode constExpNode;
         Token RBRACK;
 
         public static DefArrayNode DefArray() {
             Parser instance = Parser.getInstance();
             DefArrayNode defArrayNode = (new ConstDefNode()).new DefArrayNode();
-            ConstExpNode constExpNode;
+            expNode constExpNode;
             Token token;
             int tmpIndex;
             token = instance.peekNextToken();
@@ -62,7 +81,7 @@ public class ConstDefNode {//finish
             if(token.getType().equals(TokenType.LBRACK) == false) {
                 return null;
             }
-            constExpNode = ConstExpNode.ConstExp();
+            constExpNode = expNode.ConstExp();
             defArrayNode.constExpNode = constExpNode;
             if(constExpNode == null) {
                 return null;
@@ -79,6 +98,8 @@ public class ConstDefNode {//finish
             }
             return defArrayNode;
         }
+
+        private DefArrayNode() {}
 
     }
 }

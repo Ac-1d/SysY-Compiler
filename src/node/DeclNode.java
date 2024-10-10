@@ -4,8 +4,10 @@ import frontend.Parser;
 
 public class DeclNode {//finish
     //Decl → ConstDecl | VarDecl
-    private ConstDeclNode constDeclNode;
-    private VarDeclNode varDeclNode;
+    // dont print
+
+    ConstDeclNode constDeclNode;
+    VarDeclNode varDeclNode;
     
     public static DeclNode Decl() {
         Parser instance = Parser.getInstance();
@@ -29,6 +31,15 @@ public class DeclNode {//finish
         //同上
         instance.setPeekIndex(tmpIndex);
         return null;
+    }
+
+    void print() {
+        if(constDeclNode != null) {
+            constDeclNode.print();
+        }
+        else {
+            varDeclNode.print();
+        }
     }
 
     private DeclNode() {}

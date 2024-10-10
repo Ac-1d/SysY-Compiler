@@ -16,5 +16,14 @@ public class ExpNode {//finish
         return expNode;
     }
 
+    void print() {
+        addExpNode.print();
+    }
+
+    @Override
+    public String toString() {
+        return "<ExpNode>";
+    }
+
     private ExpNode() {}
 }

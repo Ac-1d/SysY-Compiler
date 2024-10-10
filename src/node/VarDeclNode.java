@@ -48,6 +48,22 @@ public class VarDeclNode {//finish
         return varDeclNode;
     }
 
+    void print() {
+        bTypeNode.print();
+        varDefNode.print();
+        for (MultifyVarDefNode multifyVarDefNode : multifyVarDefNodesList) {
+            multifyVarDefNode.commaToken.print();
+            multifyVarDefNode.varDefNode.print();
+        }
+        semicnToken.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<VarDeclNode>";
+    }
+
     private VarDeclNode() {
         semicnToken = new Token(TokenType.SEMICN, ";");
     }

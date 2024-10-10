@@ -21,5 +21,15 @@ public class NumberNode {//finish
         return numberNode;
     }
 
+    void print() {
+        intConstToken.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<NumberNode>";
+    }
+
     private NumberNode() {}
 }

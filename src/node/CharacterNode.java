@@ -20,4 +20,15 @@ public class CharacterNode {
         characterNode.charConstToken = charConstToken;
         return characterNode;
     }
+
+    void print() {
+        charConstToken.print();
+        System.out.println(this.toString());
+    }
+
+    public String toString() {
+        return "<CharacterNode>";
+    }
+
+    private CharacterNode() {}
 }

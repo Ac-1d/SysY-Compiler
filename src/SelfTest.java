@@ -1,21 +1,21 @@
+import java.util.ArrayList;
+
 public class SelfTest {
     public static void main(String[] args) {
-        A.B b = A.B.foo();
+        ArrayList<String> strs = new ArrayList<>();
+        for (String string : strs) {
+            System.out.println(string);
+        }
     }
 
-    public static Object foo(Object o) {
-        return o;
-    }
 }
 
 class A {
-    public void sayHello() {
-        System.out.println("hello");
+    public String toString() {
+        return this.getClass().toString();
     }
+}
 
-    class B {
-        public static B foo() {
-            return (new A()).new B();
-        }
-    }
+class B extends A {
+
 }

@@ -36,4 +36,20 @@ public class RelExpNode {//finish
         relExpNode.shorterRelExpNode = shorterRelExpNode;
         return relExpNode;
     }
+
+    void print() {
+        if(shorterRelExpNode != null) {
+            shorterRelExpNode.print();
+            token.print();
+        }
+        addExpNode.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<RelExpNode>";
+    }
+
+    private RelExpNode() {}
 }

@@ -64,6 +64,29 @@ public class PrimaryExpNode {//finish
         return null;
     }
 
+    void print() {
+        if(expNode != null) {
+            lparentToken.print();
+            expNode.print();
+            rparentToken.print();
+        }
+        else if(lValNode != null) {
+            lValNode.print();
+        }
+        else if(numberNode != null) {
+            numberNode.print();
+        }
+        else if(characterNode != null) {
+            characterNode.print();
+        }
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<PrimaryExpNode>";
+    }
+
     private PrimaryExpNode() {
         lparentToken = new Token(TokenType.LPARENT, "(");
         rparentToken = new Token(TokenType.RPARENT, ")");

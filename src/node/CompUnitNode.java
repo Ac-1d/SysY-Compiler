@@ -6,9 +6,10 @@ import frontend.Parser;
 
 public class CompUnitNode {
     // CompUnit → {Decl} {FuncDef} MainFuncDef
-    private ArrayList<DeclNode> declNodes = new ArrayList<>();
-    private ArrayList<FuncDefNode> funcDefNodes = new ArrayList<>();
-    private MainFuncDefNode mainFuncDefNode;
+
+    ArrayList<DeclNode> declNodes = new ArrayList<>();
+    ArrayList<FuncDefNode> funcDefNodes = new ArrayList<>();
+    MainFuncDefNode mainFuncDefNode;
 
     public static CompUnitNode CompUnit() {//finish
         Parser instance = Parser.getInstance();
@@ -29,6 +30,21 @@ public class CompUnitNode {
         instance.setPeekIndex(tmpIndex);
         compUnit.mainFuncDefNode = MainFuncDefNode.MainFuncDef();
         return compUnit;
+    }
+
+    void print() {
+        for (DeclNode declNode : declNodes) {
+            declNode.print();
+        }
+        for (FuncDefNode funcDefNode : funcDefNodes) {
+            funcDefNode.print();
+        }
+        mainFuncDefNode.print();
+        System.out.println(this.toString());
+    }
+
+    public String toString() {
+        return "<CompUnitNode>";
     }
 
     private CompUnitNode() {}

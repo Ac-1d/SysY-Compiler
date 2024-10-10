@@ -39,6 +39,19 @@ public class BlockNode {//finish
         return blockNode;
     }
 
+    void print() {
+        lbraceToken.print();
+        for (BlockItemNode blockItemNode : blockItemNodesList) {
+            blockItemNode.print();
+        }
+        rbraceToken.print();
+        System.out.println(this.toString());
+    }
+
+    public String toString() {
+        return "<BlockNode>";
+    }
+
     private BlockNode() {
         lbraceToken = new Token(TokenType.LBRACE, "{");
         rbraceToken = new Token(TokenType.RBRACE, "}");

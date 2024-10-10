@@ -1,11 +1,11 @@
 package node;
 
-public class ConstExpNode {//finish
+public class expNode {//finish
     //ConstExp → AddExp
     AddExpNode addExpNode;
 
-    public static ConstExpNode ConstExp() {
-        ConstExpNode constExpNode = new ConstExpNode();
+    public static expNode ConstExp() {
+        expNode constExpNode = new expNode();
         AddExpNode addExpNode;
         addExpNode = AddExpNode.AddExp();
         if(addExpNode == null) {
@@ -15,5 +15,15 @@ public class ConstExpNode {//finish
         return constExpNode;
     }
 
-    private ConstExpNode() {}
+    void print() {
+        addExpNode.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<ConstExpNode>";
+    }
+
+    private expNode() {}
 }

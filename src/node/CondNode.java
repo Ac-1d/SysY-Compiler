@@ -16,5 +16,14 @@ public class CondNode {//finish
         return condNode;
     }
 
+    void print() {
+        lOrExpNode.print();
+        System.out.println(toString());
+    }
+
+    public String toString() {
+        return "<CondNode>";
+    }
+
     private CondNode() {}
 }

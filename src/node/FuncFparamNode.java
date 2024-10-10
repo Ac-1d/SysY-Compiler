@@ -47,6 +47,21 @@ public class FuncFParamNode {
         return funcFParamNode;
     }
 
+    void print() {
+        bTypeNode.print();
+        identToken.print();
+        if(lbrackToken != null) {
+            lbrackToken.print();
+            rbrackToken.print();
+        }
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<FuncFParamNode>";
+    }
+
     private FuncFParamNode() {
         rbrackToken = new Token(TokenType.RBRACK, "]");
     }

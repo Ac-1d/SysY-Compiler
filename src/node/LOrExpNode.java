@@ -36,4 +36,20 @@ public class LOrExpNode {//finish
         lOrExpNode.shorterLOrExpNode = shoterLOrExpNode;
         return lOrExpNode;
     }
+
+    void print() {
+        if(shorterLOrExpNode != null) {
+            shorterLOrExpNode.print();
+            orToken.print();
+        }
+        lAndExpNode.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<LOrExpNode>";
+    }
+
+    private LOrExpNode() {}
 }

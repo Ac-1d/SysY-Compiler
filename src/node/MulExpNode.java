@@ -39,5 +39,19 @@ public class MulExpNode {//finish
         return mulExpNode;
     }
 
+    void print() {
+        if(shorterMulExpNode != null) {
+            shorterMulExpNode.print();
+            mulToken.print();
+        }
+        unaryExpNode.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<MulExpNode>";
+    }
+
     private MulExpNode() {}
 }

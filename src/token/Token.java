@@ -25,6 +25,10 @@ public class Token {
         return type + " " + word;
     }
 
+    public void print() {
+        System.out.println(this.toString());
+    }
+
     public void setWord(String word) {
         this.word = word;
     }

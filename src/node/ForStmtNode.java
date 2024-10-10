@@ -1,11 +1,51 @@
 package node;
 
-public class ForStmtNode {
+import frontend.Parser;
+import token.Token;
+import token.TokenType;
+
+public class ForStmtNode {//finish
     // ForStmt → LVal '=' Exp
 
-    public static ForStmtNode ForStmt() {
-        ForStmtNode forStmtNode = new ForStmtNode();
+    LValNode lValNode;
+    Token assignToken;
+    ExpNode expNode;
 
+    public static ForStmtNode ForStmt() {
+        Parser instance = Parser.getInstance();
+        ForStmtNode forStmtNode = new ForStmtNode();
+        LValNode lValNode;
+        Token assignToken;
+        ExpNode expNode;
+        lValNode = LValNode.LVal();
+        if(lValNode == null) {
+            return null;
+        }
+        forStmtNode.lValNode = lValNode;
+        assignToken = instance.peekNextToken();
+        if(assignToken.getType().equals(TokenType.ASSIGN) == false) {
+            return null;
+        }
+        forStmtNode.assignToken = assignToken;
+        expNode = ExpNode.Exp();
+        if(expNode == null) {
+            return null;
+        }
+        forStmtNode.expNode = expNode;
         return forStmtNode;
     }
+
+    void print() {
+        lValNode.print();
+        assignToken.print();
+        expNode.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<ForStmtNode>";
+    }
+
+    private ForStmtNode() {}
 }

@@ -21,4 +21,16 @@ public class FuncTypeNode {//finish
         funcTypeNode.funcTypeToken = token;
         return funcTypeNode;
     }
+
+    void print() {
+        funcTypeToken.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<FuncTypeNode>";
+    }
+
+    private FuncTypeNode() {}
 }

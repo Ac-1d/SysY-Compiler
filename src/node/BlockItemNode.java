@@ -4,6 +4,7 @@ import frontend.Parser;
 
 public class BlockItemNode {//finish
     // BlockItem → Decl | Stmt
+    // dont print
 
     DeclNode declNode;
     StmtNode stmtNode;
@@ -29,4 +30,15 @@ public class BlockItemNode {//finish
         instance.setPeekIndex(tmpIndex);
         return null;
     }
+
+    void print() {
+        if(declNode != null) {
+            declNode.print();
+        }
+        else {
+            stmtNode.print();
+        }
+    }
+
+    private BlockItemNode() {}
 }

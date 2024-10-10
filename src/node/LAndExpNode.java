@@ -37,4 +37,20 @@ public class LAndExpNode {//finish
         lAndExpNode.shorterLAndExpNode = shorterAndExpNode;
         return lAndExpNode;
     }
+
+    void print() {
+        if(shorterLAndExpNode != null) {
+            shorterLAndExpNode.print();
+            andToken.print();
+        }
+        eqExpNode.print();
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "<LAndExpNode>";
+    }
+
+    private LAndExpNode() {}
 }
