@@ -42,7 +42,7 @@ public class FuncRParamsNode {//finish
 
     @Override
     public String toString() {
-        return "<FuncRParamsNode";
+        return "<FuncRParams>";
     }
 
     private FuncRParamsNode() {}

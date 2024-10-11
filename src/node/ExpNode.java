@@ -17,12 +17,13 @@ public class ExpNode {//finish
     }
 
     void print() {
-        addExpNode.print();
+        addExpNode.print(true);
+        System.out.println(toString());
     }
 
     @Override
     public String toString() {
-        return "<ExpNode>";
+        return "<Exp>";
     }
 
     private ExpNode() {}

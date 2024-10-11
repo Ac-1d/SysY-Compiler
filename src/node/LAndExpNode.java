@@ -38,18 +38,23 @@ public class LAndExpNode {//finish
         return lAndExpNode;
     }
 
-    void print() {
-        if(shorterLAndExpNode != null) {
-            shorterLAndExpNode.print();
-            andToken.print();
+    void print(boolean state) {
+        eqExpNode.print(true);
+        if(state == true) {
+            System.out.println(toString());
         }
-        eqExpNode.print();
-        System.out.println(toString());
+        if(shorterLAndExpNode != null) {
+            andToken.print();
+            shorterLAndExpNode.print(false);
+            if(state == true) {
+                System.out.println(toString());
+            }
+        }
     }
 
     @Override
     public String toString() {
-        return "<LAndExpNode>";
+        return "<LAndExp>";
     }
 
     private LAndExpNode() {}

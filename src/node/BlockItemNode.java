@@ -23,7 +23,7 @@ public class BlockItemNode {//finish
         }
         instance.setPeekIndex(tmpIndex);
         stmtNode = StmtNode.Stmt();
-        if(stmtNode == null) {
+        if(stmtNode != null) {
             blockItemNode.stmtNode = stmtNode;
             return blockItemNode;
         }

@@ -27,7 +27,7 @@ public class CharacterNode {
     }
 
     public String toString() {
-        return "<CharacterNode>";
+        return "<Character>";
     }
 
     private CharacterNode() {}

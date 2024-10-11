@@ -84,7 +84,7 @@ public class PrimaryExpNode {//finish
 
     @Override
     public String toString() {
-        return "<PrimaryExpNode>";
+        return "<PrimaryExp>";
     }
 
     private PrimaryExpNode() {

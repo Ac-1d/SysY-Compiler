@@ -31,7 +31,7 @@ public class UnaryOpNode {//finish
 
     @Override
     public String toString() {
-        return "<UnaryOpNode>";
+        return "<UnaryOp>";
     }
 
     private UnaryOpNode() {}

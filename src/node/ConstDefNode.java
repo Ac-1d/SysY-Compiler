@@ -21,7 +21,7 @@ public class ConstDefNode {//finish
         Token token;
         int tmpIndex;
         token = instance.peekNextToken();
-        constDefNode.identToken.setLineNum(token.getLineNum());
+        constDefNode.identToken = token;
         if(token.getType().equals(TokenType.IDENFR) == false) {
             return null;
         }
@@ -30,11 +30,10 @@ public class ConstDefNode {//finish
         constDefNode.defArrayNode = defArrayNode;
         if(defArrayNode == null) {
             instance.setPeekIndex(tmpIndex);
-            return null;
         }
         token = instance.peekNextToken();
-        constDefNode.assignToken.setLineNum(token.getLineNum());
-        if(token.getType().equals(TokenType.ASSIGN)) {
+        constDefNode.assignToken = token;
+        if(token.getType().equals(TokenType.ASSIGN) == false) {
             return null;
         }
         constInitValNode = ConstInitValNode.ConstInitVal();
@@ -49,9 +48,9 @@ public class ConstDefNode {//finish
     void print() {
         identToken.print();
         if(defArrayNode != null) {
-            defArrayNode.LBRACK.print();
+            defArrayNode.lbrackToken.print();
             defArrayNode.constExpNode.print();
-            defArrayNode.RBRACK.print();
+            defArrayNode.rbrackToken.print();
         }
         assignToken.print();
         constInitValNode.print();
@@ -60,46 +59,48 @@ public class ConstDefNode {//finish
 
     @Override
     public String toString() {
-        return "<ConstDefNode>";
+        return "<ConstDef>";
     }
 
     private ConstDefNode() {}
 
     class DefArrayNode {//finish
-        Token LBRACK;
-        expNode constExpNode;
-        Token RBRACK;
+        Token lbrackToken;
+        ConstExpNode constExpNode;
+        Token rbrackToken;
 
         public static DefArrayNode DefArray() {
             Parser instance = Parser.getInstance();
             DefArrayNode defArrayNode = (new ConstDefNode()).new DefArrayNode();
-            expNode constExpNode;
+            ConstExpNode constExpNode;
             Token token;
             int tmpIndex;
             token = instance.peekNextToken();
-            defArrayNode.LBRACK.setLineNum(token.getLineNum());
+            defArrayNode.lbrackToken = token;
             if(token.getType().equals(TokenType.LBRACK) == false) {
                 return null;
             }
-            constExpNode = expNode.ConstExp();
+            constExpNode = ConstExpNode.ConstExp();
             defArrayNode.constExpNode = constExpNode;
             if(constExpNode == null) {
                 return null;
             }
             token = instance.peekNextToken();
-            defArrayNode.RBRACK.setLineNum(token.getLineNum());
+            defArrayNode.rbrackToken.setLineNum(token.getLineNum());
             tmpIndex = instance.getPeekIndex();
             if(token.getType().equals(TokenType.RBRACK) == false) {//未识别到']'
                 instance.errorsList.add(new Error("Parse", instance.getPreTokenLineNum(token), 'k'));
                 instance.setPeekIndex(tmpIndex);
             }
             else {
-                defArrayNode.RBRACK.setLineNum(token.getLineNum());
+                defArrayNode.rbrackToken.setLineNum(token.getLineNum());
             }
             return defArrayNode;
         }
 
-        private DefArrayNode() {}
+        private DefArrayNode() {
+            rbrackToken = new Token(TokenType.RBRACK, "]");
+        }
 
     }
 }

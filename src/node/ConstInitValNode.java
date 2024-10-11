@@ -9,7 +9,7 @@ import token.TokenType;
 public class ConstInitValNode {//finish
     // ConstInitVal → ConstExp | '{' [ ConstExp { ',' ConstExp } ] '}' | StringConst
     /**in case 1 or 2 */
-    expNode constExpNode;
+    ConstExpNode constExpNode;
     Token lbraceToken;
     ArrayList<InitArrayNode> initArrayNodesList = new ArrayList<>();
     Token rbraceToken;
@@ -19,13 +19,13 @@ public class ConstInitValNode {//finish
     public static ConstInitValNode ConstInitVal() {
         Parser instance = Parser.getInstance();
         ConstInitValNode constInitValNode = new ConstInitValNode();
-        expNode constExpNode;
+        ConstExpNode constExpNode;
         InitArrayNode initArrayNode;
         Token token;
         int tmpIndex;
         //case 1
         tmpIndex = instance.getPeekIndex();
-        constExpNode = expNode.ConstExp();
+        constExpNode = ConstExpNode.ConstExp();
         if(constExpNode != null) {
             constInitValNode.constExpNode = constExpNode;
             constInitValNode.state = 1;
@@ -35,10 +35,10 @@ public class ConstInitValNode {//finish
         //case 2
         tmpIndex = instance.getPeekIndex();
         token = instance.peekNextToken();
-        constInitValNode.lbraceToken.setLineNum(token.getLineNum());
         if(token.getType().equals(TokenType.LBRACE) == true) {//吃到了 '{'，一定是case2，不必顾虑tmpIndex覆盖问题
+            constInitValNode.lbraceToken.setLineNum(token.getLineNum());
             tmpIndex = instance.getPeekIndex();
-            constExpNode = expNode.ConstExp();
+            constExpNode = ConstExpNode.ConstExp();
             if(constExpNode == null) {//不包含'[]'
                 instance.setPeekIndex(tmpIndex);
             }
@@ -56,6 +56,7 @@ public class ConstInitValNode {//finish
             return constInitValNode;
         }
         //case 3
+        instance.setPeekIndex(tmpIndex);
         tmpIndex = instance.getPeekIndex();
         token = instance.peekNextToken();
         constInitValNode.stringConstToken.setLineNum(token.getLineNum());
@@ -94,7 +95,7 @@ public class ConstInitValNode {//finish
 
     @Override
     public String toString() {
-        return "<ConstInitValNode>";
+        return "<ConstInitVal>";
     }
 
     private ConstInitValNode() {
@@ -106,18 +107,18 @@ public class ConstInitValNode {//finish
     class InitArrayNode {//finish
         // InitArray → ',' ConstExp
         Token commaToken;
-        expNode constExpNode;
+        ConstExpNode constExpNode;
         public static InitArrayNode InitArray() {
             Parser instance = Parser.getInstance();
             InitArrayNode initArrayNode = (new ConstInitValNode()).new InitArrayNode();
-            expNode constExpNode;
+            ConstExpNode constExpNode;
             Token token;
             token = instance.peekNextToken();
-            initArrayNode.commaToken.setLineNum(token.getLineNum());
+            initArrayNode.commaToken = token;
             if(token.getType().equals(TokenType.COMMA) == false) {
                 return null;
             }
-            constExpNode = expNode.ConstExp();
+            constExpNode = ConstExpNode.ConstExp();
             if(constExpNode == null) {
                 return null;
             }

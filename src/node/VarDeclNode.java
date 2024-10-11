@@ -41,6 +41,11 @@ public class VarDeclNode {//finish
         }
         instance.setPeekIndex(tmpIndex);
         semicnToken = instance.peekNextToken();
+
+        //此处不应出现左小括号^^，出现左小括号将视为正在定义函数
+        if(semicnToken.getType().equals(TokenType.LPARENT) == true) {
+            return null;
+        }
         if(semicnToken.getType().equals(TokenType.SEMICN) == false) {
             instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(semicnToken), 'i'));
         }
@@ -61,7 +66,7 @@ public class VarDeclNode {//finish
 
     @Override
     public String toString() {
-        return "<VarDeclNode>";
+        return "<VarDecl>";
     }
 
     private VarDeclNode() {

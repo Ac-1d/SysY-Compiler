@@ -28,7 +28,7 @@ public class NumberNode {//finish
 
     @Override
     public String toString() {
-        return "<NumberNode>";
+        return "<Number>";
     }
 
     private NumberNode() {}

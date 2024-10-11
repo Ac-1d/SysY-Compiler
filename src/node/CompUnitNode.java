@@ -32,7 +32,7 @@ public class CompUnitNode {
         return compUnit;
     }
 
-    void print() {
+    public void print() {
         for (DeclNode declNode : declNodes) {
             declNode.print();
         }
@@ -44,7 +44,7 @@ public class CompUnitNode {
     }
 
     public String toString() {
-        return "<CompUnitNode>";
+        return "<CompUnit>";
     }
 
     private CompUnitNode() {}

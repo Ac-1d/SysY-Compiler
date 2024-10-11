@@ -29,7 +29,7 @@ public class FuncTypeNode {//finish
 
     @Override
     public String toString() {
-        return "<FuncTypeNode>";
+        return "<FuncType>";
     }
 
     private FuncTypeNode() {}

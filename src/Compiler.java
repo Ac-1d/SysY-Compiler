@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 public class Compiler {
     public static void main(String[] args) throws Exception {
         Lexer lexer = Lexer.getInstace();
+        Config.setOriginalStream();
         Config.init();
         String source;
         source = Files.readString(Paths.get(Config.fileInPath));
@@ -22,5 +23,6 @@ public class Compiler {
         }
         Parser parse = Parser.getInstance();
         parse.parseAnalyse();
+        parse.print();
     }
 }

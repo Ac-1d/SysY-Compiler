@@ -15,10 +15,10 @@ public class BTypeNode {//finish
         BTypeNode bTypeNode = new BTypeNode();
         Token token;
         token = instance.peekNextToken();
-        bTypeNode.intOrCharToken.setLineNum(token.getLineNum());
-        if(token.getType().equals(TokenType.INTTK) == false && token.getType().equals(TokenType.CHARTK)) {
+        if(token.getType().equals(TokenType.INTTK) == false && token.getType().equals(TokenType.CHARTK) == false) {
             return null;
         }
+        bTypeNode.intOrCharToken = token;
         return bTypeNode;
     }
 

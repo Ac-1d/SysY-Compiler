@@ -44,7 +44,7 @@ public class ForStmtNode {//finish
 
     @Override
     public String toString() {
-        return "<ForStmtNode>";
+        return "<ForStmt>";
     }
 
     private ForStmtNode() {}

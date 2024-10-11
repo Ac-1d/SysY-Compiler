@@ -17,12 +17,12 @@ public class CondNode {//finish
     }
 
     void print() {
-        lOrExpNode.print();
+        lOrExpNode.print(true);
         System.out.println(toString());
     }
 
     public String toString() {
-        return "<CondNode>";
+        return "<Cond>";
     }
 
     private CondNode() {}

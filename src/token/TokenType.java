@@ -43,4 +43,5 @@ public enum TokenType {
     RBRACK,
     LBRACE,
     RBRACE,
+    None,
 }

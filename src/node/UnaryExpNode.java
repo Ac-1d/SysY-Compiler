@@ -29,6 +29,33 @@ public class UnaryExpNode {//finish
         UnaryExpNode shorterUnaryExpNode;
         int tmpIndex;
         tmpIndex = instance.getPeekIndex();
+        identToken = instance.peekNextToken();
+        if(identToken.getType().equals(TokenType.IDENFR)) {//case 2
+            do {
+                unaryExpNode.identToken = identToken;
+                lparentToken = instance.peekNextToken();//TODO: 校验
+                if(lparentToken.getType().equals(TokenType.LPARENT) == false) {
+                    break;
+                }
+                unaryExpNode.lparentToken = lparentToken;
+                int ttmpIndex = instance.getPeekIndex();
+                funcRParamsNode = FuncRParamsNode.FuncRParams();
+                if(funcRParamsNode == null) {
+                    instance.setPeekIndex(ttmpIndex);
+                }
+                unaryExpNode.funcRParamsNode = funcRParamsNode;
+                ttmpIndex = instance.getPeekIndex();
+                rparentToken = instance.peekNextToken();
+                if(rparentToken.getType().equals(TokenType.RPARENT) == false) {
+                    instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(rparentToken), 'j'));
+                    instance.setPeekIndex(tmpIndex);
+                }
+                unaryExpNode.rparentToken.setLineNum(instance.getPreTokenLineNum(rparentToken));
+                unaryExpNode.state = 2;
+                return unaryExpNode;
+            } while (true);
+        }
+        instance.setPeekIndex(tmpIndex);
         primaryExpNode = PrimaryExpNode.primaryExp();
         if(primaryExpNode != null) {//case 1
             unaryExpNode.primaryExpNode = primaryExpNode;
@@ -36,29 +63,9 @@ public class UnaryExpNode {//finish
             return unaryExpNode;
         }
         instance.setPeekIndex(tmpIndex);
-        identToken = instance.peekNextToken();
-        if(identToken.getType().equals(TokenType.IDENFR)) {//case 2
-            lparentToken = instance.peekNextToken();
-            unaryExpNode.lparentToken.setLineNum(lparentToken.getLineNum());
-            int ttmpIndex = instance.getPeekIndex();
-            funcRParamsNode = FuncRParamsNode.FuncRParams();
-            if(funcRParamsNode == null) {
-                instance.setPeekIndex(ttmpIndex);
-            }
-            unaryExpNode.funcRParamsNode = funcRParamsNode;
-            ttmpIndex = instance.getPeekIndex();
-            rparentToken = instance.peekNextToken();
-            if(rparentToken.getType().equals(TokenType.RPARENT) == false) {
-                instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(rparentToken), 'j'));
-                instance.setPeekIndex(tmpIndex);
-            }
-            unaryExpNode.rparentToken.setLineNum(instance.getPreTokenLineNum(rparentToken));
-            unaryExpNode.state = 2;
-            return unaryExpNode;
-        }
-        instance.setPeekIndex(tmpIndex);
         unaryOpNode = UnaryOpNode.UnaryOp();
         if(unaryOpNode != null) {//case 3
+            unaryExpNode.unaryOpNode = unaryOpNode;
             shorterUnaryExpNode = UnaryExpNode.UnaryExp();
             unaryExpNode.shortreUnaryExpNode = shorterUnaryExpNode;
             unaryExpNode.state = 3;
@@ -93,8 +100,10 @@ public class UnaryExpNode {//finish
 
     @Override
     public String toString() {
-        return "<UnaryExpNode>";
+        return "<UnaryExp>";
     }
 
-    private UnaryExpNode() {}
+    private UnaryExpNode() {
+        rparentToken = new Token(TokenType.RPARENT, ")");
+    }
 }

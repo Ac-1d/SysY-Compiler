@@ -49,7 +49,7 @@ public class BlockNode {//finish
     }
 
     public String toString() {
-        return "<BlockNode>";
+        return "<Block>";
     }
 
     private BlockNode() {

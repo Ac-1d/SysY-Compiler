@@ -30,6 +30,7 @@ public class MainFuncDefNode {//finish
             return null;
         }
         mainFuncDefNode.mainToken = token;
+        token = instance.peekNextToken();
         if(token.getType().equals(TokenType.LPARENT) == false) {
             return null;
         }
@@ -63,7 +64,7 @@ public class MainFuncDefNode {//finish
 
     @Override
     public String toString() {
-        return "<MainFuncDefNode>";
+        return "<MainFuncDef>";
     }
 
     private MainFuncDefNode() {}

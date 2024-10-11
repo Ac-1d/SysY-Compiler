@@ -29,6 +29,7 @@ public class LOrExpNode {//finish
             instance.setPeekIndex(tmpIndex);
             return lOrExpNode;
         }
+        lOrExpNode.orToken = orToken;
         shoterLOrExpNode = LOrExpNode.LOrExp();
         if(shoterLOrExpNode == null) {
             return null;
@@ -37,18 +38,23 @@ public class LOrExpNode {//finish
         return lOrExpNode;
     }
 
-    void print() {
-        if(shorterLOrExpNode != null) {
-            shorterLOrExpNode.print();
-            orToken.print();
+    void print(boolean state) {
+        lAndExpNode.print(true);
+        if(state == true) {
+            System.out.println(toString());
         }
-        lAndExpNode.print();
-        System.out.println(toString());
+        if(shorterLOrExpNode != null) {
+            orToken.print();
+            shorterLOrExpNode.print(false);
+            if(state == true) {
+                System.out.println(toString());
+            }
+        }
     }
 
     @Override
     public String toString() {
-        return "<LOrExpNode>";
+        return "<LOrExp>";
     }
 
     private LOrExpNode() {}

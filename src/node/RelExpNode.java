@@ -29,6 +29,7 @@ public class RelExpNode {//finish
             instance.setPeekIndex(tmpIndex);
             return relExpNode;
         }
+        relExpNode.token = token;
         shorterRelExpNode = RelExpNode.RelExp();
         if(shorterRelExpNode == null) {
             return null;
@@ -37,18 +38,23 @@ public class RelExpNode {//finish
         return relExpNode;
     }
 
-    void print() {
-        if(shorterRelExpNode != null) {
-            shorterRelExpNode.print();
-            token.print();
+    void print(boolean state) {
+        addExpNode.print(true);
+        if(state == true) {
+            System.out.println(toString());
         }
-        addExpNode.print();
-        System.out.println(toString());
+        if(shorterRelExpNode != null) {
+            token.print();
+            shorterRelExpNode.print(false);
+            if(state == true) {
+                System.out.println(toString());
+            }
+        }
     }
 
     @Override
     public String toString() {
-        return "<RelExpNode>";
+        return "<RelExp>";
     }
 
     private RelExpNode() {}

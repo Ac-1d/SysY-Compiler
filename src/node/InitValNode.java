@@ -36,8 +36,8 @@ public class InitValNode {//finish maybe some mistake
         //case 2
         tmpIndex = instance.getPeekIndex();
         token = instance.peekNextToken();
-        initValNode.lbraceToken.setLineNum(token.getLineNum());
         if(token.getType().equals(TokenType.LBRACE) == true) {//吃到了 '{'，一定是case2，不必顾虑tmpIndex覆盖问题
+            initValNode.lbraceToken.setLineNum(token.getLineNum());
             tmpIndex = instance.getPeekIndex();
             expNode = ExpNode.Exp();
             if(expNode == null) {//不包含'[]'
@@ -57,6 +57,7 @@ public class InitValNode {//finish maybe some mistake
             return initValNode;
         }
         //case 3
+        instance.setPeekIndex(tmpIndex);
         tmpIndex = instance.getPeekIndex();
         token = instance.peekNextToken();
         initValNode.stringConstToken.setLineNum(token.getLineNum());
@@ -95,7 +96,7 @@ public class InitValNode {//finish maybe some mistake
 
     @Override
     public String toString() {
-        return "<InitValNode>";
+        return "<InitVal>";
     }
 
     private InitValNode() {
@@ -114,7 +115,7 @@ public class InitValNode {//finish maybe some mistake
             ExpNode expNode;
             Token token;
             token = instance.peekNextToken();
-            initArrayNode.commaToken.setLineNum(token.getLineNum());
+            initArrayNode.commaToken = token;
             if(token.getType().equals(TokenType.COMMA) == false) {
                 return null;
             }

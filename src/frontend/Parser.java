@@ -1,8 +1,10 @@
 package frontend;
 
 import java.util.ArrayList;
-import token.Token;
 
+import config.Config;
+import token.Token;
+import token.TokenType;
 import error.Error;
 import node.CompUnitNode;
 
@@ -12,11 +14,15 @@ public class Parser {
     public ArrayList<Error> errorsList;
     private int index;
     private int peekIndex;
+    public CompUnitNode compUnitNode;
+
     public static Parser getInstance() {
         return instance;
     }
 
     public void init() {
+        Config.parser();
+        // System.setOut(Config.originalStream);
         Lexer instance = Lexer.getInstace();
         this.tokensList = instance.getTokensList();
         this.errorsList = instance.getErrorsList();
@@ -26,7 +32,11 @@ public class Parser {
 
     public void parseAnalyse() {
         init();
-        CompUnitNode.CompUnit();
+        compUnitNode = CompUnitNode.CompUnit();
+    }
+
+    public void print() {
+        compUnitNode.print();
     }
 
 
@@ -42,7 +52,7 @@ public class Parser {
         try {
             token = tokensList.get(peekIndex);
         } catch (Exception e) {
-            token = null;
+            token = new Token(TokenType.None, null);
         }
         peekIndex++;
         return token;

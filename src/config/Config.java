@@ -9,7 +9,8 @@ public class Config {
      */
     public static String fileInPath = "testfile.txt";
     public static String fileOutPath = "output.txt";
-    public static String stdOutPath = "lexer.txt";
+    public static String lexerOutPath = "lexer.txt";
+    public static String parserOutPath = "parser.txt";
     public static String stdErrPath = "error.txt";
     public static String stdTestPath = "test.txt";
     /**
@@ -17,14 +18,19 @@ public class Config {
      */
     public static String compileState;
 
-    public static PrintStream originalStream;
+    public static PrintStream originalStream = System.out;
 
     public static void setOriginalStream() {
         originalStream = System.out;
     }
 
     public static void init() throws IOException {
-        System.setOut(new PrintStream(stdOutPath));
+        System.setOut(new PrintStream(lexerOutPath));
+    }
+    public static void parser() {
+        try {
+            System.setOut(new PrintStream(parserOutPath));
+        } catch (IOException e) {}
     }
     public static void error() throws IOException {
         System.setOut(new PrintStream(stdErrPath));

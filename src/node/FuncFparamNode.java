@@ -59,7 +59,7 @@ public class FuncFParamNode {
 
     @Override
     public String toString() {
-        return "<FuncFParamNode>";
+        return "<FuncFParam>";
     }
 
     private FuncFParamNode() {

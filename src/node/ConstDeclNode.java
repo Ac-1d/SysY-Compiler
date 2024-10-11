@@ -25,7 +25,7 @@ public class ConstDeclNode {//finish
         int tmpIndex;
         token = instance.peekNextToken();
         constDeclNode.constToken.setLineNum(token.getLineNum());
-        if(instance.peekNextToken().getType().equals(TokenType.CONSTTK) == false){
+        if(token.getType().equals(TokenType.CONSTTK) == false){
             return null;
         }
         bTypeNode = BTypeNode.BType();
@@ -39,13 +39,15 @@ public class ConstDeclNode {//finish
             return null;
         }
         //保证在最后一次识别前拿到了这个tmpIndex，在识别错误后回溯
-        tmpIndex = instance.getPeekIndex();
-        while((multipleDeclNode = ConstDeclNode.MultipleDeclNode.MultipleDecl()) != null) {
-            constDeclNode.multipleDeclNodesList.add(multipleDeclNode);
+        do {
             tmpIndex = instance.getPeekIndex();
-        }
-        //可以预期到，这里一定以错误的识别收尾
-        instance.setPeekIndex(tmpIndex);
+            multipleDeclNode = MultipleDeclNode.MultipleDecl();
+            if(multipleDeclNode == null) {
+                instance.setPeekIndex(tmpIndex);
+                break;
+            }
+            constDeclNode.multipleDeclNodesList.add(multipleDeclNode);
+        } while (true);
         tmpIndex = instance.getPeekIndex();
         token = instance.peekNextToken();
         constDeclNode.semicnToken.setLineNum(token.getLineNum());
@@ -63,14 +65,14 @@ public class ConstDeclNode {//finish
         constDefNode.print();
         for (MultipleDeclNode multipleDeclNode : multipleDeclNodesList) {
             multipleDeclNode.commaToken.print();
-            multipleDeclNode.commaToken.print();
+            multipleDeclNode.constDefNode.print();
         }
         semicnToken.print();
         System.out.println(toString());
     }
 
     public String toString() {
-        return "<ConstDeclNode>";
+        return "<ConstDecl>";
     }
 
     private ConstDeclNode() {
@@ -87,9 +89,12 @@ public class ConstDeclNode {//finish
             Parser instance = Parser.getInstance();
             MultipleDeclNode multipleDeclNode = (new ConstDeclNode()).new MultipleDeclNode();
             ConstDefNode constDefNode;
-            if(instance.peekNextToken().getType().equals(TokenType.COMMA) == false) {
+            Token token;
+            token = instance.peekNextToken();
+            if(token.getType().equals(TokenType.COMMA) == false) {
                 return null;
             }
+            multipleDeclNode.commaToken = token;
             constDefNode = ConstDefNode.ConstDef();
             multipleDeclNode.constDefNode = constDefNode;
             if(constDefNode == null) {

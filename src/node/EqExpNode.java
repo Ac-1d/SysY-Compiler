@@ -42,18 +42,23 @@ public class EqExpNode {//finish
         return eqExpNode;
     }
 
-    void print() {
+    void print(boolean state) {
+        relExpNode.print(true);
+        if(state == true) {
+            System.out.println(toString());
+        }
         if(shorterEqExpNode != null) {
             eqlOrNeqToken.print();
-            eqlOrNeqToken.print();
+            shorterEqExpNode.print(false);
+            if(state == true) {
+                System.out.println(toString());
+            }
         }
-        relExpNode.print();
-        System.out.println(toString());
     }
 
     @Override
     public String toString() {
-        return "<EqExpNode>";
+        return "<EqExp>";
     }
 
     private EqExpNode() {}

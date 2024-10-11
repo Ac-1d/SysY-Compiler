@@ -53,8 +53,11 @@ public class FuncDefNode {//finish
         if(rparentToken.getType().equals(TokenType.RPARENT) == false) {//error
             instance.setPeekIndex(tmpIndex);
             instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(rparentToken), 'j'));
+            funcDefNode.rparentToken.setLineNum(instance.getPreTokenLineNum(rparentToken));
         }
-        funcDefNode.rparentToken.setLineNum(instance.getPreTokenLineNum(rparentToken));
+        else {
+            funcDefNode.rparentToken = rparentToken;
+        }
         blockNode = BlockNode.Block();
         if(blockNode == null) {
             return null;
@@ -70,13 +73,14 @@ public class FuncDefNode {//finish
         if(funcFParamsNode != null) {
             funcFParamsNode.print();
         }
+        rparentToken.print();
         blockNode.print();
         System.out.println(toString());
     }
 
     @Override
     public String toString() {
-        return "<FuncDefNode>";
+        return "<FuncDef>";
     }
 
     private FuncDefNode() {

@@ -45,7 +45,7 @@ public class LValNode {//finish
 
     @Override
     public String toString() {
-        return "<LValNode>";
+        return "<LVal>";
     }
 
     private LValNode() {}

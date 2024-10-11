@@ -49,9 +49,9 @@ public class VarDefNode {//finish
     void print() {
         identToken.print();
         if(defArrayNode != null) {
-            defArrayNode.LBRACK.print();
+            defArrayNode.lbrackToken.print();
             defArrayNode.constExpNode.print();
-            defArrayNode.RBRACK.print();
+            defArrayNode.rbrackToken.print();
         }
         if(initValNode != null) {
             assignToken.print();
@@ -62,7 +62,7 @@ public class VarDefNode {//finish
 
     @Override
     public String toString() {
-        return "<VarDefNode>";
+        return "<VarDef>";
     }
 
     private VarDefNode() {
@@ -70,37 +70,42 @@ public class VarDefNode {//finish
     }
 
     class DefArrayNode {//finish
-        Token LBRACK;
-        expNode constExpNode;
-        Token RBRACK;
+        Token lbrackToken;
+        ConstExpNode constExpNode;
+        Token rbrackToken;
 
         public static DefArrayNode DefArray() {
             Parser instance = Parser.getInstance();
             DefArrayNode defArrayNode = (new VarDefNode()).new DefArrayNode();
-            expNode constExpNode;
+            ConstExpNode constExpNode;
             Token token;
             int tmpIndex;
             token = instance.peekNextToken();
-            defArrayNode.LBRACK.setLineNum(token.getLineNum());
+            defArrayNode.lbrackToken.setLineNum(token.getLineNum());
             if(token.getType().equals(TokenType.LBRACK) == false) {
                 return null;
             }
-            constExpNode = expNode.ConstExp();
+            constExpNode = ConstExpNode.ConstExp();
             defArrayNode.constExpNode = constExpNode;
             if(constExpNode == null) {
                 return null;
             }
             token = instance.peekNextToken();
-            defArrayNode.RBRACK.setLineNum(token.getLineNum());
+            defArrayNode.rbrackToken.setLineNum(token.getLineNum());
             tmpIndex = instance.getPeekIndex();
             if(token.getType().equals(TokenType.RBRACK) == false) {//未识别到']'
                 instance.errorsList.add(new Error("Parse", instance.getPreTokenLineNum(token), 'k'));
                 instance.setPeekIndex(tmpIndex);
             }
             else {
-                defArrayNode.RBRACK.setLineNum(token.getLineNum());
+                defArrayNode.rbrackToken.setLineNum(token.getLineNum());
             }
             return defArrayNode;
+        }
+
+        private DefArrayNode() {
+            lbrackToken = new Token(TokenType.LBRACK, "[");
+            rbrackToken = new Token(TokenType.RBRACK, "]");
         }
 
     }

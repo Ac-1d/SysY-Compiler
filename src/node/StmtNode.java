@@ -81,54 +81,77 @@ public class StmtNode {
         int tmpIndex;
         tmpIndex = instance.getPeekIndex();
         lValNode = LValNode.LVal();
-        if(lValNode != null) {//case 1, 8 or 9
-            token = instance.peekNextToken();
-            if(token.getType().equals(TokenType.ASSIGN) == false) {
-                return null;
-            }
-            stmtNode.assignToken = token;
-            tmpIndex = instance.getPeekIndex();// 其实不必要另设一变量
-            expNode = ExpNode.Exp();
-            if(expNode != null) {//case 1
+        do {
+            if(lValNode != null) {//case 1, 8 or 9
+                stmtNode.lValNode = lValNode;
                 token = instance.peekNextToken();
-                if(token.getType().equals(TokenType.SEMICN) == false) {//error
-                    instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));    
+                if(token.getType().equals(TokenType.ASSIGN) == false) {
+                    break;
                 }
-                stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
-                stmtNode.state = 1;
-                return stmtNode;
-            }
-            instance.setPeekIndex(tmpIndex);
-            token = instance.peekNextToken();
-            if(token.getType().equals(TokenType.GETINTTK) == true || token.getType().equals(TokenType.GETCHARTK) == true) {//case 8 or 9 they are the same😊
-                if(token.getType().equals(TokenType.GETINTTK) == true) {
-                    stmtNode.state = 8;
-                    stmtNode.getintToken = token;
+                stmtNode.assignToken = token;
+                int ttmpIndex = instance.getPeekIndex();
+                expNode = ExpNode.Exp();
+                if(expNode != null) {//case 1
+                    stmtNode.expNode = expNode;
+                    token = instance.peekNextToken();
+                    if(token.getType().equals(TokenType.SEMICN) == false) {//error
+                        instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));    
+                    }
+                    stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
+                    stmtNode.state = 1;
+                    return stmtNode;
                 }
-                else {
-                    stmtNode.state = 9;
-                    stmtNode.getcharToken = token;
-                }
+                instance.setPeekIndex(ttmpIndex);
                 token = instance.peekNextToken();
-                if(token.getType().equals(TokenType.LPARENT) == false) {
-                    return null;
+                if(token.getType().equals(TokenType.GETINTTK) == true || token.getType().equals(TokenType.GETCHARTK) == true) {//case 8 or 9 they are the same😊
+                    if(token.getType().equals(TokenType.GETINTTK) == true) {
+                        stmtNode.state = 8;
+                        stmtNode.getintToken = token;
+                    }
+                    else {
+                        stmtNode.state = 9;
+                        stmtNode.getcharToken = token;
+                    }
+                    token = instance.peekNextToken();
+                    if(token.getType().equals(TokenType.LPARENT) == false) {
+                        break;
+                    }
+                    stmtNode.lparentToken = token;
+                    ttmpIndex = instance.getPeekIndex();
+                    token = instance.peekNextToken();
+                    if(token.getType().equals(TokenType.RPARENT) == false) {//error
+                        instance.setPeekIndex(ttmpIndex);
+                        instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'j'));
+                    }
+                    stmtNode.rparentToken.setLineNum(instance.getPreTokenLineNum(token));
+                    ttmpIndex = instance.getPeekIndex();
+                    token = instance.peekNextToken();
+                    if(token.getType().equals(TokenType.SEMICN) == false) {
+                        instance.setPeekIndex(ttmpIndex);
+                        instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));
+                        stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
+                    }
+                    else {
+                        stmtNode.semicnToken1 = token;
+                    }
+                    return stmtNode;
                 }
-                stmtNode.lparentToken = token;
-                tmpIndex = instance.getPeekIndex();
-                token = instance.peekNextToken();
-                if(token.getType().equals(TokenType.RPARENT) == false) {//error
-                    instance.setPeekIndex(tmpIndex);
-                    instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'j'));
-                }
-                stmtNode.rparentToken.setLineNum(instance.getPreTokenLineNum(token));
-                return stmtNode;
+                break;
             }
-            return null;
-        }
+            break;
+        } while (true);
         instance.setPeekIndex(tmpIndex);
         expNode = ExpNode.Exp();
         if(expNode != null) {//case 2
             stmtNode.expNode = expNode;
+            token = instance.peekNextToken();
+            if(token.getType().equals(TokenType.SEMICN) == false) {
+                instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));
+                stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
+            }
+            else {
+                stmtNode.semicnToken1 = token;
+            }
             stmtNode.state = 2;
             return stmtNode;
         }
@@ -165,6 +188,7 @@ public class StmtNode {
             if(stmtNode1 == null) {
                 return null;
             }
+            stmtNode.stmtNode1 = stmtNode1;
             tmpIndex = instance.getPeekIndex();
             token = instance.peekNextToken();
             if(token.getType().equals(TokenType.ELSETK) == false) {
@@ -298,6 +322,7 @@ public class StmtNode {
             if(token.getType().equals(TokenType.STRCON) == false) {
                 return null;
             }
+            stmtNode.strconToken = token;
             do {//do-while结构处理更好
                 tmpIndex = instance.getPeekIndex();
                 expWithCommaNode = ExpWithCommaNode.ExpWithComma();
@@ -333,7 +358,7 @@ public class StmtNode {
             stmtNode.state = 2;
             return stmtNode;
         }
-        return stmtNode;
+        return null;
     }
 
     void print() {
@@ -361,7 +386,7 @@ public class StmtNode {
                 stmtNode1.print();
                 if(elseToken != null) {
                     elseToken.print();
-                    semicnToken2.print();
+                    stmtNode2.print();
                 }
                 break;
             case 5:
@@ -432,7 +457,7 @@ public class StmtNode {
 
     @Override
     public String toString() {
-        return "<StmtNode>";
+        return "<Stmt>";
     }
 
     private StmtNode() {
