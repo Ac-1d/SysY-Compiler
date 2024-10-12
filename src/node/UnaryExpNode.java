@@ -33,7 +33,7 @@ public class UnaryExpNode {//finish
         if(identToken.getType().equals(TokenType.IDENFR)) {//case 2
             do {
                 unaryExpNode.identToken = identToken;
-                lparentToken = instance.peekNextToken();//TODO: 校验
+                lparentToken = instance.peekNextToken();
                 if(lparentToken.getType().equals(TokenType.LPARENT) == false) {
                     break;
                 }
@@ -48,7 +48,7 @@ public class UnaryExpNode {//finish
                 rparentToken = instance.peekNextToken();
                 if(rparentToken.getType().equals(TokenType.RPARENT) == false) {
                     instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(rparentToken), 'j'));
-                    instance.setPeekIndex(tmpIndex);
+                    instance.setPeekIndex(ttmpIndex);
                 }
                 unaryExpNode.rparentToken.setLineNum(instance.getPreTokenLineNum(rparentToken));
                 unaryExpNode.state = 2;

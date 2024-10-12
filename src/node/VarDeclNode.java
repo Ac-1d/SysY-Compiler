@@ -40,13 +40,14 @@ public class VarDeclNode {//finish
             varDeclNode.multifyVarDefNodesList.add(multifyVarDefNode);
         }
         instance.setPeekIndex(tmpIndex);
+        tmpIndex = instance.getPeekIndex();
         semicnToken = instance.peekNextToken();
-
         //此处不应出现左小括号^^，出现左小括号将视为正在定义函数
         if(semicnToken.getType().equals(TokenType.LPARENT) == true) {
             return null;
         }
         if(semicnToken.getType().equals(TokenType.SEMICN) == false) {
+            instance.setPeekIndex(tmpIndex);
             instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(semicnToken), 'i'));
         }
         varDeclNode.semicnToken.setLineNum(instance.getPreTokenLineNum(semicnToken));

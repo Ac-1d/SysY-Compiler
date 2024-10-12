@@ -1,6 +1,7 @@
 package frontend;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import config.Config;
 import token.Token;
@@ -33,10 +34,17 @@ public class Parser {
     public void parseAnalyse() {
         init();
         compUnitNode = CompUnitNode.CompUnit();
+        Collections.sort(errorsList);
     }
 
     public void print() {
         compUnitNode.print();
+    }
+
+    public void printError() {
+        for (Error error : errorsList) {
+            System.out.println(error.toString());
+        }
     }
 
 

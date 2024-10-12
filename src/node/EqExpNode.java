@@ -42,17 +42,12 @@ public class EqExpNode {//finish
         return eqExpNode;
     }
 
-    void print(boolean state) {
-        relExpNode.print(true);
-        if(state == true) {
-            System.out.println(toString());
-        }
+    void print() {
+        relExpNode.print();
+        System.out.println(toString());
         if(shorterEqExpNode != null) {
             eqlOrNeqToken.print();
-            shorterEqExpNode.print(false);
-            if(state == true) {
-                System.out.println(toString());
-            }
+            shorterEqExpNode.print();
         }
     }
 

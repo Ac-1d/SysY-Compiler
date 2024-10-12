@@ -86,11 +86,11 @@ public class ConstDefNode {//finish
                 return null;
             }
             token = instance.peekNextToken();
-            defArrayNode.rbrackToken.setLineNum(token.getLineNum());
             tmpIndex = instance.getPeekIndex();
             if(token.getType().equals(TokenType.RBRACK) == false) {//未识别到']'
                 instance.errorsList.add(new Error("Parse", instance.getPreTokenLineNum(token), 'k'));
                 instance.setPeekIndex(tmpIndex);
+                defArrayNode.rbrackToken.setLineNum(instance.getPreTokenLineNum(token));
             }
             else {
                 defArrayNode.rbrackToken.setLineNum(token.getLineNum());

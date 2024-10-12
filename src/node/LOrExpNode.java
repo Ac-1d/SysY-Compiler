@@ -38,17 +38,12 @@ public class LOrExpNode {//finish
         return lOrExpNode;
     }
 
-    void print(boolean state) {
-        lAndExpNode.print(true);
-        if(state == true) {
-            System.out.println(toString());
-        }
+    void print() {
+        lAndExpNode.print();
+        System.out.println(toString());
         if(shorterLOrExpNode != null) {
             orToken.print();
-            shorterLOrExpNode.print(false);
-            if(state == true) {
-                System.out.println(toString());
-            }
+            shorterLOrExpNode.print();
         }
     }
 

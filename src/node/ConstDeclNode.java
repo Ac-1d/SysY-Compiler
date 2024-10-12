@@ -50,11 +50,14 @@ public class ConstDeclNode {//finish
         } while (true);
         tmpIndex = instance.getPeekIndex();
         token = instance.peekNextToken();
-        constDeclNode.semicnToken.setLineNum(token.getLineNum());
         if(token.getType().equals(TokenType.SEMICN) == false) {
             //错误处理 && 回溯
             instance.setPeekIndex(tmpIndex);
             instance.errorsList.add(new Error("Parse", instance.getPreTokenLineNum(token), 'i'));
+            constDeclNode.semicnToken.setLineNum(instance.getPreTokenLineNum(token));
+        }
+        else {
+            constDeclNode.semicnToken = token;
         }
         return constDeclNode;
     }

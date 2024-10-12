@@ -43,6 +43,7 @@ public class ConstInitValNode {//finish
                 instance.setPeekIndex(tmpIndex);
             }
             else {
+                constInitValNode.constExpNode = constExpNode;
                 tmpIndex = instance.getPeekIndex();
                 while((initArrayNode = InitArrayNode.InitArray()) != null) {
                     tmpIndex = instance.getPeekIndex();

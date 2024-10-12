@@ -67,6 +67,8 @@ public class MainFuncDefNode {//finish
         return "<MainFuncDef>";
     }
 
-    private MainFuncDefNode() {}
+    private MainFuncDefNode() {
+        rparentToken = new Token(TokenType.RPARENT, ")");
+    }
     
 }

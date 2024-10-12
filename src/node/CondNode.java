@@ -17,7 +17,7 @@ public class CondNode {//finish
     }
 
     void print() {
-        lOrExpNode.print(true);
+        lOrExpNode.print();
         System.out.println(toString());
     }
 

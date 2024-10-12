@@ -23,6 +23,12 @@ public class Compiler {
         }
         Parser parse = Parser.getInstance();
         parse.parseAnalyse();
-        parse.print();
+        if(parse.errorsList.isEmpty() == true) {
+            parse.print();
+        }
+        else {
+            Config.error();
+            parse.printError();
+        }
     }
 }

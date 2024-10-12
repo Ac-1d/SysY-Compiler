@@ -39,17 +39,12 @@ public class MulExpNode {//finish
         return mulExpNode;
     }
 
-    void print(boolean state) {
+    void print() {
         unaryExpNode.print();
-        if(state == true) {
-            System.out.println(toString());
-        }
+        System.out.println(toString());
         if(shorterMulExpNode != null) {
             mulToken.print();
-            shorterMulExpNode.print(false);
-            if(state == true) {
-                System.out.println(toString());
-            }
+            shorterMulExpNode.print();
         }
     }
 

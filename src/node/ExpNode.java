@@ -17,7 +17,7 @@ public class ExpNode {//finish
     }
 
     void print() {
-        addExpNode.print(true);
+        addExpNode.print();
         System.out.println(toString());
     }
 

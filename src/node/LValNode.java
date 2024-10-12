@@ -63,6 +63,7 @@ public class LValNode {//finish
             Token lbrackToken;
             ExpNode expNode;
             Token rbrackToken;
+            int tmpIndex;
             lbrackToken = instance.peekNextToken();
             if(lbrackToken.getType().equals(TokenType.LBRACK) == false) {
                 return null;
@@ -73,8 +74,10 @@ public class LValNode {//finish
                 return null;
             }
             arrayNode.expNode = expNode;
+            tmpIndex = instance.getPeekIndex();
             rbrackToken = instance.peekNextToken();
             if(rbrackToken.getType().equals(TokenType.RBRACK) == false) {
+                instance.setPeekIndex(tmpIndex);
                 instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(rbrackToken), 'k'));
             }
             arrayNode.rbrackToken.setLineNum(rbrackToken.getLineNum());

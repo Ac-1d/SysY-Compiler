@@ -38,17 +38,12 @@ public class RelExpNode {//finish
         return relExpNode;
     }
 
-    void print(boolean state) {
-        addExpNode.print(true);
-        if(state == true) {
-            System.out.println(toString());
-        }
+    void print() {
+        addExpNode.print();
+        System.out.println(toString());
         if(shorterRelExpNode != null) {
             token.print();
-            shorterRelExpNode.print(false);
-            if(state == true) {
-                System.out.println(toString());
-            }
+            shorterRelExpNode.print();
         }
     }
 

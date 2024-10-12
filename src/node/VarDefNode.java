@@ -31,6 +31,7 @@ public class VarDefNode {//finish
         if(defArrayNode == null) {
             instance.setPeekIndex(tmpIndex);
         }
+        varDefNode.defArrayNode = defArrayNode;
         tmpIndex = instance.getPeekIndex();
         assignToken = instance.peekNextToken();
         if(assignToken.getType().equals(TokenType.ASSIGN) == false) {
@@ -91,10 +92,10 @@ public class VarDefNode {//finish
                 return null;
             }
             token = instance.peekNextToken();
-            defArrayNode.rbrackToken.setLineNum(token.getLineNum());
             tmpIndex = instance.getPeekIndex();
             if(token.getType().equals(TokenType.RBRACK) == false) {//未识别到']'
                 instance.errorsList.add(new Error("Parse", instance.getPreTokenLineNum(token), 'k'));
+                defArrayNode.rbrackToken.setLineNum(instance.getPreTokenLineNum(token));
                 instance.setPeekIndex(tmpIndex);
             }
             else {

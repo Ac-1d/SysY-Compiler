@@ -44,6 +44,7 @@ public class InitValNode {//finish maybe some mistake
                 instance.setPeekIndex(tmpIndex);
             }
             else {
+                initValNode.expNode = expNode;
                 tmpIndex = instance.getPeekIndex();
                 while((initArrayNode = InitArrayNode.InitArray()) != null) {
                     tmpIndex = instance.getPeekIndex();

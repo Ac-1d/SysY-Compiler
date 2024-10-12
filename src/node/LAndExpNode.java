@@ -38,17 +38,12 @@ public class LAndExpNode {//finish
         return lAndExpNode;
     }
 
-    void print(boolean state) {
-        eqExpNode.print(true);
-        if(state == true) {
-            System.out.println(toString());
-        }
+    void print() {
+        eqExpNode.print();
+        System.out.println(toString());
         if(shorterLAndExpNode != null) {
             andToken.print();
-            shorterLAndExpNode.print(false);
-            if(state == true) {
-                System.out.println(toString());
-            }
+            shorterLAndExpNode.print();
         }
     }
 

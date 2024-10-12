@@ -41,8 +41,9 @@ public class FuncFParamNode {
         if(token.getType().equals(TokenType.RBRACK) == false) {//error
             instance.setPeekIndex(tmpIndex);
             instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'k'));
+            funcFParamNode.rbrackToken.setLineNum(instance.getPreTokenLineNum(token));
         }
-        funcFParamNode.rbrackToken.setLineNum(instance.getPreTokenLineNum(token));
+        funcFParamNode.rbrackToken = token;
 
         return funcFParamNode;
     }

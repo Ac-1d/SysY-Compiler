@@ -35,8 +35,10 @@ public class PrimaryExpNode {//finish
                 return null;
             }
             primaryExpNode.expNode = expNode;
+            tmpIndex = instance.getPeekIndex();
             rparentToken = instance.peekNextToken();
             if(rparentToken.getType().equals(TokenType.RPARENT) == false) {
+                instance.setPeekIndex(tmpIndex);
                 instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(rparentToken), 'j'));
             }
             primaryExpNode.rparentToken.setLineNum(instance.getPreTokenLineNum(rparentToken));

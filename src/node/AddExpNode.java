@@ -41,17 +41,12 @@ public class AddExpNode {//finish
         return addExpNode;
     }
 
-    void print(boolean isPrint) {
-        mulExpNode.print(true);
-        if (isPrint == true) {
-            System.out.println(toString());
-        }
+    void print() {
+        mulExpNode.print();
+        System.out.println(toString());
         if(shorterAddExpNode != null) {
             addToken.print();
-            shorterAddExpNode.print(false);
-            if(isPrint == true) {
-                System.out.println(toString());
-            }
+            shorterAddExpNode.print();
         }
     }
 

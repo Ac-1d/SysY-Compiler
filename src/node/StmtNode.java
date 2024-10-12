@@ -93,8 +93,10 @@ public class StmtNode {
                 expNode = ExpNode.Exp();
                 if(expNode != null) {//case 1
                     stmtNode.expNode = expNode;
+                    ttmpIndex = instance.getPeekIndex();
                     token = instance.peekNextToken();
                     if(token.getType().equals(TokenType.SEMICN) == false) {//error
+                        instance.setPeekIndex(ttmpIndex);
                         instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));    
                     }
                     stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
@@ -144,8 +146,10 @@ public class StmtNode {
         expNode = ExpNode.Exp();
         if(expNode != null) {//case 2
             stmtNode.expNode = expNode;
+            int ttmpIndex = instance.getPeekIndex();
             token = instance.peekNextToken();
             if(token.getType().equals(TokenType.SEMICN) == false) {
+                instance.setPeekIndex(ttmpIndex);
                 instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));
                 stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
             }
@@ -330,6 +334,7 @@ public class StmtNode {
                     instance.setPeekIndex(tmpIndex);
                     break;
                 }
+                stmtNode.expWithCommaNodesList.add(expWithCommaNode);
             } while (true);
             tmpIndex = instance.getPeekIndex();
             token = instance.peekNextToken();
@@ -404,7 +409,7 @@ public class StmtNode {
                     forStmtNode2.print();
                 }
                 rparentToken.print();
-                semicnToken1.print();
+                stmtNode1.print();
                 break;
             case 6:
                 if(breakToken != null) {

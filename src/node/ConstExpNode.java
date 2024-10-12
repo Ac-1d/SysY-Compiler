@@ -16,7 +16,7 @@ public class ConstExpNode {//finish
     }
 
     void print() {
-        addExpNode.print(true);
+        addExpNode.print();
         System.out.println(toString());
     }
 
