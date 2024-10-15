@@ -383,7 +383,4 @@ public class Lexer {
         return Character.isDigit(c) && c != '0';
     }
 
-    public int getLineNum() {
-        return lineNum;
-    }
 }

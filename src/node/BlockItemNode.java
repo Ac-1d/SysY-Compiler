@@ -40,5 +40,14 @@ public class BlockItemNode {//finish
         }
     }
 
+    void setupSymbolTable() {
+        if(declNode != null) {
+            declNode.setupSymbolTable();
+        }
+        else {
+            stmtNode.setupSymbolTable();
+        }
+    }
+
     private BlockItemNode() {}
 }

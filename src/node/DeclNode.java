@@ -3,7 +3,7 @@ package node;
 import frontend.Parser;
 
 public class DeclNode {//finish
-    //Decl → ConstDecl | VarDecl
+    // Decl → ConstDecl | VarDecl
     // dont print
 
     ConstDeclNode constDeclNode;
@@ -39,6 +39,15 @@ public class DeclNode {//finish
         }
         else {
             varDeclNode.print();
+        }
+    }
+
+    void setupSymbolTable() {
+        if(constDeclNode != null) {
+            constDeclNode.setupSymbolTable();
+        }
+        else {
+            varDeclNode.setupSymbolTable();
         }
     }
 

@@ -43,6 +43,16 @@ public class CompUnitNode {
         System.out.println(this.toString());
     }
 
+    public void setupSymbolTable() {
+        for (DeclNode declNode : declNodes) {
+            declNode.setupSymbolTable();
+        }
+        for (FuncDefNode funcDefNode : funcDefNodes) {
+            funcDefNode.setupSymbolTable();
+        }
+        mainFuncDefNode.setupSymbolTable();
+    }
+
     public String toString() {
         return "<CompUnit>";
     }

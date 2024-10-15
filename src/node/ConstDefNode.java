@@ -9,6 +9,7 @@ public class ConstDefNode {//finish
     // ConstDef → Ident [ '[' ConstExp ']' ] '=' ConstInitVal
     // 此处不检查数组/变量声明与数组/变量初始化是否匹配
     Token identToken;
+    /** DefArrayNode → '[' ConstExp ']' */
     DefArrayNode defArrayNode;
     Token assignToken;
     ConstInitValNode constInitValNode;
@@ -41,7 +42,6 @@ public class ConstDefNode {//finish
         if(constInitValNode == null) {
             return null;
         }
-        
         return constDefNode;
     }
 
@@ -64,6 +64,7 @@ public class ConstDefNode {//finish
 
     private ConstDefNode() {}
 
+    /** DefArrayNode → '[' ConstExp ']' */
     class DefArrayNode {//finish
         Token lbrackToken;
         ConstExpNode constExpNode;

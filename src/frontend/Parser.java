@@ -21,7 +21,7 @@ public class Parser {
         return instance;
     }
 
-    public void init() {
+    private void init() {
         Config.parser();
         // System.setOut(Config.originalStream);
         Lexer instance = Lexer.getInstace();

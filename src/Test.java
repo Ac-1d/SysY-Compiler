@@ -1,6 +1,7 @@
 import config.Config;
 import frontend.Lexer;
 import frontend.Parser;
+import frontend.SymbolHandler;
 
 import java.io.File;
 import java.io.FileReader;
@@ -11,16 +12,17 @@ import java.util.Scanner;
 
 public class Test {
     public static void main(String[] args) throws Exception {
-        Config.setOriginalStream();
+        Config.init();
         lexerTest();
     }
 
     private static boolean lexerTest() throws Exception{
         Lexer lexer = Lexer.getInstace();
         Parser parser = Parser.getInstance();
-        String rootPath = "test_parser";
+        SymbolHandler symbolHandler = SymbolHandler.getInstance();
+        String rootPath = "test_symbolHandler";
         String sourcePath = "/testfile.txt";
-        String lexerPath = "/parser.txt";
+        String outPath = "/symbol.txt";
         String ansPath = "/ans.txt";
         String resPath = "/res.txt";
         for (DiffType type : DiffType.values()) {
@@ -34,10 +36,11 @@ public class Test {
                     {
                         lexer.lexerAnalyse(source);
                         parser.parseAnalyse();
-                        System.setOut(new PrintStream(testCasePath + lexerPath));
-                        parser.print();
+                        symbolHandler.analyse();
+                        System.setOut(new PrintStream(testCasePath + outPath));
+                        symbolHandler.print();
                     }
-                    Scanner scLexer = new Scanner(new FileReader(testCasePath + lexerPath));
+                    Scanner scLexer = new Scanner(new FileReader(testCasePath + outPath));
                     Scanner scAns = new Scanner(new FileReader(testCasePath + ansPath));
                     System.setOut(new PrintStream(testCasePath + resPath));
                     // System.setOut(Config.originalStream);

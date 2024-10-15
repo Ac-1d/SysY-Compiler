@@ -1,12 +1,23 @@
 package node;
 
+import Symbol.FuncParam;
+import Symbol.FuncSymbol;
+import Symbol.FuncType;
+import Symbol.Symbol;
+import Symbol.SymbolTable;
+import Symbol.VarSymbol;
+import Symbol.VarType;
 import error.Error;
 import frontend.Parser;
+import frontend.SymbolHandler;
 import token.Token;
 import token.TokenType;
 
 public class FuncDefNode {//finish
     // FuncDef → FuncType Ident '(' [FuncFParams] ')' Block
+    // FuncType → 'void' | 'int' | 'char'
+    // FuncFParams → FuncFParam { ',' FuncFParam }
+    // FuncFParam → BType Ident ['[' ']']
 
     FuncTypeNode funcTypeNode;
     Token identToken;
@@ -64,6 +75,33 @@ public class FuncDefNode {//finish
         }
         funcDefNode.blockNode = blockNode;
         return funcDefNode;
+    }
+
+    void setupSymbolTable() {
+        SymbolHandler instance = SymbolHandler.getInstance();
+        FuncType funcType = SymbolHandler.getFuncType(funcTypeNode.funcTypeToken);
+        FuncSymbol funcSymbol = new FuncSymbol(identToken, funcType);
+        instance.addSymbol(funcSymbol);
+        instance.setCurSymbolTable(new SymbolTable(instance.getCurSymbolTable()));
+        if(funcFParamsNode != null) {
+            FuncFParamNode funcFParamNode = funcFParamsNode.funcFParamNode;
+            Token identToken = funcFParamNode.identToken;
+            VarType varType = SymbolHandler.getVarType(funcFParamNode.bTypeNode.intOrCharToken);
+            boolean isArray = funcFParamNode.lbrackToken != null;
+            boolean isConst = false;
+            funcSymbol.addFuncParam(new FuncParam(varType, isArray));
+            instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+            for (FuncFParamsNode.FuncFParamWithCommaNode funcFParamWithCommaNode : funcFParamsNode.funcFParamWithCommaNodesList) {
+                funcFParamNode = funcFParamWithCommaNode.funcFParamNode;
+                identToken = funcFParamNode.identToken;
+                varType = SymbolHandler.getVarType(funcFParamNode.bTypeNode.intOrCharToken);
+                isArray = funcFParamNode.lbrackToken != null;
+                funcSymbol.addFuncParam(new FuncParam(varType, isArray));
+                instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+            }
+        }
+        blockNode.setupSymbolTable(true);
+        instance.setCurSymbolTable(instance.getCurSymbolTable().getFatherSymbolTable());
     }
 
     void print() {

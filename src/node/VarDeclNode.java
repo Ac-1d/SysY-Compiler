@@ -5,11 +5,16 @@ import token.TokenType;
 
 import java.util.ArrayList;
 
+import Symbol.VarSymbol;
+import Symbol.VarType;
 import error.Error;
 import frontend.Parser;
+import frontend.SymbolHandler;
 
 public class VarDeclNode {//finish
-    //VarDecl → BType VarDef { ',' VarDef } ';'
+    // VarDecl → BType VarDef { ',' VarDef } ';'
+    // BType → 'int' | 'char'
+    // VarDef → Ident [ '[' ConstExp ']' ] | Ident [ '[' ConstExp ']' ] '=' InitVal
 
     BTypeNode bTypeNode;
     VarDefNode varDefNode;
@@ -52,6 +57,21 @@ public class VarDeclNode {//finish
         }
         varDeclNode.semicnToken.setLineNum(instance.getPreTokenLineNum(semicnToken));
         return varDeclNode;
+    }
+
+    void setupSymbolTable() {
+        SymbolHandler instance = SymbolHandler.getInstance();
+        VarType varType = SymbolHandler.getVarType(bTypeNode.intOrCharToken);
+        Token identToken = varDefNode.identToken;
+        boolean isConst = false;
+        boolean isArray;
+        isArray = varDefNode.defArrayNode != null;
+        instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+        for (MultifyVarDefNode multifyVarDefNode : multifyVarDefNodesList) {
+            identToken = multifyVarDefNode.varDefNode.identToken;
+            isArray = multifyVarDefNode.varDefNode.defArrayNode != null;
+            instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+        }
     }
 
     void print() {

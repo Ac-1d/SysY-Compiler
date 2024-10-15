@@ -1,14 +1,21 @@
 package node;
 
 import frontend.Parser;
+import frontend.SymbolHandler;
 import token.Token;
 import token.TokenType;
 import error.Error;
 
 import java.util.ArrayList;
 
+import Symbol.VarSymbol;
+import Symbol.VarType;
+
 public class ConstDeclNode {//finish
-    //ConstDecl → 'const' BType ConstDef { ',' ConstDef } ';'
+    // ConstDecl → 'const' BType ConstDef { ',' ConstDef } ';'
+    // BType → 'int' | 'char'
+    // ConstDef → Ident [ '[' ConstExp ']' ] '=' ConstInitVal
+
     Token constToken;
     BTypeNode bTypeNode;
     ConstDefNode constDefNode;
@@ -60,6 +67,23 @@ public class ConstDeclNode {//finish
             constDeclNode.semicnToken = token;
         }
         return constDeclNode;
+    }
+
+    void setupSymbolTable() {
+        SymbolHandler instance = SymbolHandler.getInstance();
+        VarType varType = SymbolHandler.getVarType(bTypeNode.intOrCharToken);
+        Token identToken = constDefNode.identToken;
+        boolean isConst = true;
+        boolean isArray;
+        isArray = constDefNode.defArrayNode != null;
+        //solve 'ConstDef'
+        instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+        //solve '{, ConstDef}'
+        for (MultipleDeclNode multipleDeclNode : multipleDeclNodesList) {
+            identToken = multipleDeclNode.constDefNode.identToken;
+            isArray = multipleDeclNode.constDefNode.defArrayNode != null;
+            instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+        }
     }
 
     void print() {

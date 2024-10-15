@@ -1,6 +1,7 @@
 import config.Config;
 import frontend.Lexer;
 import frontend.Parser;
+import frontend.SymbolHandler;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -8,8 +9,8 @@ import java.nio.file.Paths;
 public class Compiler {
     public static void main(String[] args) throws Exception {
         Lexer lexer = Lexer.getInstace();
-        Config.setOriginalStream();
         Config.init();
+        Config.lexer();
         String source;
         source = Files.readString(Paths.get(Config.fileInPath));
         boolean success = !lexer.lexerAnalyse(source + "\n");
@@ -30,5 +31,9 @@ public class Compiler {
             Config.error();
             parse.printError();
         }
+        System.setOut(Config.originalStream);
+        SymbolHandler symbolHandler = SymbolHandler.getInstance();
+        symbolHandler.analyse();
+        symbolHandler.print();
     }
 }

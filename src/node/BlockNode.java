@@ -1,13 +1,17 @@
 package node;
 
 import frontend.Parser;
+import frontend.SymbolHandler;
 import token.Token;
 import token.TokenType;
 
 import java.util.ArrayList;
 
+import Symbol.SymbolTable;
+
 public class BlockNode {//finish
     // Block → '{' { BlockItem } '}'
+    // 当前文法满足一个确定的Block代表着一个完整的不会失败回溯的识别。我们域的划分建立在这个前提下。
 
     Token lbraceToken;
     ArrayList<BlockItemNode> blockItemNodesList = new ArrayList<>();
@@ -46,6 +50,19 @@ public class BlockNode {//finish
         }
         rbraceToken.print();
         System.out.println(this.toString());
+    }
+
+    void setupSymbolTable(boolean isFunc) {
+        SymbolHandler instance = SymbolHandler.getInstance();
+        if(isFunc == false) {
+            instance.setCurSymbolTable(new SymbolTable(instance.getCurSymbolTable()));
+        }
+        for (BlockItemNode blockItemNode : blockItemNodesList) {
+            blockItemNode.setupSymbolTable();
+        }
+        if(isFunc == false) {
+            instance.setCurSymbolTable(instance.getCurSymbolTable().getFatherSymbolTable());
+        }
     }
 
     public String toString() {

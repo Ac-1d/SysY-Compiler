@@ -62,6 +62,10 @@ public class MainFuncDefNode {//finish
         System.out.println(toString());
     }
 
+    void setupSymbolTable() {
+        blockNode.setupSymbolTable(false);
+    }
+
     @Override
     public String toString() {
         return "<MainFuncDef>";

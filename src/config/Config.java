@@ -20,14 +20,20 @@ public class Config {
 
     public static PrintStream originalStream = System.out;
 
-    public static void setOriginalStream() {
+    private static void setOriginalStream() {
         originalStream = System.out;
     }
 
-    public static void init() throws IOException {
+    public static void init() {
+        Config.setOriginalStream();
+    }
+
+    public static void lexer() throws IOException {
+        compileState = "lexer";
         System.setOut(new PrintStream(lexerOutPath));
     }
     public static void parser() {
+        compileState = "parser";
         try {
             System.setOut(new PrintStream(parserOutPath));
         } catch (IOException e) {}

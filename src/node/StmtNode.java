@@ -460,6 +460,24 @@ public class StmtNode {
         System.out.println(toString());
     }
 
+    void setupSymbolTable() {
+        switch (state) {
+            case 3:
+                blockNode.setupSymbolTable(false);
+                break;
+            case 4:
+                stmtNode1.setupSymbolTable();
+                if(stmtNode2 != null) {
+                    stmtNode2.setupSymbolTable();
+                }
+                break;
+            case 5:
+                stmtNode1.setupSymbolTable();
+            default:
+                break;
+        }
+    }
+
     @Override
     public String toString() {
         return "<Stmt>";

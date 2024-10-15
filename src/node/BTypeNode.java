@@ -5,7 +5,7 @@ import token.Token;
 import token.TokenType;
 
 public class BTypeNode {//finish
-    //BType → 'int' | 'char'
+    // BType → 'int' | 'char'
     // dont print
 
     Token intOrCharToken;

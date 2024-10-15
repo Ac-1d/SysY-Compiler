@@ -1,21 +1,31 @@
-import java.util.ArrayList;
 
 public class SelfTest {
     public static void main(String[] args) {
-        ArrayList<String> strs = new ArrayList<>();
-        for (String string : strs) {
-            System.out.println(string);
-        }
+        A a1 = new A(null, 1);
+        A a2 = new A(a1, 2);
+        System.out.println(a1.lowerA.toString());
+        System.out.println(a2.upperA.toString());
+        
     }
 
 }
 
 class A {
-    public String toString() {
-        return this.getClass().toString();
-    }
-}
+    public A upperA;
+    public A lowerA;
+    public int num = 0;
 
-class B extends A {
+    public A(A upperA, int num) {
+        if(upperA != null) {
+            this.upperA = upperA;
+            upperA.lowerA = this;
+        }
+        this.num = num;
+    }
+
+    @Override
+    public String toString() {
+        return num + "";
+    }
 
 }
