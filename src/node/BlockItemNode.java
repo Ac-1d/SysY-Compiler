@@ -1,5 +1,8 @@
 package node;
 
+import error.Error;
+import error.ErrorType;
+import frontend.ErrorHandler;
 import frontend.Parser;
 
 public class BlockItemNode {//finish
@@ -46,6 +49,19 @@ public class BlockItemNode {//finish
         }
         else {
             stmtNode.setupSymbolTable();
+            stmtNode.checkBreak();
+        }
+    }
+
+    void checkVoidFuncReturn() {
+        if (stmtNode == null) {
+            return;
+        }
+        if (stmtNode.state != 7) {// 非return语句
+            return;
+        }
+        if (stmtNode.expNode != null) {// 带有返回值
+            ErrorHandler.getInstance().addError(new Error(stmtNode.returnToken.getLineNum(), ErrorType.f));
         }
     }
 

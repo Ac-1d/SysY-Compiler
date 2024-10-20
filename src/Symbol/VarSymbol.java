@@ -17,6 +17,18 @@ public class VarSymbol extends Symbol {
         this.isArray = isArray;
     }
 
+    public VarType getVarType() {
+        return varType;
+    }
+
+    public boolean isArray() {
+        return isArray;
+    }
+
+    public boolean isConst() {
+        return isConst;
+    }
+
     @Override
     public String toString() {
         return word + " " + (isConst ? "Const" : "") + varType.toString();

@@ -1,4 +1,5 @@
 import config.Config;
+import frontend.ErrorHandler;
 import frontend.Lexer;
 import frontend.Parser;
 import frontend.SymbolHandler;
@@ -32,12 +33,14 @@ public class Compiler {
         }
         System.setOut(Config.originalStream);
         SymbolHandler symbolHandler = SymbolHandler.getInstance();
+        ErrorHandler errorHandler = ErrorHandler.getInstance();
         symbolHandler.analyse();
-        if(symbolHandler.getErrorsList().isEmpty()) {
+        if(errorHandler.getErrorsList().isEmpty()) {
             symbolHandler.print();
         } else {
             Config.error();
-            symbolHandler.printError();
+            errorHandler.printError();
         }
+
     }
 }

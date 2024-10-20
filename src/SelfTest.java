@@ -5,10 +5,7 @@ public class SelfTest {
         ArrayList<A> AsList = new ArrayList<>();
         AsList.add(new A());
         AsList.add(new B());
-        for (A a : AsList) {
-            System.out.println(a.getClass().equals(Class.forName("A")));
-        }
-        
+        System.out.println(AsList.size());
     }
 
 }

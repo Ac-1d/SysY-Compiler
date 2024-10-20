@@ -44,6 +44,7 @@ public class ForStmtNode {//finish
 
     void setupSymbolTable() {
         lValNode.setupSymbolTable();
+        lValNode.checkIfConst();
         expNode.setupSymbolTable();
     }
 

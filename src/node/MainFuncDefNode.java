@@ -65,6 +65,7 @@ public class MainFuncDefNode {//finish
 
     void setupSymbolTable() {
         blockNode.setupSymbolTable(false);
+        blockNode.checkFuncHasReturn();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package node;
 
+import Symbol.FuncParam;
 import Symbol.FuncSymbol;
 import Symbol.Symbol;
 import Symbol.SymbolTable;
@@ -129,6 +130,7 @@ public class UnaryExpNode {//finish
                     }
                 }
                 funcRParamsNode.setupSymbolTable();
+                checkRParamNumError();
                 checkRParamTypeError();
                 break;
             case 3:
@@ -149,9 +151,35 @@ public class UnaryExpNode {//finish
     }
 
     void checkRParamTypeError() {
-        SymbolHandler symbolHandler = SymbolHandler.getInstance();
         ErrorHandler errorHandler = ErrorHandler.getInstance();
-        
+        for (int i = 0; i < funcSymbol.getParamsNum(); i++) {
+            FuncParam funcParam = funcSymbol.getFuncParamsList().get(i);
+            ExpNode expNode;
+            if (i == 0) {//exp
+                if (funcParam.getIsArray() != funcRParamsNode.expNode.isArray) {//数组与变量
+                    errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.e));
+                    break;
+                }
+                if (funcParam.getIsArray() == true) {
+                    if (funcParam.getVarType().equals(funcRParamsNode.expNode.varType) == false) {//数组，但是类型不同
+                        errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.e));
+                        break;
+                    }
+                }
+            } else {
+                expNode = funcRParamsNode.paramNodesList.get(i - 1).expNode;
+                if (funcParam.getIsArray() != expNode.isArray) {//数组与变量
+                    errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.e));
+                    break;
+                }
+                if (funcParam.getIsArray() == true) {
+                    if (funcParam.getVarType().equals(expNode.varType) == false) {//数组，但是类型不同
+                        errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.e));
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override

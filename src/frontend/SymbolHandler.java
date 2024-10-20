@@ -2,7 +2,6 @@ package frontend;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
 import Symbol.FuncType;
 import Symbol.Symbol;
@@ -26,7 +25,6 @@ public class SymbolHandler {
     private SymbolTable curSymbolTable;
 
     private CompUnitNode compUnitNode;
-    private List<Error> errorsList;
 
     private final static Map<TokenType, VarType> TokenVarMap = new HashMap<>() {{
         put(TokenType.CHARTK, VarType.Char);
@@ -48,8 +46,9 @@ public class SymbolHandler {
     }
 
     public void addSymbol(Symbol symbol) { 
+        ErrorHandler errorHandler = ErrorHandler.getInstance();
         if(curSymbolTable.equals(findSymbolTableHasIdent(symbol.getIdentToken())) == true) {
-            errorsList.add(new Error(symbol.getLineNum(), ErrorType.b));
+            errorHandler.addError(new Error(symbol.getLineNum(), ErrorType.b));
             return;
         }
         curSymbolTable.addSymbol(symbol);
@@ -58,14 +57,6 @@ public class SymbolHandler {
 
     public SymbolTable getCurSymbolTable() {
         return curSymbolTable;
-    }
-
-    public List<Error> getErrorsList() {
-        return errorsList;
-    }
-
-    public void addError(Error error) {
-        errorsList.add(error);
     }
 
     public void setCurSymbolTable(SymbolTable symbolTable) {
@@ -91,9 +82,9 @@ public class SymbolHandler {
         Parser parser = Parser.getInstance();
         scopeNum = 1;
         compUnitNode = parser.compUnitNode;
-        errorsList = parser.errorsList;
         rootSymbolTable = new SymbolTable(null);
         curSymbolTable = rootSymbolTable;
+        ErrorHandler.getInstance().init();
     }
 
     public void analyse() {
@@ -105,9 +96,4 @@ public class SymbolHandler {
         rootSymbolTable.print();
     }
 
-    public void printError() {
-        for (Error error : errorsList) {
-            System.out.println(error.toString());
-        }
-    }
 }

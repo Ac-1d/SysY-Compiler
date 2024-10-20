@@ -5,6 +5,7 @@ import Symbol.SymbolTable;
 import Symbol.VarSymbol;
 import error.Error;
 import error.ErrorType;
+import frontend.ErrorHandler;
 import frontend.Parser;
 import frontend.SymbolHandler;
 import token.Token;
@@ -51,20 +52,27 @@ public class LValNode {//finish
 
     void setupSymbolTable() {
         SymbolHandler symbolHandler = SymbolHandler.getInstance();
+        ErrorHandler errorHandler = ErrorHandler.getInstance();
         SymbolTable symbolTable = symbolHandler.findSymbolTableHasIdent(identToken);
         if (symbolTable == null) {
-            symbolHandler.addError(new Error(identToken.getLineNum(), ErrorType.c));
+            errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.c));
         } else {
             Symbol symbol = symbolTable.findSymbol(identToken);
             boolean isVarSymbol = symbol.getClass().equals(VarSymbol.class);
             if (isVarSymbol == false) {
-                symbolHandler.addError(new Error(identToken.getLineNum(), ErrorType.c));
+                errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.c));
             } else {
                 varSymbol = (VarSymbol) symbol;
             }
         }
         if (arrayNode != null) {
             arrayNode.expNode.setupSymbolTable();
+        }
+    }
+
+    void checkIfConst() {
+        if (varSymbol.isConst() == true) {
+            ErrorHandler.getInstance().addError(new Error(identToken.getLineNum(), ErrorType.h));
         }
     }
 

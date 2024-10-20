@@ -8,6 +8,7 @@ import Symbol.VarSymbol;
 import Symbol.VarType;
 import error.Error;
 import error.ErrorType;
+import frontend.ErrorHandler;
 import frontend.Parser;
 import frontend.SymbolHandler;
 import token.Token;
@@ -96,7 +97,7 @@ public class FuncDefNode {//finish
         this.funcSymbol = new FuncSymbol(identToken, funcType);
         instance.addSymbol(funcSymbol);
         instance.setCurSymbolTable(new SymbolTable(instance.getCurSymbolTable()));
-        if(funcFParamsNode != null) {
+        if(funcFParamsNode != null) {//有参数
             FuncFParamNode funcFParamNode = funcFParamsNode.funcFParamNode;
             Token identToken = funcFParamNode.identToken;
             VarType varType = SymbolHandler.getVarType(funcFParamNode.bTypeNode.intOrCharToken);
@@ -115,7 +116,15 @@ public class FuncDefNode {//finish
         }
         blockNode.setupSymbolTable(true);
         instance.setCurSymbolTable(instance.getCurSymbolTable().getFatherSymbolTable());
+        if (funcSymbol.getFuncType().equals(FuncType.Void)) {// check error.f
+            for (BlockItemNode blockItemNode : blockNode.blockItemNodesList) {
+                blockItemNode.checkVoidFuncReturn();
+            }
+        } else {// check error.g
+            blockNode.checkFuncHasReturn();
+        }
     }
+
 
     @Override
     public String toString() {

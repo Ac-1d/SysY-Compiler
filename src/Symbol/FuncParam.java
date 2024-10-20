@@ -8,4 +8,12 @@ public class FuncParam {
         this.varType = varType;
         this.isArray = isArray;
     }
+
+    public VarType getVarType() {
+        return varType;
+    }
+
+    public boolean getIsArray() {
+        return isArray;
+    }
 }

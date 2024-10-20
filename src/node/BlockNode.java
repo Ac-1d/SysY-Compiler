@@ -1,5 +1,6 @@
 package node;
 
+import frontend.ErrorHandler;
 import frontend.Parser;
 import frontend.SymbolHandler;
 import token.Token;
@@ -8,6 +9,8 @@ import token.TokenType;
 import java.util.ArrayList;
 
 import Symbol.SymbolTable;
+import error.ErrorType;
+import error.Error;
 
 public class BlockNode {//finish
     // Block → '{' { BlockItem } '}'
@@ -66,6 +69,20 @@ public class BlockNode {//finish
         if(isFunc == false) {
             instance.setCurSymbolTable(instance.getCurSymbolTable().getFatherSymbolTable());
         }
+    }
+
+    void checkFuncHasReturn() {
+        if (blockItemNodesList.size() == 0) {
+            ErrorHandler.getInstance().addError(new Error(rbraceToken.getLineNum(), ErrorType.g));
+            return;
+        }
+        BlockItemNode blockItemNode = blockItemNodesList.get(blockItemNodesList.size() - 1);
+        if (blockItemNode.stmtNode != null) {
+            if (blockItemNode.stmtNode.state == 7) {// end with return
+                return;
+            }
+        }
+        ErrorHandler.getInstance().addError(new Error(rbraceToken.getLineNum(), ErrorType.g));
     }
 
     public String toString() {

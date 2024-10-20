@@ -18,8 +18,16 @@ public class FuncSymbol extends Symbol {
         funcParamsList.add(funcParam);
     }
 
+    public List<FuncParam> getFuncParamsList() {
+        return funcParamsList;
+    }
+
     public int getParamsNum() {
         return funcParamsList.size();
+    }
+
+    public FuncType getFuncType() {
+        return funcType;
     }
 
     @Override

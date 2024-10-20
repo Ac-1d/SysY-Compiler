@@ -2,10 +2,14 @@ package node;
 
 import error.Error;
 import error.ErrorType;
+import frontend.ErrorHandler;
 import frontend.Parser;
 import java.util.ArrayList;
 import token.Token;
 import token.TokenType;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StmtNode {
     /*
@@ -463,6 +467,10 @@ public class StmtNode {
         switch (state) {
             case 1:
                 lValNode.setupSymbolTable();
+                lValNode.checkIfConst();
+                expNode.setupSymbolTable();
+                break;
+            case 2:
                 expNode.setupSymbolTable();
                 break;
             case 3:
@@ -476,20 +484,51 @@ public class StmtNode {
                 }
                 break;
             case 5:
+                ErrorHandler.loopNum++;
                 forStmtNode1.setupSymbolTable();
                 condNode.setupSymbolTable(); 
                 forStmtNode2.setupSymbolTable();
                 stmtNode1.setupSymbolTable();
+                ErrorHandler.loopNum--;
                 break;
             case 8:
                 lValNode.setupSymbolTable();
+                lValNode.checkIfConst();
                 break;
             case 9:
                 lValNode.setupSymbolTable();
+                lValNode.checkIfConst();
+                break;
+            case 10:
+                checkPrint();
                 break;
             default:
                 break;
         }
+    }
+
+    void checkPrint() {
+        int countD = countOccurenceRegex(strconToken.getWord(), "%d");
+        int countC = countOccurenceRegex(strconToken.getWord(), "%c");
+        if (countC + countD != expWithCommaNodesList.size()) {
+            ErrorHandler.getInstance().addError(new Error(printfToken.getLineNum(), ErrorType.l));
+        }
+    }
+
+    void checkBreak() {
+        if (ErrorHandler.loopNum == 0 && state == 6) {
+            ErrorHandler.getInstance().addError(new Error((breakToken != null ? breakToken.getLineNum() : continueToken.getLineNum()), ErrorType.m));
+        }
+    }
+
+    private int countOccurenceRegex(String str, String sub) {
+        int count = 0;
+        Pattern pattern = Pattern.compile(Pattern.quote(sub));
+        Matcher matcher = pattern.matcher(str);
+        while (matcher.find()) {
+            count++;
+        }
+        return count;
     }
 
     @Override

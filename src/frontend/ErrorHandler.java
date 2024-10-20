@@ -11,10 +11,21 @@ public class ErrorHandler {
     }
 
     private List<Error> errorsList;
+    public static int loopNum = 0;
 
-    private void init() {
-        SymbolHandler instance = SymbolHandler.getInstance();
-        errorsList = instance.getErrorsList();
+    public List<Error> getErrorsList() {
+        return errorsList;
+    }
+
+    public void printError() {
+        for (Error error : errorsList) {
+            System.out.println(error.toString());
+        }
+    }
+
+    void init() {
+        Parser parser = Parser.getInstance();
+        errorsList = parser.errorsList;
     }
 
     public void analyse() {
