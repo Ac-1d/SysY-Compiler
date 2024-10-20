@@ -1,7 +1,12 @@
 package node;
 
+import Symbol.Symbol;
+import Symbol.SymbolTable;
+import Symbol.VarSymbol;
 import error.Error;
+import error.ErrorType;
 import frontend.Parser;
+import frontend.SymbolHandler;
 import token.Token;
 import token.TokenType;
 
@@ -10,6 +15,7 @@ public class LValNode {//finish
 
     Token identToken;
     ArrayNode arrayNode;
+    VarSymbol varSymbol;
 
     public static LValNode LVal() {
         Parser instance = Parser.getInstance();
@@ -41,6 +47,25 @@ public class LValNode {//finish
             arrayNode.rbrackToken.print();
         }
         System.out.println(toString());
+    }
+
+    void setupSymbolTable() {
+        SymbolHandler symbolHandler = SymbolHandler.getInstance();
+        SymbolTable symbolTable = symbolHandler.findSymbolTableHasIdent(identToken);
+        if (symbolTable == null) {
+            symbolHandler.addError(new Error(identToken.getLineNum(), ErrorType.c));
+        } else {
+            Symbol symbol = symbolTable.findSymbol(identToken);
+            boolean isVarSymbol = symbol.getClass().equals(VarSymbol.class);
+            if (isVarSymbol == false) {
+                symbolHandler.addError(new Error(identToken.getLineNum(), ErrorType.c));
+            } else {
+                varSymbol = (VarSymbol) symbol;
+            }
+        }
+        if (arrayNode != null) {
+            arrayNode.expNode.setupSymbolTable();
+        }
     }
 
     @Override
@@ -78,7 +103,7 @@ public class LValNode {//finish
             rbrackToken = instance.peekNextToken();
             if(rbrackToken.getType().equals(TokenType.RBRACK) == false) {
                 instance.setPeekIndex(tmpIndex);
-                instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(rbrackToken), 'k'));
+                instance.errorsList.add(new Error(instance.getPreTokenLineNum(rbrackToken), ErrorType.k));
             }
             arrayNode.rbrackToken.setLineNum(rbrackToken.getLineNum());
             return arrayNode;

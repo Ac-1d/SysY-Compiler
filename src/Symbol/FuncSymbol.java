@@ -10,12 +10,16 @@ public class FuncSymbol extends Symbol {
     private List<FuncParam> funcParamsList = new ArrayList<>();
 
     public FuncSymbol(Token identToken, FuncType funcType) {
-        super(identToken.getWord());
+        super(identToken);
         this.funcType = funcType;
     }
 
     public void addFuncParam(FuncParam funcParam) {
         funcParamsList.add(funcParam);
+    }
+
+    public int getParamsNum() {
+        return funcParamsList.size();
     }
 
     @Override

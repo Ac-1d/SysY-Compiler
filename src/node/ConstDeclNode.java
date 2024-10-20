@@ -1,15 +1,14 @@
 package node;
 
-import frontend.Parser;
-import frontend.SymbolHandler;
-import token.Token;
-import token.TokenType;
-import error.Error;
-
-import java.util.ArrayList;
-
 import Symbol.VarSymbol;
 import Symbol.VarType;
+import error.Error;
+import error.ErrorType;
+import frontend.Parser;
+import frontend.SymbolHandler;
+import java.util.ArrayList;
+import token.Token;
+import token.TokenType;
 
 public class ConstDeclNode {//finish
     // ConstDecl → 'const' BType ConstDef { ',' ConstDef } ';'
@@ -60,7 +59,7 @@ public class ConstDeclNode {//finish
         if(token.getType().equals(TokenType.SEMICN) == false) {
             //错误处理 && 回溯
             instance.setPeekIndex(tmpIndex);
-            instance.errorsList.add(new Error("Parse", instance.getPreTokenLineNum(token), 'i'));
+            instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.i));
             constDeclNode.semicnToken.setLineNum(instance.getPreTokenLineNum(token));
         }
         else {
@@ -77,12 +76,18 @@ public class ConstDeclNode {//finish
         boolean isArray;
         isArray = constDefNode.defArrayNode != null;
         //solve 'ConstDef'
-        instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+        VarSymbol varSymbol = new VarSymbol(identToken, varType, isConst, isArray);
+        instance.addSymbol(varSymbol);
+        constDefNode.varSymbol = varSymbol;
+        constDefNode.setupSymbolTable();
         //solve '{, ConstDef}'
         for (MultipleDeclNode multipleDeclNode : multipleDeclNodesList) {
             identToken = multipleDeclNode.constDefNode.identToken;
             isArray = multipleDeclNode.constDefNode.defArrayNode != null;
-            instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+            varSymbol = new VarSymbol(identToken, varType, isConst, isArray);
+            instance.addSymbol(varSymbol);
+            multipleDeclNode.constDefNode.varSymbol = varSymbol;
+            multipleDeclNode.constDefNode.setupSymbolTable();
         }
     }
 
@@ -98,6 +103,7 @@ public class ConstDeclNode {//finish
         System.out.println(toString());
     }
 
+    @Override
     public String toString() {
         return "<ConstDecl>";
     }

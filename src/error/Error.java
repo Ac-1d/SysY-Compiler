@@ -1,17 +1,15 @@
 package error;
 
 public class Error implements Comparable<Error> {
-    private String stage;
-    private int position;
-    private char errorCode;
-    public Error(String stage, int position, char errorCode) {
-        this.stage = stage;
+    private final int position;
+    private final ErrorType errorType;
+    public Error(int position, ErrorType errorType) {
         this.position = position;
-        this.errorCode = errorCode;
+        this.errorType = errorType;
     }
     @Override
     public String toString() {
-        return position + " " + Character.toString(errorCode);
+        return position + " " + errorType.toString();
     }
     
     @Override

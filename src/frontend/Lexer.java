@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import error.Error;
+import error.ErrorType;
 import token.Token;
 import token.TokenType;
 
@@ -262,7 +263,7 @@ public class Lexer {
                     }
                     else {
                         //错误处理
-                        errorsList.add(new Error("LEX", lineNum, 'a'));
+                        errorsList.add(new Error(lineNum, ErrorType.a));
                         this.errorState = true;
                         return new Token(TokenType.OR, "||", lineNum);
                     }
@@ -276,7 +277,7 @@ public class Lexer {
                     }
                     else {
                         //错误处理
-                        errorsList.add(new Error("LEX", lineNum, 'a'));
+                        errorsList.add(new Error(lineNum, ErrorType.a));
                         this.errorState = true;
                         return new Token(TokenType.AND, "&&", lineNum);
                     }

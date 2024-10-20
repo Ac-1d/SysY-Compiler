@@ -1,6 +1,7 @@
 package node;
 
 import error.Error;
+import error.ErrorType;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -39,7 +40,7 @@ public class MainFuncDefNode {//finish
         token = instance.peekNextToken();
         if(token.getType().equals(TokenType.RPARENT) == false) {//error
             instance.setPeekIndex(tmpIndex);
-            instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'j'));
+            instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.j));
             mainFuncDefNode.rparentToken.setLineNum(instance.getPreTokenLineNum(token));
         }
         else {

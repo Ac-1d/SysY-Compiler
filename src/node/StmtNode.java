@@ -1,12 +1,11 @@
 package node;
 
+import error.Error;
+import error.ErrorType;
+import frontend.Parser;
+import java.util.ArrayList;
 import token.Token;
 import token.TokenType;
-
-import java.util.ArrayList;
-
-import error.Error;
-import frontend.Parser;
 
 public class StmtNode {
     /*
@@ -97,7 +96,7 @@ public class StmtNode {
                     token = instance.peekNextToken();
                     if(token.getType().equals(TokenType.SEMICN) == false) {//error
                         instance.setPeekIndex(ttmpIndex);
-                        instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));    
+                        instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.i));    
                     }
                     stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
                     stmtNode.state = 1;
@@ -123,14 +122,14 @@ public class StmtNode {
                     token = instance.peekNextToken();
                     if(token.getType().equals(TokenType.RPARENT) == false) {//error
                         instance.setPeekIndex(ttmpIndex);
-                        instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'j'));
+                        instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.j));
                     }
                     stmtNode.rparentToken.setLineNum(instance.getPreTokenLineNum(token));
                     ttmpIndex = instance.getPeekIndex();
                     token = instance.peekNextToken();
                     if(token.getType().equals(TokenType.SEMICN) == false) {
                         instance.setPeekIndex(ttmpIndex);
-                        instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));
+                        instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.i));
                         stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
                     }
                     else {
@@ -150,7 +149,7 @@ public class StmtNode {
             token = instance.peekNextToken();
             if(token.getType().equals(TokenType.SEMICN) == false) {
                 instance.setPeekIndex(ttmpIndex);
-                instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));
+                instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.i));
                 stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
             }
             else {
@@ -185,7 +184,7 @@ public class StmtNode {
             token = instance.peekNextToken();
             if(token.getType().equals(TokenType.RPARENT) == false) {//error
                 instance.setPeekIndex(tmpIndex);
-                instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'j'));
+                instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.j));
             }
             stmtNode.rparentToken.setLineNum(instance.getPreTokenLineNum(token));
             stmtNode1 = StmtNode.Stmt();
@@ -270,7 +269,7 @@ public class StmtNode {
             token = instance.peekNextToken();
             if(token.getType().equals(TokenType.SEMICN) == false) {// error //其实这个是正确的错误处理方式，之前的写法有一些隐患 有空改改吧
                 instance.setPeekIndex(tmpIndex);
-                instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));
+                instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.i));
                 stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
             }
             else {
@@ -285,7 +284,7 @@ public class StmtNode {
             token = instance.peekNextToken();
             if(token.getType().equals(TokenType.SEMICN) == false) {// error
                 instance.setPeekIndex(tmpIndex);
-                instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));
+                instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.i));
                 stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
             }
             else {
@@ -306,7 +305,7 @@ public class StmtNode {
             token = instance.peekNextToken();
             if(token.getType().equals(TokenType.SEMICN) == false) {//error
                 instance.setPeekIndex(tmpIndex);
-                instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));
+                instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.i));
                 stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
             }
             else {
@@ -340,7 +339,7 @@ public class StmtNode {
             token = instance.peekNextToken();
             if(token.getType().equals(TokenType.RPARENT) == false) {//error
                 instance.setPeekIndex(tmpIndex);
-                instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'j'));
+                instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.j));
                 stmtNode.rparentToken.setLineNum(instance.getPreTokenLineNum(token));
             }
             else {
@@ -350,7 +349,7 @@ public class StmtNode {
             token = instance.peekNextToken();
             if(token.getType().equals(TokenType.SEMICN) == false) {
                 instance.setPeekIndex(tmpIndex);
-                instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(token), 'i'));
+                instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.i));
                 stmtNode.semicnToken1.setLineNum(instance.getPreTokenLineNum(token));
             }
             else {
@@ -462,17 +461,32 @@ public class StmtNode {
 
     void setupSymbolTable() {
         switch (state) {
+            case 1:
+                lValNode.setupSymbolTable();
+                expNode.setupSymbolTable();
+                break;
             case 3:
                 blockNode.setupSymbolTable(false);
                 break;
             case 4:
+                condNode.setupSymbolTable();
                 stmtNode1.setupSymbolTable();
                 if(stmtNode2 != null) {
                     stmtNode2.setupSymbolTable();
                 }
                 break;
             case 5:
+                forStmtNode1.setupSymbolTable();
+                condNode.setupSymbolTable(); 
+                forStmtNode2.setupSymbolTable();
                 stmtNode1.setupSymbolTable();
+                break;
+            case 8:
+                lValNode.setupSymbolTable();
+                break;
+            case 9:
+                lValNode.setupSymbolTable();
+                break;
             default:
                 break;
         }

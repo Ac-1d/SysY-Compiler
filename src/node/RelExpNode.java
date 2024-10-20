@@ -47,6 +47,13 @@ public class RelExpNode {//finish
         }
     }
 
+    void setupSymbolTable() {
+        addExpNode.setupSymbolTable();
+        if (shorterRelExpNode != null) {
+            shorterRelExpNode.setupSymbolTable();
+        }
+    }
+
     @Override
     public String toString() {
         return "<RelExp>";

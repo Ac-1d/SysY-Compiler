@@ -47,6 +47,13 @@ public class LAndExpNode {//finish
         }
     }
 
+    void setupSymbolTable() {
+        eqExpNode.setupSymbolTable();
+        if (shorterLAndExpNode != null) {
+            shorterLAndExpNode.setupSymbolTable();
+        }
+    }
+
     @Override
     public String toString() {
         return "<LAndExp>";

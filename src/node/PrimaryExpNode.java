@@ -1,6 +1,7 @@
 package node;
 
 import error.Error;
+import error.ErrorType;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -39,7 +40,7 @@ public class PrimaryExpNode {//finish
             rparentToken = instance.peekNextToken();
             if(rparentToken.getType().equals(TokenType.RPARENT) == false) {
                 instance.setPeekIndex(tmpIndex);
-                instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(rparentToken), 'j'));
+                instance.errorsList.add(new Error(instance.getPreTokenLineNum(rparentToken), ErrorType.j));
             }
             primaryExpNode.rparentToken.setLineNum(instance.getPreTokenLineNum(rparentToken));
             return primaryExpNode;
@@ -82,6 +83,15 @@ public class PrimaryExpNode {//finish
             characterNode.print();
         }
         System.out.println(toString());
+    }
+
+    void setupSymbolTable() {
+        if (lValNode != null) {
+            lValNode.setupSymbolTable();
+        }
+        else if (expNode != null) {
+            expNode.setupSymbolTable();
+        }
     }
 
     @Override

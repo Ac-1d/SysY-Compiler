@@ -21,6 +21,10 @@ public class ExpNode {//finish
         System.out.println(toString());
     }
 
+    void setupSymbolTable() {
+        addExpNode.setupSymbolTable();
+    }
+
     @Override
     public String toString() {
         return "<Exp>";

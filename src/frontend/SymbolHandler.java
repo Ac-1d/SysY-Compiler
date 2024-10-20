@@ -2,13 +2,14 @@ package frontend;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ArrayList;
+import java.util.List;
 
 import Symbol.FuncType;
 import Symbol.Symbol;
 import Symbol.SymbolTable;
 import Symbol.VarType;
 import error.Error;
+import error.ErrorType;
 import node.CompUnitNode;
 import token.Token;
 import token.TokenType;
@@ -25,7 +26,7 @@ public class SymbolHandler {
     private SymbolTable curSymbolTable;
 
     private CompUnitNode compUnitNode;
-    private ArrayList<Error> errorsList;
+    private List<Error> errorsList;
 
     private final static Map<TokenType, VarType> TokenVarMap = new HashMap<>() {{
         put(TokenType.CHARTK, VarType.Char);
@@ -47,7 +48,10 @@ public class SymbolHandler {
     }
 
     public void addSymbol(Symbol symbol) { 
-        
+        if(curSymbolTable.equals(findSymbolTableHasIdent(symbol.getIdentToken())) == true) {
+            errorsList.add(new Error(symbol.getLineNum(), ErrorType.b));
+            return;
+        }
         curSymbolTable.addSymbol(symbol);
         symbol.setSymbolTable(curSymbolTable);
     }
@@ -56,12 +60,31 @@ public class SymbolHandler {
         return curSymbolTable;
     }
 
+    public List<Error> getErrorsList() {
+        return errorsList;
+    }
+
+    public void addError(Error error) {
+        errorsList.add(error);
+    }
+
     public void setCurSymbolTable(SymbolTable symbolTable) {
         this.curSymbolTable = symbolTable;
     }
 
     public int getScopeNum() {
         return scopeNum++;
+    }
+
+    public SymbolTable findSymbolTableHasIdent(Token token) {
+        SymbolTable target = curSymbolTable;
+        while (target != null) {
+            if(target.findSymbol(token) != null) {
+                return target;
+            }
+            target = target.getFatherSymbolTable();
+        }
+        return null;
     }
 
     private void init() {
@@ -80,5 +103,11 @@ public class SymbolHandler {
 
     public void print() {
         rootSymbolTable.print();
+    }
+
+    public void printError() {
+        for (Error error : errorsList) {
+            System.out.println(error.toString());
+        }
     }
 }

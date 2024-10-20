@@ -51,6 +51,13 @@ public class EqExpNode {//finish
         }
     }
 
+    void setupSymbolTable() {
+        relExpNode.setupSymbolTable();
+        if (shorterEqExpNode != null) {
+            shorterEqExpNode.setupSymbolTable();
+        }
+    }
+
     @Override
     public String toString() {
         return "<EqExp>";

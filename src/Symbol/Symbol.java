@@ -1,17 +1,18 @@
 package Symbol;
 
-import frontend.SymbolHandler;
+import token.Token;
 
 public class Symbol {
     private int id;
     private static int autoIncreId;
     private SymbolTable symbolTable;
+    private Token identToken;
     protected String word;
 
-    public Symbol(String word) {
-        SymbolHandler instance = SymbolHandler.getInstance();
+    public Symbol(Token identToken) {
         this.id = autoIncreId++;
-        this.word = word;
+        this.identToken = identToken;
+        this.word = identToken.getWord();
     }
 
     public void setSymbolTable(SymbolTable symbolTable) {
@@ -20,6 +21,18 @@ public class Symbol {
 
     public void print() {
         System.out.println(word);
+    }
+
+    public String getWord() {
+        return word;
+    }
+
+    public int getLineNum() {
+        return identToken.getLineNum();
+    }
+
+    public Token getIdentToken() {
+        return identToken;
     }
     
 }

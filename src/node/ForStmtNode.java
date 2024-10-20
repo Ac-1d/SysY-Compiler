@@ -42,6 +42,11 @@ public class ForStmtNode {//finish
         System.out.println(toString());
     }
 
+    void setupSymbolTable() {
+        lValNode.setupSymbolTable();
+        expNode.setupSymbolTable();
+    }
+
     @Override
     public String toString() {
         return "<ForStmt>";

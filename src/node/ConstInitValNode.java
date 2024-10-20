@@ -94,6 +94,25 @@ public class ConstInitValNode {//finish
         System.out.println(toString());
     }
 
+    void setupSymbolTable() {
+        switch (state) {
+            case 1:
+                constExpNode.setupSymbolTable();
+                break;
+            case 2:
+                if (constExpNode != null) {
+                    constExpNode.setupSymbolTable();
+                }
+                for (InitArrayNode initArrayNode : initArrayNodesList) {
+                    initArrayNode.constExpNode.setupSymbolTable();
+                }
+                break;
+        
+            default:
+                break;
+        }
+    }
+
     @Override
     public String toString() {
         return "<ConstInitVal>";

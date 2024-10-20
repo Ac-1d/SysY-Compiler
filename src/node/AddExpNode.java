@@ -50,6 +50,13 @@ public class AddExpNode {//finish
         }
     }
 
+    void setupSymbolTable() {
+        mulExpNode.setupSymbolTable();
+        if (shorterAddExpNode != null) {
+            shorterAddExpNode.setupSymbolTable();
+        }
+    }
+
     public String toString() {
         return "<AddExp>";
     }

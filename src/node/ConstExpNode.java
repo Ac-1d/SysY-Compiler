@@ -20,6 +20,10 @@ public class ConstExpNode {//finish
         System.out.println(toString());
     }
 
+    void setupSymbolTable() {
+        addExpNode.setupSymbolTable();
+    }
+
     @Override
     public String toString() {
         return "<ConstExp>";

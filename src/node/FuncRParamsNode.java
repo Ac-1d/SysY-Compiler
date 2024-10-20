@@ -40,6 +40,13 @@ public class FuncRParamsNode {//finish
         System.out.println(toString());
     }
 
+    void setupSymbolTable() {
+        expNode.setupSymbolTable();
+        for (ParamNode paramNode : paramNodesList) {
+            paramNode.expNode.setupSymbolTable();
+        }
+    }
+
     @Override
     public String toString() {
         return "<FuncRParams>";

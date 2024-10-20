@@ -1,12 +1,20 @@
 package node;
 
+import Symbol.FuncSymbol;
+import Symbol.Symbol;
+import Symbol.SymbolTable;
 import error.Error;
+import error.ErrorType;
+import frontend.ErrorHandler;
 import frontend.Parser;
+import frontend.SymbolHandler;
 import token.Token;
 import token.TokenType;
 
 public class UnaryExpNode {//finish
     // UnaryExp → PrimaryExp | Ident '(' [FuncRParams] ')' | UnaryOp UnaryExp
+    // FuncRParams → Exp { ',' Exp } 
+    // WTF EXP IS TERRIBLE!
 
     PrimaryExpNode primaryExpNode;
     Token identToken;
@@ -15,6 +23,7 @@ public class UnaryExpNode {//finish
     Token rparentToken;
     UnaryOpNode unaryOpNode;
     UnaryExpNode shortreUnaryExpNode;
+    FuncSymbol funcSymbol;
     int state;
 
     public static UnaryExpNode UnaryExp() {
@@ -47,7 +56,7 @@ public class UnaryExpNode {//finish
                 ttmpIndex = instance.getPeekIndex();
                 rparentToken = instance.peekNextToken();
                 if(rparentToken.getType().equals(TokenType.RPARENT) == false) {
-                    instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(rparentToken), 'j'));
+                    instance.errorsList.add(new Error(instance.getPreTokenLineNum(rparentToken), ErrorType.j));
                     instance.setPeekIndex(ttmpIndex);
                 }
                 unaryExpNode.rparentToken.setLineNum(instance.getPreTokenLineNum(rparentToken));
@@ -96,6 +105,53 @@ public class UnaryExpNode {//finish
                 break;
         }
         System.out.println(toString());
+    }
+
+    void setupSymbolTable() {
+        SymbolHandler symbolHandler = SymbolHandler.getInstance();
+        ErrorHandler errorHandler = ErrorHandler.getInstance();
+        SymbolTable symbolTable;
+        switch (state) {
+            case 1:
+                primaryExpNode.setupSymbolTable();
+                break;
+            case 2:
+                symbolTable = symbolHandler.findSymbolTableHasIdent(identToken);
+                if(symbolTable == null) {
+                    errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.c));
+                } else {
+                    Symbol symbol = symbolTable.findSymbol(identToken);
+                    boolean isFuncSymbol = symbol.getClass().equals(FuncSymbol.class);
+                    if (isFuncSymbol == false) {
+                        errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.c));
+                    } else {
+                        funcSymbol = (FuncSymbol) symbol;
+                    }
+                }
+                funcRParamsNode.setupSymbolTable();
+                checkRParamTypeError();
+                break;
+            case 3:
+                shortreUnaryExpNode.setupSymbolTable();
+            default:
+                break;
+        }
+
+    }
+
+    void checkRParamNumError() {
+        ErrorHandler instance = ErrorHandler.getInstance();
+        int paramsNum = funcSymbol.getParamsNum();
+        // 1 + n (Exp + List)
+        if(paramsNum != (1 + funcRParamsNode.paramNodesList.size())) {
+            instance.addError(new Error(identToken.getLineNum(), ErrorType.d));
+        }
+    }
+
+    void checkRParamTypeError() {
+        SymbolHandler symbolHandler = SymbolHandler.getInstance();
+        ErrorHandler errorHandler = ErrorHandler.getInstance();
+        
     }
 
     @Override

@@ -21,6 +21,10 @@ public class CondNode {//finish
         System.out.println(toString());
     }
 
+    void setupSymbolTable() {
+        lOrExpNode.setupSymbolTable();
+    }
+
     public String toString() {
         return "<Cond>";
     }

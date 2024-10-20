@@ -3,7 +3,9 @@ package node;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
+import Symbol.VarSymbol;
 import error.Error;
+import error.ErrorType;
 
 public class VarDefNode {//finish
     // VarDef → Ident [ '[' ConstExp ']' ] | Ident [ '[' ConstExp ']' ] '=' InitVal
@@ -12,6 +14,7 @@ public class VarDefNode {//finish
     DefArrayNode defArrayNode;
     Token assignToken;
     InitValNode initValNode;
+    VarSymbol varSymbol;
 
     public static VarDefNode VarDef() {
         Parser instance = Parser.getInstance();
@@ -61,6 +64,15 @@ public class VarDefNode {//finish
         System.out.println(toString());
     }
 
+    void setupSymbolTable() {
+        if (defArrayNode != null) {
+            defArrayNode.constExpNode.setupSymbolTable();
+        }
+        if (initValNode != null) {
+            initValNode.setupSymbolTable();
+        }
+    }
+
     @Override
     public String toString() {
         return "<VarDef>";
@@ -74,6 +86,7 @@ public class VarDefNode {//finish
         Token lbrackToken;
         ConstExpNode constExpNode;
         Token rbrackToken;
+        VarSymbol varSymbol;
 
         public static DefArrayNode DefArray() {
             Parser instance = Parser.getInstance();
@@ -91,10 +104,10 @@ public class VarDefNode {//finish
             if(constExpNode == null) {
                 return null;
             }
-            token = instance.peekNextToken();
             tmpIndex = instance.getPeekIndex();
+            token = instance.peekNextToken();
             if(token.getType().equals(TokenType.RBRACK) == false) {//未识别到']'
-                instance.errorsList.add(new Error("Parse", instance.getPreTokenLineNum(token), 'k'));
+                instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.k));
                 defArrayNode.rbrackToken.setLineNum(instance.getPreTokenLineNum(token));
                 instance.setPeekIndex(tmpIndex);
             }

@@ -3,11 +3,11 @@ package node;
 import Symbol.FuncParam;
 import Symbol.FuncSymbol;
 import Symbol.FuncType;
-import Symbol.Symbol;
 import Symbol.SymbolTable;
 import Symbol.VarSymbol;
 import Symbol.VarType;
 import error.Error;
+import error.ErrorType;
 import frontend.Parser;
 import frontend.SymbolHandler;
 import token.Token;
@@ -25,6 +25,7 @@ public class FuncDefNode {//finish
     FuncFParamsNode funcFParamsNode;
     Token rparentToken;
     BlockNode blockNode;
+    FuncSymbol funcSymbol;
 
     public static FuncDefNode FuncDef() {
         Parser instance = Parser.getInstance();
@@ -63,7 +64,7 @@ public class FuncDefNode {//finish
         rparentToken = instance.peekNextToken();
         if(rparentToken.getType().equals(TokenType.RPARENT) == false) {//error
             instance.setPeekIndex(tmpIndex);
-            instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(rparentToken), 'j'));
+            instance.errorsList.add(new Error(instance.getPreTokenLineNum(rparentToken), ErrorType.j));
             funcDefNode.rparentToken.setLineNum(instance.getPreTokenLineNum(rparentToken));
         }
         else {
@@ -77,10 +78,22 @@ public class FuncDefNode {//finish
         return funcDefNode;
     }
 
+    void print() {
+        funcTypeNode.print();
+        identToken.print();
+        lparentToken.print();
+        if(funcFParamsNode != null) {
+            funcFParamsNode.print();
+        }
+        rparentToken.print();
+        blockNode.print();
+        System.out.println(toString());
+    }
+
     void setupSymbolTable() {
         SymbolHandler instance = SymbolHandler.getInstance();
         FuncType funcType = SymbolHandler.getFuncType(funcTypeNode.funcTypeToken);
-        FuncSymbol funcSymbol = new FuncSymbol(identToken, funcType);
+        this.funcSymbol = new FuncSymbol(identToken, funcType);
         instance.addSymbol(funcSymbol);
         instance.setCurSymbolTable(new SymbolTable(instance.getCurSymbolTable()));
         if(funcFParamsNode != null) {
@@ -102,18 +115,6 @@ public class FuncDefNode {//finish
         }
         blockNode.setupSymbolTable(true);
         instance.setCurSymbolTable(instance.getCurSymbolTable().getFatherSymbolTable());
-    }
-
-    void print() {
-        funcTypeNode.print();
-        identToken.print();
-        lparentToken.print();
-        if(funcFParamsNode != null) {
-            funcFParamsNode.print();
-        }
-        rparentToken.print();
-        blockNode.print();
-        System.out.println(toString());
     }
 
     @Override

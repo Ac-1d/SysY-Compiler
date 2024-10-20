@@ -1,15 +1,14 @@
 package node;
 
-import token.Token;
-import token.TokenType;
-
-import java.util.ArrayList;
-
 import Symbol.VarSymbol;
 import Symbol.VarType;
 import error.Error;
+import error.ErrorType;
 import frontend.Parser;
 import frontend.SymbolHandler;
+import java.util.ArrayList;
+import token.Token;
+import token.TokenType;
 
 public class VarDeclNode {//finish
     // VarDecl → BType VarDef { ',' VarDef } ';'
@@ -53,7 +52,7 @@ public class VarDeclNode {//finish
         }
         if(semicnToken.getType().equals(TokenType.SEMICN) == false) {
             instance.setPeekIndex(tmpIndex);
-            instance.errorsList.add(new Error("parse", instance.getPreTokenLineNum(semicnToken), 'i'));
+            instance.errorsList.add(new Error(instance.getPreTokenLineNum(semicnToken), ErrorType.i));
         }
         varDeclNode.semicnToken.setLineNum(instance.getPreTokenLineNum(semicnToken));
         return varDeclNode;
@@ -66,11 +65,18 @@ public class VarDeclNode {//finish
         boolean isConst = false;
         boolean isArray;
         isArray = varDefNode.defArrayNode != null;
-        instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+        // solve 'VarDef'
+        VarSymbol varSymbol = new VarSymbol(identToken, varType, isConst, isArray);
+        instance.addSymbol(varSymbol);
+        varDefNode.varSymbol = varSymbol;
+        
+        // solve '{ ',' VarDef }'
         for (MultifyVarDefNode multifyVarDefNode : multifyVarDefNodesList) {
             identToken = multifyVarDefNode.varDefNode.identToken;
             isArray = multifyVarDefNode.varDefNode.defArrayNode != null;
-            instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+            varSymbol = new VarSymbol(identToken, varType, isConst, isArray);
+            instance.addSymbol(varSymbol);
+            multifyVarDefNode.varDefNode.varSymbol = varSymbol;
         }
     }
 

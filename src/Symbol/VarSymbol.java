@@ -11,7 +11,7 @@ public class VarSymbol extends Symbol {
     private int dim;
 
     public VarSymbol(Token identToken, VarType varType, boolean isConst, boolean isArray) {
-        super(identToken.getWord());
+        super(identToken);
         this.varType = varType;
         this.isConst = isConst;
         this.isArray = isArray;

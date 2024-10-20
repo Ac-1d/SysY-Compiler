@@ -1,9 +1,9 @@
 package Symbol;
 
+import frontend.SymbolHandler;
 import java.util.ArrayList;
 import java.util.List;
-
-import frontend.SymbolHandler;
+import token.Token;
 
 public class SymbolTable {
     private int scopeNum;
@@ -29,14 +29,6 @@ public class SymbolTable {
     }
 
     public void print() {
-        // System.out.println("i am " + toString() + " i have son:");
-        // for (SymbolTable symbolTable : sonSymbolTablesList) {
-        //     System.out.println(symbolTable.scopeNum);
-        // }
-        // System.out.println("i have symbol:");
-        // for (Symbol symbol : symbolsList) {
-        //     symbol.print();
-        // }
         for (Symbol symbol : symbolsList) {
             System.out.println(toString() + " " + symbol.toString());
         }
@@ -44,6 +36,15 @@ public class SymbolTable {
             symbolTable.print();
         }
 
+    }
+
+    public Symbol findSymbol(Token token) {
+        for (Symbol sonSymbol : symbolsList) {
+            if(token.getWord().equals(sonSymbol.word) == true) {
+                return sonSymbol;
+            }
+        }
+        return null;
     }
 
     @Override

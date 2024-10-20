@@ -2,7 +2,6 @@ import config.Config;
 import frontend.Lexer;
 import frontend.Parser;
 import frontend.SymbolHandler;
-
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -34,6 +33,11 @@ public class Compiler {
         System.setOut(Config.originalStream);
         SymbolHandler symbolHandler = SymbolHandler.getInstance();
         symbolHandler.analyse();
-        symbolHandler.print();
+        if(symbolHandler.getErrorsList().isEmpty()) {
+            symbolHandler.print();
+        } else {
+            Config.error();
+            symbolHandler.printError();
+        }
     }
 }

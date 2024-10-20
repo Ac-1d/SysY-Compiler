@@ -52,6 +52,9 @@ public class BlockNode {//finish
         System.out.println(this.toString());
     }
 
+    /**@param isFunc 
+     *  该block是否属于func的block
+    */
     void setupSymbolTable(boolean isFunc) {
         SymbolHandler instance = SymbolHandler.getInstance();
         if(isFunc == false) {

@@ -1,6 +1,8 @@
 package node;
 
+import Symbol.VarSymbol;
 import error.Error;
+import error.ErrorType;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -13,6 +15,7 @@ public class ConstDefNode {//finish
     DefArrayNode defArrayNode;
     Token assignToken;
     ConstInitValNode constInitValNode;
+    VarSymbol varSymbol;
     
     public static ConstDefNode ConstDef() {
         Parser instance = Parser.getInstance();
@@ -57,6 +60,12 @@ public class ConstDefNode {//finish
         System.out.println(toString());
     }
 
+    void setupSymbolTable() {
+        if (defArrayNode != null) {
+            defArrayNode.constExpNode.setupSymbolTable();
+        }
+    }
+
     @Override
     public String toString() {
         return "<ConstDef>";
@@ -89,7 +98,7 @@ public class ConstDefNode {//finish
             token = instance.peekNextToken();
             tmpIndex = instance.getPeekIndex();
             if(token.getType().equals(TokenType.RBRACK) == false) {//未识别到']'
-                instance.errorsList.add(new Error("Parse", instance.getPreTokenLineNum(token), 'k'));
+                instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.k));
                 instance.setPeekIndex(tmpIndex);
                 defArrayNode.rbrackToken.setLineNum(instance.getPreTokenLineNum(token));
             }

@@ -48,6 +48,13 @@ public class MulExpNode {//finish
         }
     }
 
+    void setupSymbolTable() {
+        unaryExpNode.setupSymbolTable();
+        if(shorterMulExpNode != null) {
+            shorterMulExpNode.setupSymbolTable();
+        }
+    }
+
     @Override
     public String toString() {
         return "<MulExp>";

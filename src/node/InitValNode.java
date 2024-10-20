@@ -95,6 +95,22 @@ public class InitValNode {//finish maybe some mistake
         System.out.println(toString());
     }
 
+    void setupSymbolTable() {
+        switch (state) {
+            case 1:
+                expNode.setupSymbolTable();
+                break;
+            case 2:
+                expNode.setupSymbolTable();
+                for (InitArrayNode initArrayNode : initArrayNodesList) {
+                    initArrayNode.expNode.setupSymbolTable();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     @Override
     public String toString() {
         return "<InitVal>";

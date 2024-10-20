@@ -47,6 +47,13 @@ public class LOrExpNode {//finish
         }
     }
 
+    void setupSymbolTable() {
+        lAndExpNode.setupSymbolTable();
+        if (shorterLOrExpNode != null) {
+            shorterLOrExpNode.setupSymbolTable();
+        }
+    }
+
     @Override
     public String toString() {
         return "<LOrExp>";
