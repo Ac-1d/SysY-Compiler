@@ -1,4 +1,5 @@
 import config.Config;
+import frontend.ErrorHandler;
 import frontend.Lexer;
 import frontend.Parser;
 import frontend.SymbolHandler;
@@ -78,5 +79,6 @@ public class Test {
         A,
         B,
         C,
+        // ERROR,
     };
 }

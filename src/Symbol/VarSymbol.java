@@ -31,6 +31,6 @@ public class VarSymbol extends Symbol {
 
     @Override
     public String toString() {
-        return word + " " + (isConst ? "Const" : "") + varType.toString();
+        return word + " " + (isConst ? "Const" : "") + varType.toString() + (isArray ? "Array" : "");
     }
 }

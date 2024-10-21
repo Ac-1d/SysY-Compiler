@@ -57,12 +57,7 @@ public class BlockItemNode {//finish
         if (stmtNode == null) {
             return;
         }
-        if (stmtNode.state != 7) {// 非return语句
-            return;
-        }
-        if (stmtNode.expNode != null) {// 带有返回值
-            ErrorHandler.getInstance().addError(new Error(stmtNode.returnToken.getLineNum(), ErrorType.f));
-        }
+        stmtNode.checkVoidFuncReturn();
     }
 
     private BlockItemNode() {}

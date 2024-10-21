@@ -1,6 +1,8 @@
 package frontend;
 
 import error.Error;
+
+import java.util.Collections;
 import java.util.List;
 
 public class ErrorHandler {
@@ -18,6 +20,7 @@ public class ErrorHandler {
     }
 
     public void printError() {
+        Collections.sort(errorsList);
         for (Error error : errorsList) {
             System.out.println(error.toString());
         }

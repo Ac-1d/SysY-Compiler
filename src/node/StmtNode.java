@@ -471,7 +471,9 @@ public class StmtNode {
                 expNode.setupSymbolTable();
                 break;
             case 2:
-                expNode.setupSymbolTable();
+                if (expNode != null) {
+                    expNode.setupSymbolTable();
+                }
                 break;
             case 3:
                 blockNode.setupSymbolTable(false);
@@ -485,11 +487,22 @@ public class StmtNode {
                 break;
             case 5:
                 ErrorHandler.loopNum++;
-                forStmtNode1.setupSymbolTable();
-                condNode.setupSymbolTable(); 
-                forStmtNode2.setupSymbolTable();
+                if (forStmtNode1 != null) {
+                    forStmtNode1.setupSymbolTable();
+                }
+                if (condNode != null) {
+                    condNode.setupSymbolTable(); 
+                }
+                if (forStmtNode2 != null) {
+                    forStmtNode2.setupSymbolTable();
+                }
                 stmtNode1.setupSymbolTable();
                 ErrorHandler.loopNum--;
+                break;
+            case 7:
+                if (expNode != null) {
+                    expNode.setupSymbolTable();
+                }
                 break;
             case 8:
                 lValNode.setupSymbolTable();
@@ -500,8 +513,37 @@ public class StmtNode {
                 lValNode.checkIfConst();
                 break;
             case 10:
+                for (ExpWithCommaNode expWithCommaNode : expWithCommaNodesList) {
+                    expWithCommaNode.expNode.setupSymbolTable();
+                }
                 checkPrint();
                 break;
+            default:
+                break;
+        }
+    }
+
+    void checkVoidFuncReturn() {
+        switch (state) {
+            case 3:
+                for (BlockItemNode blockItemNode : blockNode.blockItemNodesList) {
+                    blockItemNode.checkVoidFuncReturn();
+                }
+                break;
+            case 4:
+                stmtNode1.checkVoidFuncReturn();
+                if (stmtNode2 != null) {
+                    stmtNode2.checkVoidFuncReturn();
+                }
+                break;
+            case 5:
+                stmtNode1.checkVoidFuncReturn();
+                break;
+            case 7:
+                if (expNode != null) {
+                    ErrorHandler.getInstance().addError(new Error(returnToken.getLineNum(), ErrorType.f));
+                }
+        
             default:
                 break;
         }

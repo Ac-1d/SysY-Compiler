@@ -31,7 +31,6 @@ public class Compiler {
             Config.error();
             parse.printError();
         }
-        System.setOut(Config.originalStream);
         SymbolHandler symbolHandler = SymbolHandler.getInstance();
         ErrorHandler errorHandler = ErrorHandler.getInstance();
         symbolHandler.analyse();

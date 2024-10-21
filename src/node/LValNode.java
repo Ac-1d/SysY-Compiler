@@ -71,6 +71,9 @@ public class LValNode {//finish
     }
 
     void checkIfConst() {
+        if (varSymbol == null) {
+            return;
+        }
         if (varSymbol.isConst() == true) {
             ErrorHandler.getInstance().addError(new Error(identToken.getLineNum(), ErrorType.h));
         }

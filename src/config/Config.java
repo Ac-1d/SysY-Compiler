@@ -11,6 +11,7 @@ public class Config {
     public static String fileOutPath = "output.txt";
     public static String lexerOutPath = "lexer.txt";
     public static String parserOutPath = "parser.txt";
+    public static String symbolOutPath = "symbol.txt";
     public static String stdErrPath = "error.txt";
     public static String stdTestPath = "test.txt";
     /**
@@ -37,6 +38,11 @@ public class Config {
         try {
             System.setOut(new PrintStream(parserOutPath));
         } catch (IOException e) {}
+    }
+    public static void symbol() {
+        try {
+            System.setOut(new PrintStream(symbolOutPath));
+        } catch (Exception e) {}
     }
     public static void error() throws IOException {
         System.setOut(new PrintStream(stdErrPath));

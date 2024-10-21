@@ -129,7 +129,9 @@ public class UnaryExpNode {//finish
                         funcSymbol = (FuncSymbol) symbol;
                     }
                 }
-                funcRParamsNode.setupSymbolTable();
+                if (funcRParamsNode != null) {
+                    funcRParamsNode.setupSymbolTable();
+                }
                 checkRParamNumError();
                 checkRParamTypeError();
                 break;
@@ -143,6 +145,12 @@ public class UnaryExpNode {//finish
 
     void checkRParamNumError() {
         ErrorHandler instance = ErrorHandler.getInstance();
+        if (funcSymbol == null) {
+            return;
+        }
+        if (funcRParamsNode == null) {
+            return;
+        }
         int paramsNum = funcSymbol.getParamsNum();
         // 1 + n (Exp + List)
         if(paramsNum != (1 + funcRParamsNode.paramNodesList.size())) {
@@ -152,7 +160,10 @@ public class UnaryExpNode {//finish
 
     void checkRParamTypeError() {
         ErrorHandler errorHandler = ErrorHandler.getInstance();
-        for (int i = 0; i < funcSymbol.getParamsNum(); i++) {
+        if (funcRParamsNode == null) {
+            return;
+        }
+        for (int i = 0; i < funcSymbol.getParamsNum() && i < 1 + funcRParamsNode.paramNodesList.size(); i++) {
             FuncParam funcParam = funcSymbol.getFuncParamsList().get(i);
             ExpNode expNode;
             if (i == 0) {//exp

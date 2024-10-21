@@ -7,6 +7,7 @@ import Symbol.FuncType;
 import Symbol.Symbol;
 import Symbol.SymbolTable;
 import Symbol.VarType;
+import config.Config;
 import error.Error;
 import error.ErrorType;
 import node.CompUnitNode;
@@ -85,6 +86,7 @@ public class SymbolHandler {
         rootSymbolTable = new SymbolTable(null);
         curSymbolTable = rootSymbolTable;
         ErrorHandler.getInstance().init();
+        Config.symbol();
     }
 
     public void analyse() {

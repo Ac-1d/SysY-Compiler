@@ -64,8 +64,10 @@ public class ExpNode {//finish
             isArray = false;
             return;
         }
-        isArray = lValNode.varSymbol.isArray();
-        varType = lValNode.varSymbol.getVarType();
+        if (lValNode.varSymbol != null) {
+            isArray = lValNode.varSymbol.isArray();
+            varType = lValNode.varSymbol.getVarType();
+        }
     }
 
     @Override

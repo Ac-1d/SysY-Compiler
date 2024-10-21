@@ -64,6 +64,7 @@ public class ConstDefNode {//finish
         if (defArrayNode != null) {
             defArrayNode.constExpNode.setupSymbolTable();
         }
+        constInitValNode.setupSymbolTable();
     }
 
     @Override
@@ -95,8 +96,8 @@ public class ConstDefNode {//finish
             if(constExpNode == null) {
                 return null;
             }
-            token = instance.peekNextToken();
             tmpIndex = instance.getPeekIndex();
+            token = instance.peekNextToken();
             if(token.getType().equals(TokenType.RBRACK) == false) {//未识别到']'
                 instance.errorsList.add(new Error(instance.getPreTokenLineNum(token), ErrorType.k));
                 instance.setPeekIndex(tmpIndex);

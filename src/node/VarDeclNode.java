@@ -69,7 +69,7 @@ public class VarDeclNode {//finish
         VarSymbol varSymbol = new VarSymbol(identToken, varType, isConst, isArray);
         instance.addSymbol(varSymbol);
         varDefNode.varSymbol = varSymbol;
-        
+        varDefNode.setupSymbolTable();
         // solve '{ ',' VarDef }'
         for (MultifyVarDefNode multifyVarDefNode : multifyVarDefNodesList) {
             identToken = multifyVarDefNode.varDefNode.identToken;
@@ -77,6 +77,7 @@ public class VarDeclNode {//finish
             varSymbol = new VarSymbol(identToken, varType, isConst, isArray);
             instance.addSymbol(varSymbol);
             multifyVarDefNode.varDefNode.varSymbol = varSymbol;
+            varDefNode.setupSymbolTable();
         }
     }
 

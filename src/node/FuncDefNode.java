@@ -8,7 +8,6 @@ import Symbol.VarSymbol;
 import Symbol.VarType;
 import error.Error;
 import error.ErrorType;
-import frontend.ErrorHandler;
 import frontend.Parser;
 import frontend.SymbolHandler;
 import token.Token;
