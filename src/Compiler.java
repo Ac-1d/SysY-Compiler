@@ -31,15 +31,15 @@ public class Compiler {
             Config.error();
             parse.printError();
         }
-        SymbolHandler symbolHandler = SymbolHandler.getInstance();
-        ErrorHandler errorHandler = ErrorHandler.getInstance();
-        symbolHandler.analyse();
-        if(errorHandler.getErrorsList().isEmpty()) {
-            symbolHandler.print();
-        } else {
-            Config.error();
-            errorHandler.printError();
-        }
+        // SymbolHandler symbolHandler = SymbolHandler.getInstance();
+        // ErrorHandler errorHandler = ErrorHandler.getInstance();
+        // symbolHandler.analyse();
+        // if(errorHandler.getErrorsList().isEmpty()) {
+        //     symbolHandler.print();
+        // } else {
+        //     Config.error();
+        //     errorHandler.printError();
+        // }
 
     }
 }

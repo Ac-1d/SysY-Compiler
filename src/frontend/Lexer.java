@@ -202,10 +202,12 @@ public class Lexer {
                     }
                     else {
                         finish = true;
+                        StringBuilder lower = getLowerWord(word);
                         //寻找关键字
                         for (Map.Entry<String, TokenType> reserveWord : reserveWords.entrySet()) {
-                            if(reserveWord.getKey().equals(word.toString())) {
+                            if(reserveWord.getKey().equals(lower.toString())) {
                                 type = reserveWord.getValue();
+                                word = lower;
                                 break;
                             }
                         }
@@ -365,6 +367,17 @@ public class Lexer {
         }
         token = new Token(type, word.toString(), lineNum);
         return token;
+    }
+
+    private StringBuilder getLowerWord(StringBuilder str) {
+        StringBuilder lower = new StringBuilder(str.toString());
+        for (int i = 0; i < lower.length(); i++) {
+            char c = lower.charAt(i);
+            if (c >= 'A' && c <= 'Z') {
+                lower.setCharAt(i, (char)(c + 32));
+            }
+        }
+        return lower;
     }
 
     private boolean isIdentifierNondigit(char c) {

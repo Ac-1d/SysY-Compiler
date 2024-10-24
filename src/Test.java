@@ -21,7 +21,7 @@ public class Test {
         Lexer lexer = Lexer.getInstace();
         Parser parser = Parser.getInstance();
         SymbolHandler symbolHandler = SymbolHandler.getInstance();
-        String rootPath = "test_symbolHandler";
+        String rootPath = "test_parser";
         String sourcePath = "/testfile.txt";
         String outPath = "/symbol.txt";
         String ansPath = "/ans.txt";
@@ -37,9 +37,14 @@ public class Test {
                     {
                         lexer.lexerAnalyse(source);
                         parser.parseAnalyse();
-                        symbolHandler.analyse();
                         System.setOut(new PrintStream(testCasePath + outPath));
-                        symbolHandler.print();
+                        if (parser.errorsList.isEmpty()) {
+                            parser.print();
+                        } else {
+                            parser.printError();
+                        }
+                        // symbolHandler.analyse();
+                        // symbolHandler.print();
                     }
                     Scanner scLexer = new Scanner(new FileReader(testCasePath + outPath));
                     Scanner scAns = new Scanner(new FileReader(testCasePath + ansPath));
@@ -79,6 +84,6 @@ public class Test {
         A,
         B,
         C,
-        // ERROR,
+        error,
     };
 }
