@@ -70,6 +70,10 @@ public class ExpNode {//finish
         }
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<Exp>";

@@ -26,6 +26,10 @@ public class CharacterNode {
         System.out.println(this.toString());
     }
 
+    void makeLLVM() {
+        
+    }
+
     public String toString() {
         return "<Character>";
     }

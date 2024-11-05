@@ -58,6 +58,10 @@ public class EqExpNode {//finish
         }
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<EqExp>";

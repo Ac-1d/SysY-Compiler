@@ -111,6 +111,10 @@ public class InitValNode {//finish maybe some mistake
         }
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<InitVal>";

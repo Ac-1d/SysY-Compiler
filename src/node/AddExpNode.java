@@ -57,6 +57,10 @@ public class AddExpNode {//finish
         }
     }
 
+    void makeLLVM() {
+        
+    }
+
     public String toString() {
         return "<AddExp>";
     }

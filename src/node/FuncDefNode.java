@@ -124,6 +124,9 @@ public class FuncDefNode {//finish
         }
     }
 
+    void makeLLVM() {
+        
+    }
 
     @Override
     public String toString() {

@@ -47,6 +47,10 @@ public class FuncRParamsNode {//finish
         }
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<FuncRParams>";

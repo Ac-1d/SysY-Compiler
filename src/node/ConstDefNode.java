@@ -67,6 +67,10 @@ public class ConstDefNode {//finish
         constInitValNode.setupSymbolTable();
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<ConstDef>";

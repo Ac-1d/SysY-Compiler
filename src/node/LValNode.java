@@ -79,6 +79,10 @@ public class LValNode {//finish
         }
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<LVal>";

@@ -1,8 +1,5 @@
 package node;
 
-import error.Error;
-import error.ErrorType;
-import frontend.ErrorHandler;
 import frontend.Parser;
 
 public class BlockItemNode {//finish
@@ -58,6 +55,10 @@ public class BlockItemNode {//finish
             return;
         }
         stmtNode.checkVoidFuncReturn();
+    }
+
+    void makeLLVM() {
+        
     }
 
     private BlockItemNode() {}

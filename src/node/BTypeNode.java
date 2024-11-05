@@ -26,6 +26,10 @@ public class BTypeNode {//finish
         intOrCharToken.print();
     }
 
+    void makeLLVM() {
+        
+    }
+
     private BTypeNode() {}
     
 }

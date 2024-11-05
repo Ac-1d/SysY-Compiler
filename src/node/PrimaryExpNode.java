@@ -94,6 +94,10 @@ public class PrimaryExpNode {//finish
         }
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<PrimaryExp>";

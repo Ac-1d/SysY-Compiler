@@ -25,6 +25,10 @@ public class CondNode {//finish
         lOrExpNode.setupSymbolTable();
     }
 
+    void makeLLVM() {
+        
+    }
+
     public String toString() {
         return "<Cond>";
     }

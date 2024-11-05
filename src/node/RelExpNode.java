@@ -54,6 +54,10 @@ public class RelExpNode {//finish
         }
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<RelExp>";

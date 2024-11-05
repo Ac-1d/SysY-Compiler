@@ -41,6 +41,10 @@ public class FuncFParamsNode {//finish
         System.out.println(toString());
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<FuncFParams>";

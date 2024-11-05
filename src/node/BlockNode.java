@@ -85,6 +85,10 @@ public class BlockNode {//finish
         ErrorHandler.getInstance().addError(new Error(rbraceToken.getLineNum(), ErrorType.g));
     }
 
+    void makeLLVM() {
+        
+    }
+
     public String toString() {
         return "<Block>";
     }

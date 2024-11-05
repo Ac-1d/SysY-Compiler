@@ -24,6 +24,10 @@ public class ConstExpNode {//finish
         addExpNode.setupSymbolTable();
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<ConstExp>";

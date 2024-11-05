@@ -40,6 +40,6 @@ public class Compiler {
             Config.error();
             errorHandler.printError();
         }
-
+        
     }
 }

@@ -53,6 +53,16 @@ public class CompUnitNode {
         mainFuncDefNode.setupSymbolTable();
     }
 
+    public void makeLLVM() {
+        for (DeclNode declNode : declNodes) {
+            declNode.makeLLVM();
+        }
+        for (FuncDefNode funcDefNode : funcDefNodes) {
+            funcDefNode.makeLLVM();
+        }
+        mainFuncDefNode.makeLLVM();
+    }
+
     public String toString() {
         return "<CompUnit>";
     }

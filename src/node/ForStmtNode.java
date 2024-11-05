@@ -48,6 +48,10 @@ public class ForStmtNode {//finish
         expNode.setupSymbolTable();
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<ForStmt>";

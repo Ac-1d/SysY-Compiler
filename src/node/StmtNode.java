@@ -573,6 +573,10 @@ public class StmtNode {
         return count;
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<Stmt>";

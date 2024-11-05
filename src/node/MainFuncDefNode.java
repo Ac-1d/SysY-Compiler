@@ -68,6 +68,10 @@ public class MainFuncDefNode {//finish
         blockNode.checkFuncHasReturn();
     }
 
+    void makeLLVM() {
+        
+    }
+
     @Override
     public String toString() {
         return "<MainFuncDef>";
