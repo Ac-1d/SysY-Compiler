@@ -2,18 +2,30 @@ import java.util.ArrayList;
 
 public class SelfTest {
     public static void main(String[] args) throws ClassNotFoundException {
-        ArrayList<A> AsList = new ArrayList<>();
-        AsList.add(new A());
-        AsList.add(new B());
-        System.out.println(AsList.size());
+        A a = new A("init");
+        a.setInnerA();
+        a.foo();
+        System.out.println(a.str);
+        System.out.println(a.a.str);
     }
-
 }
 
 class A {
-    
-}
+    public String str = "init";
+    public A a;
 
-class B extends A {
+    A(String name) {
+        this.str = name;
+    }
 
+    void foo() {
+        A bar = a;
+        bar.str = "change";
+        // System.out.println(a.str);
+        // System.out.println(bar);
+    }
+
+    void setInnerA() {
+        a = new A("inner");
+    }
 }

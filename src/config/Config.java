@@ -12,6 +12,7 @@ public class Config {
     public static String lexerOutPath = "lexer.txt";
     public static String parserOutPath = "parser.txt";
     public static String symbolOutPath = "symbol.txt";
+    public static String LLVMOutPath = "llvm_ir.txt";
     public static String stdErrPath = "error.txt";
     public static String stdTestPath = "test.txt";
     /**
@@ -42,6 +43,11 @@ public class Config {
     public static void symbol() {
         try {
             System.setOut(new PrintStream(symbolOutPath));
+        } catch (Exception e) {}
+    }
+    public static void LLVM() {
+        try {
+            System.setOut(new PrintStream(LLVMOutPath));
         } catch (Exception e) {}
     }
     public static void error() throws IOException {

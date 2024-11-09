@@ -1,7 +1,10 @@
 package node;
 
+import Symbol.ExpInfo;
+import Symbol.VarType;
 import error.Error;
 import error.ErrorType;
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -85,17 +88,20 @@ public class PrimaryExpNode {//finish
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
-        if (lValNode != null) {
+    ExpInfo makeLLVM() {
+        LLVMGenerator instance = LLVMGenerator.getInstance();
+        ExpInfo expInfo = new ExpInfo();
+        if (expNode != null) {
+            expNode.makeLLVM();
+        } else if (lValNode != null) {
             lValNode.setupSymbolTable();
+        } else if (numberNode != null) {
+            expInfo.varType = VarType.Int;
+            expInfo.regIndex = instance.makeStoreImm(numberNode.getValue(), VarType.Int);
+        } else if (characterNode != null) {
+            
         }
-        else if (expNode != null) {
-            expNode.setupSymbolTable();
-        }
-    }
-
-    void makeLLVM() {
-        
+        return expInfo;
     }
 
     @Override

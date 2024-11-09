@@ -41,14 +41,10 @@ public class FuncRParamsNode {//finish
     }
 
     void setupSymbolTable() {
-        expNode.setupSymbolTable();
+        expNode.makeLLVM();
         for (ParamNode paramNode : paramNodesList) {
-            paramNode.expNode.setupSymbolTable();
+            paramNode.expNode.makeLLVM();
         }
-    }
-
-    void makeLLVM() {
-        
     }
 
     @Override

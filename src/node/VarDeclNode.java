@@ -92,10 +92,6 @@ public class VarDeclNode {//finish
         System.out.println(toString());
     }
 
-    void makeLLVM() {
-        
-    }
-
     @Override
     public String toString() {
         return "<VarDecl>";

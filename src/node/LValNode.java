@@ -66,7 +66,7 @@ public class LValNode {//finish
             }
         }
         if (arrayNode != null) {
-            arrayNode.expNode.setupSymbolTable();
+            arrayNode.expNode.makeLLVM();
         }
     }
 
@@ -77,10 +77,6 @@ public class LValNode {//finish
         if (varSymbol.isConst() == true) {
             ErrorHandler.getInstance().addError(new Error(identToken.getLineNum(), ErrorType.h));
         }
-    }
-
-    void makeLLVM() {
-        
     }
 
     @Override

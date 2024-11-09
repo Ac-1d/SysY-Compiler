@@ -98,21 +98,17 @@ public class InitValNode {//finish maybe some mistake
     void setupSymbolTable() {
         switch (state) {
             case 1:
-                expNode.setupSymbolTable();
+                expNode.makeLLVM();
                 break;
             case 2:
-                expNode.setupSymbolTable();
+                expNode.makeLLVM();
                 for (InitArrayNode initArrayNode : initArrayNodesList) {
-                    initArrayNode.expNode.setupSymbolTable();
+                    initArrayNode.expNode.makeLLVM();
                 }
                 break;
             default:
                 break;
         }
-    }
-
-    void makeLLVM() {
-        
     }
 
     @Override

@@ -26,8 +26,9 @@ public class NumberNode {//finish
         System.out.println(toString());
     }
 
-    void makeLLVM() {
-        
+    /**@return IntConst的值 */
+    int getValue() {
+        return Integer.parseInt(intConstToken.getWord());
     }
 
     @Override

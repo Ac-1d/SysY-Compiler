@@ -48,14 +48,10 @@ public class RelExpNode {//finish
     }
 
     void setupSymbolTable() {
-        addExpNode.setupSymbolTable();
+        addExpNode.makeLLVM();
         if (shorterRelExpNode != null) {
             shorterRelExpNode.setupSymbolTable();
         }
-    }
-
-    void makeLLVM() {
-        
     }
 
     @Override

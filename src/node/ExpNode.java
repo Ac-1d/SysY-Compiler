@@ -1,5 +1,6 @@
 package node;
 
+import Symbol.ExpInfo;
 import Symbol.VarType;
 
 public class ExpNode {//finish
@@ -26,11 +27,14 @@ public class ExpNode {//finish
         System.out.println(toString());
     }
     
-    void setupSymbolTable() {
-        addExpNode.setupSymbolTable();
+    ExpInfo makeLLVM() {
+        ExpInfo expInfo;
+        expInfo = addExpNode.makeLLVM();
         setVarType();
+        return expInfo;
     }
 
+    //为判断函数的形参服务
     private void setVarType() {
         AddExpNode shorterAddExpNode = addExpNode.shorterAddExpNode;
         if (shorterAddExpNode != null) {// 1 + 2
@@ -68,10 +72,6 @@ public class ExpNode {//finish
             isArray = lValNode.varSymbol.isArray();
             varType = lValNode.varSymbol.getVarType();
         }
-    }
-
-    void makeLLVM() {
-        
     }
 
     @Override

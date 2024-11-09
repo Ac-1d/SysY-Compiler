@@ -3,6 +3,7 @@ package node;
 import error.Error;
 import error.ErrorType;
 import frontend.ErrorHandler;
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import java.util.ArrayList;
 import token.Token;
@@ -10,6 +11,9 @@ import token.TokenType;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import Symbol.ExpInfo;
+import Symbol.FuncType;
 
 public class StmtNode {
     /*
@@ -463,26 +467,27 @@ public class StmtNode {
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
+    void makeLLVM() {
+        LLVMGenerator instance = LLVMGenerator.getInstance();
         switch (state) {
             case 1:
                 lValNode.setupSymbolTable();
                 lValNode.checkIfConst();
-                expNode.setupSymbolTable();
+                expNode.makeLLVM();
                 break;
             case 2:
                 if (expNode != null) {
-                    expNode.setupSymbolTable();
+                    expNode.makeLLVM();
                 }
                 break;
             case 3:
-                blockNode.setupSymbolTable(false);
+                blockNode.makeLLVM(false);
                 break;
             case 4:
                 condNode.setupSymbolTable();
-                stmtNode1.setupSymbolTable();
+                stmtNode1.makeLLVM();
                 if(stmtNode2 != null) {
-                    stmtNode2.setupSymbolTable();
+                    stmtNode2.makeLLVM();
                 }
                 break;
             case 5:
@@ -496,12 +501,16 @@ public class StmtNode {
                 if (forStmtNode2 != null) {
                     forStmtNode2.setupSymbolTable();
                 }
-                stmtNode1.setupSymbolTable();
+                stmtNode1.makeLLVM();
                 ErrorHandler.loopNum--;
                 break;
-            case 7:
+            case 7: // 'return' [Exp] ';'
+                ExpInfo expInfo;
                 if (expNode != null) {
-                    expNode.setupSymbolTable();
+                    expInfo = expNode.makeLLVM();
+                    instance.makeReturnStmt(expInfo.regIndex, expInfo.varType);
+                } else {
+                    instance.makeReturnStmt();
                 }
                 break;
             case 8:
@@ -514,7 +523,7 @@ public class StmtNode {
                 break;
             case 10:
                 for (ExpWithCommaNode expWithCommaNode : expWithCommaNodesList) {
-                    expWithCommaNode.expNode.setupSymbolTable();
+                    expWithCommaNode.expNode.makeLLVM();
                 }
                 checkPrint();
                 break;
@@ -571,10 +580,6 @@ public class StmtNode {
             count++;
         }
         return count;
-    }
-
-    void makeLLVM() {
-        
     }
 
     @Override

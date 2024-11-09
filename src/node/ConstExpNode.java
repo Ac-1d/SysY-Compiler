@@ -21,11 +21,7 @@ public class ConstExpNode {//finish
     }
 
     void setupSymbolTable() {
-        addExpNode.setupSymbolTable();
-    }
-
-    void makeLLVM() {
-        
+        addExpNode.makeLLVM();
     }
 
     @Override

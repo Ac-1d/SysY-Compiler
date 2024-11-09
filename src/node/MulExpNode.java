@@ -1,5 +1,8 @@
 package node;
 
+import Symbol.ExpInfo;
+import Symbol.LLVMToken.LLVMToken;
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -48,15 +51,22 @@ public class MulExpNode {//finish
         }
     }
 
-    void setupSymbolTable() {
-        unaryExpNode.setupSymbolTable();
-        if(shorterMulExpNode != null) {
-            shorterMulExpNode.setupSymbolTable();
+    ExpInfo makeLLVM() {
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
+        ExpInfo expInfo, expInfo2;
+        UnaryExpNode innerUnaryExpNode;
+        MulExpNode innerMulExpNode = shorterMulExpNode;
+        Token innerMulToken = mulToken;
+        expInfo = unaryExpNode.makeLLVM();
+        innerUnaryExpNode = innerMulExpNode == null ? null : innerMulExpNode.unaryExpNode;
+        while (innerUnaryExpNode != null) {
+            expInfo2 = innerUnaryExpNode.makeLLVM();
+            expInfo.regIndex = llvmGenerator.makeCalculate(innerMulToken, new LLVMToken(expInfo), new LLVMToken(expInfo2));
+            innerMulToken = innerMulExpNode == null ? null : innerMulExpNode.mulToken;
+            innerMulExpNode = innerMulExpNode.shorterMulExpNode;
+            innerUnaryExpNode = innerMulExpNode == null ? null : innerMulExpNode.unaryExpNode;
         }
-    }
-
-    void makeLLVM() {
-        
+        return expInfo;
     }
 
     @Override

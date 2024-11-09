@@ -113,10 +113,6 @@ public class ConstInitValNode {//finish
         }
     }
 
-    void makeLLVM() {
-        
-    }
-
     @Override
     public String toString() {
         return "<ConstInitVal>";

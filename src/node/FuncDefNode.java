@@ -113,7 +113,7 @@ public class FuncDefNode {//finish
                 instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
             }
         }
-        blockNode.setupSymbolTable(true);
+        blockNode.makeLLVM(true);
         instance.setCurSymbolTable(instance.getCurSymbolTable().getFatherSymbolTable());
         if (funcSymbol.getFuncType().equals(FuncType.Void)) {// check error.f
             for (BlockItemNode blockItemNode : blockNode.blockItemNodesList) {
@@ -122,10 +122,6 @@ public class FuncDefNode {//finish
         } else {// check error.g
             blockNode.checkFuncHasReturn();
         }
-    }
-
-    void makeLLVM() {
-        
     }
 
     @Override

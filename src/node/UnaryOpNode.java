@@ -29,10 +29,6 @@ public class UnaryOpNode {//finish
         System.out.println(toString());
     }
 
-    void makeLLVM() {
-        
-    }
-
     @Override
     public String toString() {
         return "<UnaryOp>";

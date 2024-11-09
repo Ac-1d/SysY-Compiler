@@ -1,7 +1,9 @@
 package node;
 
+import Symbol.FuncType;
 import error.Error;
 import error.ErrorType;
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -63,13 +65,12 @@ public class MainFuncDefNode {//finish
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
-        blockNode.setupSymbolTable(false);
-        blockNode.checkFuncHasReturn();
-    }
-
     void makeLLVM() {
-        
+        LLVMGenerator instance = LLVMGenerator.getInstance();
+        instance.makeFunction(FuncType.Int, "main");
+        blockNode.makeLLVM(false);
+        instance.makeFunctionEnd();
+        blockNode.checkFuncHasReturn();
     }
 
     @Override

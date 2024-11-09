@@ -54,10 +54,6 @@ public class LOrExpNode {//finish
         }
     }
 
-    void makeLLVM() {
-        
-    }
-
     @Override
     public String toString() {
         return "<LOrExp>";

@@ -25,7 +25,7 @@ public class SymbolHandler {
     private SymbolTable rootSymbolTable;
     private SymbolTable curSymbolTable;
 
-    private CompUnitNode compUnitNode;
+    public CompUnitNode compUnitNode;
 
     private final static Map<TokenType, VarType> TokenVarMap = new HashMap<>() {{
         put(TokenType.CHARTK, VarType.Char);
@@ -79,6 +79,10 @@ public class SymbolHandler {
         return null;
     }
 
+    public SymbolTable getRootSymbolTable() {
+        return rootSymbolTable;
+    }
+
     private void init() {
         Parser parser = Parser.getInstance();
         scopeNum = 1;
@@ -86,12 +90,12 @@ public class SymbolHandler {
         rootSymbolTable = new SymbolTable(null);
         curSymbolTable = rootSymbolTable;
         ErrorHandler.getInstance().init();
-        Config.symbol();
+        Config.LLVM();
     }
 
     public void analyse() {
         init();
-        compUnitNode.setupSymbolTable();
+        compUnitNode.makeLLVM();
     }
 
     public void print() {

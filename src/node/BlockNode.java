@@ -58,16 +58,16 @@ public class BlockNode {//finish
     /**@param isFunc 
      *  该block是否属于func的block
     */
-    void setupSymbolTable(boolean isFunc) {
-        SymbolHandler instance = SymbolHandler.getInstance();
+    void makeLLVM(boolean isFunc) {
+        SymbolHandler symbolHandler = SymbolHandler.getInstance();
         if(isFunc == false) {
-            instance.setCurSymbolTable(new SymbolTable(instance.getCurSymbolTable()));
+            symbolHandler.setCurSymbolTable(new SymbolTable(symbolHandler.getCurSymbolTable()));
         }
         for (BlockItemNode blockItemNode : blockItemNodesList) {
-            blockItemNode.setupSymbolTable();
+            blockItemNode.makeLLVM();
         }
         if(isFunc == false) {
-            instance.setCurSymbolTable(instance.getCurSymbolTable().getFatherSymbolTable());
+            symbolHandler.setCurSymbolTable(symbolHandler.getCurSymbolTable().getFatherSymbolTable());
         }
     }
 
@@ -83,10 +83,6 @@ public class BlockNode {//finish
             }
         }
         ErrorHandler.getInstance().addError(new Error(rbraceToken.getLineNum(), ErrorType.g));
-    }
-
-    void makeLLVM() {
-        
     }
 
     public String toString() {

@@ -51,10 +51,6 @@ public class DeclNode {//finish
         }
     }
 
-    void makeLLVM() {
-        
-    }
-
     private DeclNode() {}
 
 }

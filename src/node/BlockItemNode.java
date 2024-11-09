@@ -40,12 +40,12 @@ public class BlockItemNode {//finish
         }
     }
 
-    void setupSymbolTable() {
+    void makeLLVM() {
         if(declNode != null) {
             declNode.setupSymbolTable();
         }
         else {
-            stmtNode.setupSymbolTable();
+            stmtNode.makeLLVM();
             stmtNode.checkBreak();
         }
     }
@@ -55,10 +55,6 @@ public class BlockItemNode {//finish
             return;
         }
         stmtNode.checkVoidFuncReturn();
-    }
-
-    void makeLLVM() {
-        
     }
 
     private BlockItemNode() {}
