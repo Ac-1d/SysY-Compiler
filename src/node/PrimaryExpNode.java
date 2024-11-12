@@ -1,5 +1,6 @@
 package node;
 
+import Exception.ExpNotConstException;
 import Symbol.ExpInfo;
 import Symbol.VarType;
 import error.Error;
@@ -18,6 +19,8 @@ public class PrimaryExpNode {//finish
     LValNode lValNode;
     NumberNode numberNode;
     CharacterNode characterNode;
+    int state;
+    ExpInfo expInfo = new ExpInfo();
 
     public static PrimaryExpNode primaryExp() {
         Parser instance = Parser.getInstance();
@@ -46,24 +49,28 @@ public class PrimaryExpNode {//finish
                 instance.errorsList.add(new Error(instance.getPreTokenLineNum(rparentToken), ErrorType.j));
             }
             primaryExpNode.rparentToken.setLineNum(instance.getPreTokenLineNum(rparentToken));
+            primaryExpNode.state = 1;
             return primaryExpNode;
         }
         instance.setPeekIndex(tmpIndex);
         lValNode = LValNode.LVal();
         if(lValNode != null) {
             primaryExpNode.lValNode = lValNode;
+            primaryExpNode.state = 2;
             return primaryExpNode;
         }
         instance.setPeekIndex(tmpIndex);
         numberNode = NumberNode.Number();
         if(numberNode != null) {
             primaryExpNode.numberNode = numberNode;
+            primaryExpNode.state = 3;
             return primaryExpNode;
         }
         instance.setPeekIndex(tmpIndex);
         characterNode = CharacterNode.Character();
         if(characterNode != null) {
             primaryExpNode.characterNode = characterNode;
+            primaryExpNode.state = 4;
             return primaryExpNode;
         }
         instance.setPeekIndex(tmpIndex);
@@ -71,37 +78,70 @@ public class PrimaryExpNode {//finish
     }
 
     void print() {
-        if(expNode != null) {
-            lparentToken.print();
-            expNode.print();
-            rparentToken.print();
-        }
-        else if(lValNode != null) {
-            lValNode.print();
-        }
-        else if(numberNode != null) {
-            numberNode.print();
-        }
-        else if(characterNode != null) {
-            characterNode.print();
+        switch (state) {
+            case 1:
+                lparentToken.print();
+                expNode.print();
+                rparentToken.print();
+                break;
+            case 2:
+                lValNode.print();
+                break;
+            case 3:
+                numberNode.print();
+                break;
+            case 4:
+                characterNode.print();
+                break;
+            default:
+                break;
         }
         System.out.println(toString());
     }
 
-    ExpInfo makeLLVM() {
+    void makeLLVM() {
         LLVMGenerator instance = LLVMGenerator.getInstance();
-        ExpInfo expInfo = new ExpInfo();
-        if (expNode != null) {
-            expNode.makeLLVM();
-        } else if (lValNode != null) {
-            lValNode.setupSymbolTable();
-        } else if (numberNode != null) {
-            expInfo.varType = VarType.Int;
-            expInfo.regIndex = instance.makeStoreImm(numberNode.getValue(), VarType.Int);
-        } else if (characterNode != null) {
-            
+        
+        switch (state) {
+            case 1:
+                expNode.makeLLVM();
+                expInfo = expNode.expInfo;
+                break;
+            case 2:
+                lValNode.makeLLVM();
+                expInfo = lValNode.expInfo;
+                if (expInfo.globalVarName != null) {
+                    expInfo.regIndex = instance.makeLoadStmt(expInfo.globalVarName, expInfo.varType);
+                } else {
+                    expInfo.regIndex = instance.makeLoadStmt(expInfo.regIndex, expInfo.varType);
+                }
+                break;
+            case 3:
+                expInfo.varType = VarType.Int;
+                expInfo.regIndex = instance.makeStoreImm(numberNode.getValue(), expInfo.varType);
+                expInfo.regIndex = instance.makeLoadStmt(expInfo.regIndex, expInfo.varType);
+                break;
+            case 4:
+                expInfo.varType = VarType.Char;
+                expInfo.regIndex = instance.makeStoreImm(characterNode.getValue(), expInfo.varType);
+                expInfo.regIndex = instance.makeLoadStmt(expInfo.regIndex, expInfo.varType);
+                break;
+            default:
+                break;
         }
-        return expInfo;
+    }
+
+    int calculateConstExp() throws ExpNotConstException {
+        switch (state) {
+            case 1:
+                return expNode.calculateConstExp();
+            case 3:
+                return numberNode.getValue();
+            case 4:
+                return characterNode.getValue();
+            default:
+                throw new ExpNotConstException();
+        }
     }
 
     @Override

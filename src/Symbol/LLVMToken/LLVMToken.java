@@ -2,6 +2,7 @@ package Symbol.LLVMToken;
 
 import Symbol.ExpInfo;
 
+//一个立即数或者一个寄存器编号
 public class LLVMToken {
     private LLVMTokenType llvmTokenType;
     private int imm;

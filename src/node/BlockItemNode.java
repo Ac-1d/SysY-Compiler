@@ -42,7 +42,7 @@ public class BlockItemNode {//finish
 
     void makeLLVM() {
         if(declNode != null) {
-            declNode.setupSymbolTable();
+            declNode.makeLLVM();
         }
         else {
             stmtNode.makeLLVM();

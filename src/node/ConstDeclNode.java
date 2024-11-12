@@ -4,6 +4,7 @@ import Symbol.VarSymbol;
 import Symbol.VarType;
 import error.Error;
 import error.ErrorType;
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import frontend.SymbolHandler;
 import java.util.ArrayList;
@@ -68,8 +69,10 @@ public class ConstDeclNode {//finish
         return constDeclNode;
     }
 
-    void setupSymbolTable() {
+    void makeLLVM() {
         SymbolHandler instance = SymbolHandler.getInstance();
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
+        llvmGenerator.setVarType(bTypeNode.intOrCharToken);
         VarType varType = SymbolHandler.getVarType(bTypeNode.intOrCharToken);
         Token identToken = constDefNode.identToken;
         boolean isConst = true;
@@ -79,7 +82,8 @@ public class ConstDeclNode {//finish
         VarSymbol varSymbol = new VarSymbol(identToken, varType, isConst, isArray);
         instance.addSymbol(varSymbol);
         constDefNode.varSymbol = varSymbol;
-        constDefNode.setupSymbolTable();
+        constDefNode.makeLLVM();
+        varSymbol.setReg(constDefNode.expInfo.regIndex);
         //solve '{, ConstDef}'
         for (MultipleDeclNode multipleDeclNode : multipleDeclNodesList) {
             identToken = multipleDeclNode.constDefNode.identToken;
@@ -87,8 +91,10 @@ public class ConstDeclNode {//finish
             varSymbol = new VarSymbol(identToken, varType, isConst, isArray);
             instance.addSymbol(varSymbol);
             multipleDeclNode.constDefNode.varSymbol = varSymbol;
-            multipleDeclNode.constDefNode.setupSymbolTable();
+            multipleDeclNode.constDefNode.makeLLVM();
+            varSymbol.setReg(multipleDeclNode.constDefNode.expInfo.regIndex);
         }
+
     }
 
     void print() {

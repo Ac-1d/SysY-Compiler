@@ -26,6 +26,10 @@ public class CharacterNode {
         System.out.println(this.toString());
     }
 
+    int getValue() {
+        return charConstToken.getWord().charAt(1);
+    }
+
     public String toString() {
         return "<Character>";
     }

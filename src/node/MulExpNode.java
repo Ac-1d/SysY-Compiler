@@ -1,7 +1,7 @@
 package node;
 
+import Exception.ExpNotConstException;
 import Symbol.ExpInfo;
-import Symbol.LLVMToken.LLVMToken;
 import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
@@ -10,12 +10,12 @@ import token.TokenType;
 public class MulExpNode {//finish
     // MulExp → UnaryExp | MulExp ('*' | '/' | '%') UnaryExp
     // change it the same as AddExpNode
-
     UnaryExpNode unaryExpNode;
     Token mulToken;
+    ExpInfo expInfo;
     MulExpNode shorterMulExpNode;
 
-    public static MulExpNode MulExp() {
+    static MulExpNode MulExp() {
         Parser instance = Parser.getInstance();
         MulExpNode mulExpNode = new MulExpNode();
         UnaryExpNode unaryExpNode;
@@ -51,22 +51,44 @@ public class MulExpNode {//finish
         }
     }
 
-    ExpInfo makeLLVM() {
+    void makeLLVM() {
         LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
-        ExpInfo expInfo, expInfo2;
+        ExpInfo expInfo2;
         UnaryExpNode innerUnaryExpNode;
         MulExpNode innerMulExpNode = shorterMulExpNode;
         Token innerMulToken = mulToken;
-        expInfo = unaryExpNode.makeLLVM();
+        unaryExpNode.makeLLVM();
+        expInfo = unaryExpNode.expInfo;
         innerUnaryExpNode = innerMulExpNode == null ? null : innerMulExpNode.unaryExpNode;
         while (innerUnaryExpNode != null) {
-            expInfo2 = innerUnaryExpNode.makeLLVM();
-            expInfo.regIndex = llvmGenerator.makeCalculate(innerMulToken, new LLVMToken(expInfo), new LLVMToken(expInfo2));
+            innerUnaryExpNode.makeLLVM();
+            expInfo2 = innerUnaryExpNode.expInfo;
+            expInfo.regIndex = llvmGenerator.makeCalculate(innerMulToken, true,  expInfo.regIndex, true, expInfo2.regIndex);
             innerMulToken = innerMulExpNode == null ? null : innerMulExpNode.mulToken;
             innerMulExpNode = innerMulExpNode.shorterMulExpNode;
             innerUnaryExpNode = innerMulExpNode == null ? null : innerMulExpNode.unaryExpNode;
         }
-        return expInfo;
+    }
+
+    int calculateConstExp() throws ExpNotConstException {
+        int ans = unaryExpNode.calculateConstExp();
+        UnaryExpNode innerUnaryExpNode;
+        MulExpNode innerMulExpNode = shorterMulExpNode;
+        Token innerMulToken = mulToken;
+        innerUnaryExpNode = innerMulExpNode == null ? null : innerMulExpNode.unaryExpNode;
+        while (innerUnaryExpNode != null) {
+            if (innerMulToken.getType().equals(TokenType.MULT) == true) {
+                ans *= innerUnaryExpNode.calculateConstExp();
+            } else if (innerMulToken.getType().equals(TokenType.DIV) == true) {
+                ans /= innerUnaryExpNode.calculateConstExp();
+            } else {
+                ans %= innerUnaryExpNode.calculateConstExp();
+            }
+            innerMulToken = innerMulExpNode == null ? null : innerMulExpNode.mulToken;
+            innerMulExpNode = innerMulExpNode.shorterMulExpNode;
+            innerUnaryExpNode = innerMulExpNode == null ? null : innerMulExpNode.unaryExpNode;
+        }
+        return ans;
     }
 
     @Override

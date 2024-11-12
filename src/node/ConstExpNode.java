@@ -1,5 +1,7 @@
 package node;
 
+import Exception.ExpNotConstException;
+
 public class ConstExpNode {//finish
     //ConstExp → AddExp
     AddExpNode addExpNode;
@@ -20,8 +22,13 @@ public class ConstExpNode {//finish
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
-        addExpNode.makeLLVM();
+    //ConstExpNode不会出现该异常，故不做处理
+    int calculateConstExp() {
+        try {
+            return addExpNode.calculateConstExp();
+        } catch (ExpNotConstException e) {
+            return 0;
+        }
     }
 
     @Override

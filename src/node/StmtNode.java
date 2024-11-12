@@ -12,6 +12,7 @@ import token.TokenType;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import Exception.ExpNotConstException;
 import Symbol.ExpInfo;
 import Symbol.FuncType;
 
@@ -469,11 +470,15 @@ public class StmtNode {
 
     void makeLLVM() {
         LLVMGenerator instance = LLVMGenerator.getInstance();
+        ExpInfo lValNodeExpInfo, expNodeExpInfo;
         switch (state) {
-            case 1:
-                lValNode.setupSymbolTable();
+            case 1: // LVal '=' Exp ';'
+                lValNode.makeLLVM();
+                lValNodeExpInfo = lValNode.expInfo;
                 lValNode.checkIfConst();
                 expNode.makeLLVM();
+                expNodeExpInfo = expNode.expInfo;
+                instance.makeStoreRegStmt(expNodeExpInfo.regIndex, lValNodeExpInfo);
                 break;
             case 2:
                 if (expNode != null) {
@@ -505,23 +510,33 @@ public class StmtNode {
                 ErrorHandler.loopNum--;
                 break;
             case 7: // 'return' [Exp] ';'
-                ExpInfo expInfo;
+                ExpInfo expInfo = new ExpInfo();
                 if (expNode != null) {
-                    expInfo = expNode.makeLLVM();
-                    instance.makeReturnStmt(expInfo.regIndex, expInfo.varType);
+                    try {
+                        int expValue = expNode.calculateConstExp();
+                        instance.makeReturnImmStmt(expValue);
+                    } catch (ExpNotConstException e) {
+                        expNode.makeLLVM();
+                        expInfo = expNode.expInfo;
+                        instance.makeReturnRegStmt(expInfo.regIndex);
+                    }
                 } else {
                     instance.makeReturnStmt();
                 }
                 break;
-            case 8:
-                lValNode.setupSymbolTable();
+            case 8: // LVal '=' 'getint''('')'';'
+                lValNode.makeLLVM();
+                lValNodeExpInfo = lValNode.expInfo;
+                instance.makeCallFunctionStmt("getint", FuncType.Int);
                 lValNode.checkIfConst();
                 break;
-            case 9:
-                lValNode.setupSymbolTable();
+            case 9: // LVal '=' 'getchar''('')'';'
+                lValNode.makeLLVM();
+                lValNodeExpInfo = lValNode.expInfo;
+                instance.makeCallFunctionStmt("getchar", FuncType.Int);
                 lValNode.checkIfConst();
                 break;
-            case 10:
+            case 10: // 'printf''('StringConst {','Exp}')'';'
                 for (ExpWithCommaNode expWithCommaNode : expWithCommaNodesList) {
                     expWithCommaNode.expNode.makeLLVM();
                 }

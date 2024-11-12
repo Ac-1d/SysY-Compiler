@@ -15,6 +15,7 @@ public class ConstInitValNode {//finish
     Token rbraceToken;
     Token stringConstToken;
     int state;
+    int constExpValue;
     
     public static ConstInitValNode ConstInitVal() {
         Parser instance = Parser.getInstance();
@@ -94,17 +95,22 @@ public class ConstInitValNode {//finish
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
+    void makeLLVM() {
+        // 我们假想此处不需要任何符号表填写与错误处理
         switch (state) {
             case 1:
-                constExpNode.setupSymbolTable();
+                // constExpNode.setupSymbolTable();
+                constExpValue = constExpNode.calculateConstExp();
+                // System.out.println("the constExp value is :" + constExpNode.calculateConstExp());
                 break;
             case 2:
                 if (constExpNode != null) {
-                    constExpNode.setupSymbolTable();
+                    // constExpNode.setupSymbolTable();
+                    constExpValue = constExpNode.calculateConstExp();
                 }
                 for (InitArrayNode initArrayNode : initArrayNodesList) {
-                    initArrayNode.constExpNode.setupSymbolTable();
+                    // initArrayNode.constExpNode.setupSymbolTable();
+                    initArrayNode.constExpValue = initArrayNode.constExpNode.calculateConstExp();
                 }
                 break;
         
@@ -128,6 +134,7 @@ public class ConstInitValNode {//finish
         // InitArray → ',' ConstExp
         Token commaToken;
         ConstExpNode constExpNode;
+        int constExpValue;
         public static InitArrayNode InitArray() {
             Parser instance = Parser.getInstance();
             InitArrayNode initArrayNode = (new ConstInitValNode()).new InitArrayNode();

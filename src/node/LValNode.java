@@ -1,5 +1,6 @@
 package node;
 
+import Symbol.ExpInfo;
 import Symbol.Symbol;
 import Symbol.SymbolTable;
 import Symbol.VarSymbol;
@@ -17,6 +18,7 @@ public class LValNode {//finish
     Token identToken;
     ArrayNode arrayNode;
     VarSymbol varSymbol;
+    ExpInfo expInfo = new ExpInfo();
 
     public static LValNode LVal() {
         Parser instance = Parser.getInstance();
@@ -50,7 +52,7 @@ public class LValNode {//finish
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
+    void makeLLVM() {
         SymbolHandler symbolHandler = SymbolHandler.getInstance();
         ErrorHandler errorHandler = ErrorHandler.getInstance();
         SymbolTable symbolTable = symbolHandler.findSymbolTableHasIdent(identToken);
@@ -68,6 +70,7 @@ public class LValNode {//finish
         if (arrayNode != null) {
             arrayNode.expNode.makeLLVM();
         }
+        expInfo.setExpInfo(varSymbol);
     }
 
     void checkIfConst() {

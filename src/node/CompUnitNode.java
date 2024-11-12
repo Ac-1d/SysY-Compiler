@@ -2,6 +2,7 @@ package node;
 
 import java.util.ArrayList;
 
+import frontend.LLVMGenerator;
 import frontend.Parser;
 
 public class CompUnitNode {
@@ -44,9 +45,12 @@ public class CompUnitNode {
     }
 
     public void makeLLVM() {
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
+        llvmGenerator.setIsDeclVarGlobal(true);
         for (DeclNode declNode : declNodes) {
-            declNode.setupSymbolTable();
+            declNode.makeLLVM();
         }
+        llvmGenerator.setIsDeclVarGlobal(false);
         for (FuncDefNode funcDefNode : funcDefNodes) {
             funcDefNode.setupSymbolTable();
         }

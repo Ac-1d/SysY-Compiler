@@ -1,8 +1,10 @@
 package node;
 
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
+import Symbol.ExpInfo;
 import Symbol.VarSymbol;
 import error.Error;
 import error.ErrorType;
@@ -15,6 +17,7 @@ public class VarDefNode {//finish
     Token assignToken;
     InitValNode initValNode;
     VarSymbol varSymbol;
+    ExpInfo expInfo = new ExpInfo();
 
     public static VarDefNode VarDef() {
         Parser instance = Parser.getInstance();
@@ -64,12 +67,22 @@ public class VarDefNode {//finish
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
+    void makeLLVM() {
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
         if (defArrayNode != null) {
-            defArrayNode.constExpNode.setupSymbolTable();
+            // defArrayNode.constExpNode.setupSymbolTable();
+            defArrayNode.constExpValue = defArrayNode.constExpNode.calculateConstExp();
         }
         if (initValNode != null) {
-            initValNode.setupSymbolTable();
+            initValNode.makeLLVM();
+            expInfo = initValNode.expInfo;
+        }
+        if (initValNode == null) {//无初始化
+            expInfo.regIndex = llvmGenerator.makeDeclStmt(identToken.getWord(), null);
+        } else if (initValNode.expValue != null) {//有初始化 编译期可计算
+            expInfo.regIndex = llvmGenerator.makeDeclStmt(identToken.getWord(), initValNode.expValue);
+        } else {//有初始化 编译期不可计算
+            expInfo.regIndex = llvmGenerator.makeDeclStmt(expInfo.regIndex);
         }
     }
 
@@ -87,6 +100,7 @@ public class VarDefNode {//finish
         ConstExpNode constExpNode;
         Token rbrackToken;
         VarSymbol varSymbol;
+        int constExpValue;
 
         public static DefArrayNode DefArray() {
             Parser instance = Parser.getInstance();

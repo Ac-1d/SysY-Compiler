@@ -42,12 +42,12 @@ public class DeclNode {//finish
         }
     }
 
-    void setupSymbolTable() {
+    void makeLLVM() {
         if(constDeclNode != null) {
-            constDeclNode.setupSymbolTable();
+            constDeclNode.makeLLVM();
         }
         else {
-            varDeclNode.setupSymbolTable();
+            varDeclNode.makeLLVM();
         }
     }
 

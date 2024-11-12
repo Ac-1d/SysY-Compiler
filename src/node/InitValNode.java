@@ -6,6 +6,9 @@ import token.TokenType;
 
 import java.util.ArrayList;
 
+import Exception.ExpNotConstException;
+import Symbol.ExpInfo;
+
 //发现一些类可以进一步抽象，尝试使用多态来实现，等待后续的重构吧😪
 public class InitValNode {//finish maybe some mistake
     // InitVal → Exp | '{' [ Exp { ',' Exp } ] '}' | StringConst
@@ -16,6 +19,8 @@ public class InitValNode {//finish maybe some mistake
     Token rbraceToken;
     Token stringConstToken;
     int state;
+    Integer expValue;
+    ExpInfo expInfo = new ExpInfo();
     
     public static InitValNode InitVal() {
         Parser instance = Parser.getInstance();
@@ -95,15 +100,32 @@ public class InitValNode {//finish maybe some mistake
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
+    void makeLLVM() {
         switch (state) {
             case 1:
-                expNode.makeLLVM();
+                //逻辑为：如果能算出值，按常量处理，否则展开语法树进行分析
+                try {
+                    expValue = Integer.valueOf(expNode.calculateConstExp());
+                } catch (ExpNotConstException e) {
+                    expValue = null;
+                    expNode.makeLLVM();
+                    expInfo = expNode.expInfo;
+                }
                 break;
             case 2:
-                expNode.makeLLVM();
+                try {
+                    expValue = Integer.valueOf(expNode.calculateConstExp());
+                } catch (ExpNotConstException e) {
+                    expValue = null;
+                    expNode.makeLLVM();
+                }
                 for (InitArrayNode initArrayNode : initArrayNodesList) {
-                    initArrayNode.expNode.makeLLVM();
+                    try {
+                        initArrayNode.expValue = Integer.valueOf(initArrayNode.expNode.calculateConstExp());
+                    } catch (ExpNotConstException e) {
+                        initArrayNode.expValue = null;
+                        initArrayNode.expNode.makeLLVM();
+                    }
                 }
                 break;
             default:
@@ -126,6 +148,8 @@ public class InitValNode {//finish maybe some mistake
         // InitArray → ',' ConstExp
         Token commaToken;
         ExpNode expNode;
+        Integer expValue;
+
         public static InitArrayNode InitArray() {
             Parser instance = Parser.getInstance();
             InitArrayNode initArrayNode = (new InitValNode()).new InitArrayNode();

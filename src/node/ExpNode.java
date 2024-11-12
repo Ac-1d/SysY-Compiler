@@ -1,5 +1,6 @@
 package node;
 
+import Exception.ExpNotConstException;
 import Symbol.ExpInfo;
 import Symbol.VarType;
 
@@ -10,6 +11,7 @@ public class ExpNode {//finish
     boolean isArray;
     /**若isArray = false, 则可能为null */
     VarType varType;
+    ExpInfo expInfo;
 
     public static ExpNode Exp() {
         ExpNode expNode = new ExpNode();
@@ -27,11 +29,15 @@ public class ExpNode {//finish
         System.out.println(toString());
     }
     
-    ExpInfo makeLLVM() {
-        ExpInfo expInfo;
-        expInfo = addExpNode.makeLLVM();
+    void makeLLVM() {
+        addExpNode.makeLLVM();
+        expInfo = addExpNode.expInfo;
         setVarType();
-        return expInfo;
+    }
+
+    //调用者需要知晓该异常的发生
+    int calculateConstExp() throws ExpNotConstException {
+        return addExpNode.calculateConstExp();
     }
 
     //为判断函数的形参服务

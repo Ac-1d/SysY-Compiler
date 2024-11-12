@@ -1,12 +1,11 @@
 package node;
 
+import Exception.ExpNotConstException;
 import Symbol.ExpInfo;
 import Symbol.FuncParam;
 import Symbol.FuncSymbol;
 import Symbol.Symbol;
 import Symbol.SymbolTable;
-import Symbol.LLVMToken.LLVMToken;
-import Symbol.LLVMToken.LLVMTokenType;
 import error.Error;
 import error.ErrorType;
 import frontend.ErrorHandler;
@@ -30,6 +29,7 @@ public class UnaryExpNode {//finish
     UnaryExpNode shortreUnaryExpNode;
     FuncSymbol funcSymbol;
     int state;
+    ExpInfo expInfo = new ExpInfo();
 
     public static UnaryExpNode UnaryExp() {
         Parser instance = Parser.getInstance();
@@ -112,15 +112,15 @@ public class UnaryExpNode {//finish
         System.out.println(toString());
     }
 
-    ExpInfo makeLLVM() {
+    void makeLLVM() {
         SymbolHandler symbolHandler = SymbolHandler.getInstance();
         ErrorHandler errorHandler = ErrorHandler.getInstance();
         LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
         SymbolTable symbolTable;
-        ExpInfo expInfo = new ExpInfo();
         switch (state) {
             case 1:
-                expInfo = primaryExpNode.makeLLVM();
+                primaryExpNode.makeLLVM();
+                expInfo = primaryExpNode.expInfo;
                 break;
             case 2:
                 symbolTable = symbolHandler.findSymbolTableHasIdent(identToken);
@@ -141,13 +141,30 @@ public class UnaryExpNode {//finish
                 checkRParamNumError();
                 checkRParamTypeError();
                 break;
-            case 3:
-                expInfo = shortreUnaryExpNode.makeLLVM();
-                expInfo.regIndex = llvmGenerator.makeCalculate(unaryOpNode.unaryOpToken, new LLVMToken(0), new LLVMToken(expInfo));
+            case 3://此处未考虑unaryOp为!的情况
+                shortreUnaryExpNode.makeLLVM();
+                expInfo = shortreUnaryExpNode.expInfo;
+                expInfo.regIndex = llvmGenerator.makeCalculate(unaryOpNode.unaryOpToken, false, 0, false, expInfo.regIndex);
             default:
                 break;
         }
-        return expInfo;
+    }
+
+    int calculateConstExp() throws ExpNotConstException {
+        switch (state) {
+            case 1:
+                return primaryExpNode.calculateConstExp();
+            case 3:
+                if (unaryOpNode.unaryOpToken.getType().equals(TokenType.PLUS) == true) {
+                    return shortreUnaryExpNode.calculateConstExp();
+                } else if (unaryOpNode.unaryOpToken.getType().equals(TokenType.MINU) == true) {
+                    return - shortreUnaryExpNode.calculateConstExp();
+                } else {//todo
+                    return 0;
+                }
+            default:
+                throw new ExpNotConstException();
+        }
     }
 
     void checkRParamNumError() {

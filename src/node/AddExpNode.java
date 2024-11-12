@@ -1,7 +1,7 @@
 package node;
 
+import Exception.ExpNotConstException;
 import Symbol.ExpInfo;
-import Symbol.LLVMToken.LLVMToken;
 import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
@@ -15,9 +15,10 @@ public class AddExpNode {//finish
     
     AddExpNode shorterAddExpNode;
     Token addToken;
+    ExpInfo expInfo;
     MulExpNode mulExpNode;
 
-    public static AddExpNode AddExp() {
+    static AddExpNode AddExp() {
         Parser instance = Parser.getInstance();
         AddExpNode addExpNode = new AddExpNode();
         MulExpNode mulExpNode;
@@ -53,22 +54,42 @@ public class AddExpNode {//finish
         }
     }
 
-    ExpInfo makeLLVM() {
+    void makeLLVM() {
         LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
-        ExpInfo expInfo, expInfo2;
+        ExpInfo expInfo2;
         MulExpNode innerMulExpNode;
         AddExpNode innerAddExpNode = shorterAddExpNode;
         Token innerAddToken = addToken;
-        expInfo = mulExpNode.makeLLVM();
+        mulExpNode.makeLLVM();
+        expInfo = mulExpNode.expInfo;
         innerMulExpNode = innerAddExpNode == null ? null : innerAddExpNode.mulExpNode;
         while (innerMulExpNode != null) {
-            expInfo2 = innerMulExpNode.makeLLVM();
-            expInfo.regIndex = llvmGenerator.makeCalculate(innerAddToken, new LLVMToken(expInfo), new LLVMToken(expInfo2));
+            innerMulExpNode.makeLLVM();
+            expInfo2 = innerMulExpNode.expInfo;
+            expInfo.regIndex = llvmGenerator.makeCalculate(innerAddToken, true, expInfo.regIndex, true, expInfo2.regIndex);
             innerAddToken = innerAddExpNode == null ? null : innerAddExpNode.addToken;
             innerAddExpNode = innerAddExpNode.shorterAddExpNode;
             innerMulExpNode = innerAddExpNode == null ? null : innerAddExpNode.mulExpNode;
         }
-        return expInfo;
+    }
+
+    int calculateConstExp() throws ExpNotConstException {
+        int ans = mulExpNode.calculateConstExp();
+        MulExpNode innerMulExpNode;
+        AddExpNode innerAddExpNode = shorterAddExpNode;
+        Token innerAddToken = addToken;
+        innerMulExpNode = innerAddExpNode == null ? null : innerAddExpNode.mulExpNode;
+        while (innerMulExpNode != null) {
+            if (innerAddToken.getType().equals(TokenType.PLUS) == true) {
+                ans += innerMulExpNode.calculateConstExp();
+            } else {
+                ans -= innerMulExpNode.calculateConstExp();
+            }
+            innerAddToken = innerAddExpNode == null ? null : innerAddExpNode.addToken;
+            innerAddExpNode = innerAddExpNode.shorterAddExpNode;
+            innerMulExpNode = innerAddExpNode == null ? null : innerAddExpNode.mulExpNode;
+        }
+        return ans;
     }
 
     public String toString() {

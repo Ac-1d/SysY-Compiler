@@ -8,6 +8,8 @@ public class Symbol {
     private SymbolTable symbolTable;
     private Token identToken;
     protected String word;
+    private boolean isGlobal;
+    private int reg;
 
     public Symbol(Token identToken) {
         this.id = autoIncreId++;
@@ -17,6 +19,7 @@ public class Symbol {
 
     public void setSymbolTable(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
+        isGlobal = symbolTable.getFatherSymbolTable() == null ? true : false;
     }
 
     public void print() {
@@ -33,6 +36,18 @@ public class Symbol {
 
     public Token getIdentToken() {
         return identToken;
+    }
+
+    public void setReg(int reg) {
+        this.reg = reg;
+    }
+
+    public int getReg() {
+        return reg;
+    }
+
+    public boolean isGlobal() {
+        return isGlobal;
     }
     
 }

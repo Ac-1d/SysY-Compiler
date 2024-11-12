@@ -1,8 +1,10 @@
 package node;
 
+import Symbol.ExpInfo;
 import Symbol.VarSymbol;
 import error.Error;
 import error.ErrorType;
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -16,6 +18,7 @@ public class ConstDefNode {//finish
     Token assignToken;
     ConstInitValNode constInitValNode;
     VarSymbol varSymbol;
+    ExpInfo expInfo;
     
     public static ConstDefNode ConstDef() {
         Parser instance = Parser.getInstance();
@@ -60,11 +63,15 @@ public class ConstDefNode {//finish
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
+    void makeLLVM() {
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
         if (defArrayNode != null) {
-            defArrayNode.constExpNode.setupSymbolTable();
+            // defArrayNode.constExpNode.setupSymbolTable();
+            defArrayNode.constExpValue = defArrayNode.constExpNode.calculateConstExp();
         }
-        constInitValNode.setupSymbolTable();
+        constInitValNode.makeLLVM();
+        int reg = llvmGenerator.makeDeclStmt(identToken.getWord(), constInitValNode.constExpValue);
+        expInfo = new ExpInfo(null, reg);
     }
 
     @Override
@@ -79,6 +86,7 @@ public class ConstDefNode {//finish
         Token lbrackToken;
         ConstExpNode constExpNode;
         Token rbrackToken;
+        int constExpValue;
 
         public static DefArrayNode DefArray() {
             Parser instance = Parser.getInstance();
