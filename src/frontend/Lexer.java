@@ -225,6 +225,12 @@ public class Lexer {
                     }
                     break;
                 case 3://STRING 常量
+                    if (curChar == '\\') {
+                        state = 4;
+                        word.append(curChar);
+                        finish = ignoreNextChar();
+                        break;
+                    }
                     if(curChar == '\"') {
                         word.append(curChar);
                         finish = true;
@@ -235,6 +241,11 @@ public class Lexer {
                         word.append(curChar);
                         finish = ignoreNextChar();
                     }
+                    break;
+                case 4:
+                    word.append(curChar);
+                    finish = ignoreNextChar();
+                    state = 3;
                     break;
                 case 5://CHAR 常量
                     if(curChar == '\'') {
