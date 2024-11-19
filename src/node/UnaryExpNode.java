@@ -3,6 +3,7 @@ package node;
 import Exception.ExpNotConstException;
 import Symbol.ExpInfo;
 import Symbol.FuncParam;
+import Symbol.FuncRParam;
 import Symbol.FuncSymbol;
 import Symbol.Symbol;
 import Symbol.SymbolTable;
@@ -124,7 +125,7 @@ public class UnaryExpNode {//finish
                 break;
             case 2:
                 symbolTable = symbolHandler.findSymbolTableHasIdent(identToken);
-                if(symbolTable == null) {
+                if (symbolTable == null) {
                     errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.c));
                 } else {
                     Symbol symbol = symbolTable.findSymbol(identToken);
@@ -136,15 +137,27 @@ public class UnaryExpNode {//finish
                     }
                 }
                 if (funcRParamsNode != null) {
-                    funcRParamsNode.setupSymbolTable();
+                    funcRParamsNode.llvm();
+                    FuncRParam[] funcRParams = new FuncRParam[funcRParamsNode.expInfos.size()];
+                    // List<FuncRParam> funcRParams = new ArrayList<>();
+                    for (int i = 0; i < funcRParams.length; i++) {
+                        ExpInfo expInfo = funcRParamsNode.expInfos.get(i);
+                        FuncParam funcParam = funcSymbol.getFuncParamsList().get(i);
+                        funcRParams[i] = new FuncRParam(expInfo, funcParam);
+                    }
+                    expInfo.setReg(llvmGenerator.makeCallFunctionStmt(identToken.getWord(), funcSymbol.getFuncType(), funcRParams));
+                    expInfo.setVarType(funcSymbol.getFuncType());;
+                } else {
+                    expInfo.setReg(llvmGenerator.makeCallFunctionStmt(identToken.getWord(), funcSymbol.getFuncType()));
                 }
+
                 checkRParamNumError();
                 checkRParamTypeError();
                 break;
             case 3://此处未考虑unaryOp为!的情况
                 shortreUnaryExpNode.makeLLVM();
                 expInfo = shortreUnaryExpNode.expInfo;
-                expInfo.regIndex = llvmGenerator.makeCalculate(unaryOpNode.unaryOpToken, false, 0, false, expInfo.regIndex);
+                expInfo.setReg(llvmGenerator.makeCalculate(unaryOpNode.unaryOpToken, new ExpInfo(0), expInfo));
             default:
                 break;
         }

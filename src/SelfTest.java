@@ -1,13 +1,10 @@
-import java.util.ArrayList;
-
 public class SelfTest {
     public static void main(String[] args) throws ClassNotFoundException {
-        foo(Integer.valueOf(10));
-        foo(20);
-        foo(null);
+        String str = "aaa";
+        System.out.println("aaa" == str);
     }
 
-    static void foo(Integer a) {
-        Integer b = a;
+    static void foo(int[] a) {
+
     }
 }

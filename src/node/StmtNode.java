@@ -6,15 +6,18 @@ import frontend.ErrorHandler;
 import frontend.LLVMGenerator;
 import frontend.Parser;
 import java.util.ArrayList;
+import java.util.List;
+
 import token.Token;
 import token.TokenType;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import Exception.ExpNotConstException;
 import Symbol.ExpInfo;
+import Symbol.FuncRParam;
 import Symbol.FuncType;
+import Symbol.VarType;
 
 public class StmtNode {
     /*
@@ -57,6 +60,8 @@ public class StmtNode {
     Token getcharToken;
     Token printfToken;
     Token strconToken;
+    List<String> strsList;
+    ArrayList<Integer> strNumsList;
     ArrayList<ExpWithCommaNode> expWithCommaNodesList = new ArrayList<>();
     int state;
 
@@ -334,7 +339,7 @@ public class StmtNode {
             if(token.getType().equals(TokenType.STRCON) == false) {
                 return null;
             }
-            stmtNode.strconToken = token;
+            stmtNode.strconToken = token; 
             do {//do-while结构处理更好
                 tmpIndex = instance.getPeekIndex();
                 expWithCommaNode = ExpWithCommaNode.ExpWithComma();
@@ -469,8 +474,8 @@ public class StmtNode {
     }
 
     void makeLLVM() {
-        LLVMGenerator instance = LLVMGenerator.getInstance();
-        ExpInfo lValNodeExpInfo, expNodeExpInfo;
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
+        ExpInfo lValNodeExpInfo, expNodeExpInfo, funcExpInfo = new ExpInfo();
         switch (state) {
             case 1: // LVal '=' Exp ';'
                 lValNode.makeLLVM();
@@ -478,7 +483,7 @@ public class StmtNode {
                 lValNode.checkIfConst();
                 expNode.makeLLVM();
                 expNodeExpInfo = expNode.expInfo;
-                instance.makeStoreRegStmt(expNodeExpInfo.regIndex, lValNodeExpInfo);
+                llvmGenerator.makeStoreStmt(expNodeExpInfo, lValNodeExpInfo);
                 break;
             case 2:
                 if (expNode != null) {
@@ -510,37 +515,44 @@ public class StmtNode {
                 ErrorHandler.loopNum--;
                 break;
             case 7: // 'return' [Exp] ';'
-                ExpInfo expInfo = new ExpInfo();
                 if (expNode != null) {
-                    try {
-                        int expValue = expNode.calculateConstExp();
-                        instance.makeReturnImmStmt(expValue);
-                    } catch (ExpNotConstException e) {
-                        expNode.makeLLVM();
-                        expInfo = expNode.expInfo;
-                        instance.makeReturnRegStmt(expInfo.regIndex);
-                    }
+                    expNode.makeLLVM();
+                    llvmGenerator.makeReturnRegStmt(expNode.expInfo);
+                    // try {
+                    //     int expValue = expNode.calculateConstExp();
+                    //     llvmGenerator.makeReturnImmStmt(expValue);
+                    // } catch (ExpNotConstException e) {
+                    //     expNode.makeLLVM();
+                    //     expInfo = expNode.expInfo;
+                    //     llvmGenerator.makeReturnRegStmt(expInfo.regIndex);
+                    // }
                 } else {
-                    instance.makeReturnStmt();
+                    llvmGenerator.makeReturnStmt();
                 }
                 break;
             case 8: // LVal '=' 'getint''('')'';'
                 lValNode.makeLLVM();
                 lValNodeExpInfo = lValNode.expInfo;
-                instance.makeCallFunctionStmt("getint", FuncType.Int);
+                funcExpInfo.regIndex = llvmGenerator.makeCallFunctionStmt("getint", FuncType.Int);
+                llvmGenerator.makeStoreStmt(funcExpInfo, lValNodeExpInfo);
                 lValNode.checkIfConst();
                 break;
             case 9: // LVal '=' 'getchar''('')'';'
                 lValNode.makeLLVM();
                 lValNodeExpInfo = lValNode.expInfo;
-                instance.makeCallFunctionStmt("getchar", FuncType.Int);
+                funcExpInfo.regIndex = llvmGenerator.makeCallFunctionStmt("getchar", FuncType.Int);
+                funcExpInfo.varType = VarType.Int;
+                funcExpInfo = llvmGenerator.makeTransStmt(funcExpInfo);
+                llvmGenerator.makeStoreStmt(funcExpInfo, lValNodeExpInfo);
                 lValNode.checkIfConst();
                 break;
             case 10: // 'printf''('StringConst {','Exp}')'';'
-                for (ExpWithCommaNode expWithCommaNode : expWithCommaNodesList) {
-                    expWithCommaNode.expNode.makeLLVM();
-                }
+                strsList = cutConstr(strconToken.getWord().substring(1, strconToken.getWord().length() - 1));
                 checkPrint();
+                // for (String str : strsList) {
+                //     llvmGenerator.makeConstrStmt(str, llvmGenerator.getStrconTokenNum(), str.length() + 1);
+                //     // llvmGenerator.makeCallFunctionStmt("print", FuncType.Void, );
+                // }
                 break;
             default:
                 break;
@@ -595,6 +607,39 @@ public class StmtNode {
             count++;
         }
         return count;
+    }
+
+    List<String> cutConstr(String str) {
+        String regex = "(%c|%d)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(str);
+        List<String> resultList = new ArrayList<>();
+        int lastEnd = 0;
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
+        int index = 0;
+
+        while (matcher.find()) {
+            if (lastEnd != matcher.start()) {
+                String cuttedString = str.substring(lastEnd, matcher.start());
+                int strNum = llvmGenerator.getStrconTokenNum();
+                llvmGenerator.makeConstrStmt(cuttedString, strNum, cuttedString.length() + 1);
+                llvmGenerator.makeCallPutstrStmt(strNum);
+            }
+            ExpNode expNode = expWithCommaNodesList.get(index++).expNode;
+            expNode.makeLLVM();
+            ExpInfo expInfo = expNode.expInfo;
+            if (matcher.group().equals("%c") && expInfo.isConst() == false) {//转换条件
+                expInfo = llvmGenerator.makeTransStmt(expInfo);
+            }
+            FuncRParam funcRParam = new FuncRParam(expInfo, false);
+            llvmGenerator.makeCallFunctionStmt(matcher.group().equals("%c") ? "putch" : "putint", FuncType.Void, funcRParam);
+            lastEnd = matcher.end();
+        }
+        if (lastEnd != str.length()) {
+            int strNum = llvmGenerator.getStrconTokenNum();
+            llvmGenerator.makeConstrStmt(str, strNum, str.length() + 1);
+        }
+        return resultList;
     }
 
     @Override

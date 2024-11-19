@@ -38,6 +38,7 @@ public class Symbol {
         return identToken;
     }
 
+    //若为全局变量，则set0，后续有判断
     public void setReg(int reg) {
         this.reg = reg;
     }

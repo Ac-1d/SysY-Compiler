@@ -2,6 +2,7 @@ package node;
 
 import java.util.ArrayList;
 
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -13,7 +14,8 @@ public class ConstInitValNode {//finish
     Token lbraceToken;
     ArrayList<InitArrayNode> initArrayNodesList = new ArrayList<>();
     Token rbraceToken;
-    Token stringConstToken;
+    Token strconToken;
+    int strconTokenNum;
     int state;
     int constExpValue;
     
@@ -61,8 +63,8 @@ public class ConstInitValNode {//finish
         instance.setPeekIndex(tmpIndex);
         tmpIndex = instance.getPeekIndex();
         token = instance.peekNextToken();
-        constInitValNode.stringConstToken.setLineNum(token.getLineNum());
-        constInitValNode.stringConstToken.setWord(token.getWord());
+        constInitValNode.strconToken.setLineNum(token.getLineNum());
+        constInitValNode.strconToken.setWord(token.getWord());
         if(token.getType().equals(TokenType.STRCON) == true) {
             constInitValNode.state = 3;
             return constInitValNode;
@@ -87,7 +89,7 @@ public class ConstInitValNode {//finish
                 rbraceToken.print();
                 break;
             case 3:
-                stringConstToken.print();
+                strconToken.print();
                 break;
             default:
                 break;
@@ -96,6 +98,7 @@ public class ConstInitValNode {//finish
     }
 
     void makeLLVM() {
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
         // 我们假想此处不需要任何符号表填写与错误处理
         switch (state) {
             case 1:
@@ -113,6 +116,9 @@ public class ConstInitValNode {//finish
                     initArrayNode.constExpValue = initArrayNode.constExpNode.calculateConstExp();
                 }
                 break;
+            case 3:
+                strconTokenNum = llvmGenerator.getStrconTokenNum();
+                break;
         
             default:
                 break;
@@ -127,7 +133,7 @@ public class ConstInitValNode {//finish
     private ConstInitValNode() {
         this.lbraceToken = new Token(TokenType.LBRACE, "{");
         this.rbraceToken = new Token(TokenType.RBRACE, "}");
-        this.stringConstToken = new Token(TokenType.STRCON, null);
+        this.strconToken = new Token(TokenType.STRCON, null);
     }
 
     class InitArrayNode {//finish

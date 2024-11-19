@@ -70,8 +70,21 @@ public class ConstDefNode {//finish
             defArrayNode.constExpValue = defArrayNode.constExpNode.calculateConstExp();
         }
         constInitValNode.makeLLVM();
-        int reg = llvmGenerator.makeDeclStmt(identToken.getWord(), constInitValNode.constExpValue);
-        expInfo = new ExpInfo(null, reg);
+        int reg;
+        switch (constInitValNode.state) {
+            case 1:
+                reg = llvmGenerator.makeDeclStmt(identToken.getWord(), constInitValNode.constExpValue);
+                expInfo = new ExpInfo(null, reg);
+                break;
+            case 2:
+                break;
+            case 3:
+                String str = constInitValNode.strconToken.getWord();
+                llvmGenerator.makeConstrStmt(str.substring(1, str.length() - 1), constInitValNode.strconTokenNum, defArrayNode.constExpValue);
+                expInfo = new ExpInfo();
+                expInfo.globalVarName = ".str." + constInitValNode.strconTokenNum;
+                break;
+        }
     }
 
     @Override

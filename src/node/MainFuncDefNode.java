@@ -67,7 +67,7 @@ public class MainFuncDefNode {//finish
 
     void makeLLVM() {
         LLVMGenerator instance = LLVMGenerator.getInstance();
-        instance.makeFunction(FuncType.Int, "main");
+        instance.makeFunctionStmt(FuncType.Int, "main");
         blockNode.makeLLVM(false);
         instance.makeFunctionEnd();
         blockNode.checkFuncHasReturn();

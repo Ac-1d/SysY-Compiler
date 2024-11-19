@@ -79,12 +79,26 @@ public class VarDefNode {//finish
         }
         if (initValNode == null) {//无初始化
             expInfo.regIndex = llvmGenerator.makeDeclStmt(identToken.getWord(), null);
-        } else if (initValNode.expValue != null) {//有初始化 编译期可计算
-            expInfo.regIndex = llvmGenerator.makeDeclStmt(identToken.getWord(), initValNode.expValue);
-        } else {//有初始化 编译期不可计算
-            expInfo.regIndex = llvmGenerator.makeDeclStmt(expInfo.regIndex);
+        } else {
+            switch (initValNode.state) {
+                case 1:
+                    if (initValNode.expNode.expInfo.getValue() != null) {//有初始化 编译期可计算
+                        expInfo.regIndex = llvmGenerator.makeDeclStmt(identToken.getWord(), initValNode.expNode.expInfo.getValue());
+                    } else {//有初始化 编译期不可计算
+                        expInfo.regIndex = llvmGenerator.makeDeclStmt(expInfo.regIndex);
+                    }
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    String str = initValNode.strconToken.getWord();
+                    llvmGenerator.makeConstrStmt(str.substring(1, str.length() - 1), initValNode.strconTokenNum, defArrayNode.constExpValue);
+                    break;
+                default:
+                    break;
+            }
+        } 
         }
-    }
 
     @Override
     public String toString() {

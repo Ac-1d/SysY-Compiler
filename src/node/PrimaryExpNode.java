@@ -2,7 +2,6 @@ package node;
 
 import Exception.ExpNotConstException;
 import Symbol.ExpInfo;
-import Symbol.VarType;
 import error.Error;
 import error.ErrorType;
 import frontend.LLVMGenerator;
@@ -110,21 +109,11 @@ public class PrimaryExpNode {//finish
             case 2:
                 lValNode.makeLLVM();
                 expInfo = lValNode.expInfo;
-                if (expInfo.globalVarName != null) {
-                    expInfo.regIndex = instance.makeLoadStmt(expInfo.globalVarName, expInfo.varType);
-                } else {
-                    expInfo.regIndex = instance.makeLoadStmt(expInfo.regIndex, expInfo.varType);
-                }
+                expInfo.setReg(instance.makeLoadStmt(expInfo));
                 break;
             case 3:
-                expInfo.varType = VarType.Int;
-                expInfo.regIndex = instance.makeStoreImm(numberNode.getValue(), expInfo.varType);
-                expInfo.regIndex = instance.makeLoadStmt(expInfo.regIndex, expInfo.varType);
                 break;
             case 4:
-                expInfo.varType = VarType.Char;
-                expInfo.regIndex = instance.makeStoreImm(characterNode.getValue(), expInfo.varType);
-                expInfo.regIndex = instance.makeLoadStmt(expInfo.regIndex, expInfo.varType);
                 break;
             default:
                 break;

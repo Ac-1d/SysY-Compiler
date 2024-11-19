@@ -11,7 +11,7 @@ public class ExpNode {//finish
     boolean isArray;
     /**若isArray = false, 则可能为null */
     VarType varType;
-    ExpInfo expInfo;
+    ExpInfo expInfo = new ExpInfo();
 
     public static ExpNode Exp() {
         ExpNode expNode = new ExpNode();
@@ -30,9 +30,14 @@ public class ExpNode {//finish
     }
     
     void makeLLVM() {
-        addExpNode.makeLLVM();
-        expInfo = addExpNode.expInfo;
         setVarType();
+        try {
+            expInfo.setValue(calculateConstExp());
+        } catch (ExpNotConstException e) {
+            addExpNode.makeLLVM();
+            expInfo = addExpNode.expInfo;
+            
+        }
     }
 
     //调用者需要知晓该异常的发生

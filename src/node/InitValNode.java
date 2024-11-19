@@ -1,12 +1,12 @@
 package node;
 
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
 import java.util.ArrayList;
 
-import Exception.ExpNotConstException;
 import Symbol.ExpInfo;
 
 //发现一些类可以进一步抽象，尝试使用多态来实现，等待后续的重构吧😪
@@ -17,9 +17,9 @@ public class InitValNode {//finish maybe some mistake
     Token lbraceToken;
     ArrayList<InitArrayNode> initArrayNodesList = new ArrayList<>();
     Token rbraceToken;
-    Token stringConstToken;
+    Token strconToken;
+    int strconTokenNum;
     int state;
-    Integer expValue;
     ExpInfo expInfo = new ExpInfo();
     
     public static InitValNode InitVal() {
@@ -66,8 +66,8 @@ public class InitValNode {//finish maybe some mistake
         instance.setPeekIndex(tmpIndex);
         tmpIndex = instance.getPeekIndex();
         token = instance.peekNextToken();
-        initValNode.stringConstToken.setLineNum(token.getLineNum());
-        initValNode.stringConstToken.setWord(token.getWord());
+        initValNode.strconToken.setLineNum(token.getLineNum());
+        initValNode.strconToken.setWord(token.getWord());
         if(token.getType().equals(TokenType.STRCON) == true) {
             initValNode.state = 3;
             return initValNode;
@@ -92,7 +92,7 @@ public class InitValNode {//finish maybe some mistake
                 rbraceToken.print();
                 break;
             case 3:
-                stringConstToken.print();
+                strconToken.print();
                 break;
             default:
                 break;
@@ -101,32 +101,22 @@ public class InitValNode {//finish maybe some mistake
     }
 
     void makeLLVM() {
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
         switch (state) {
             case 1:
-                //逻辑为：如果能算出值，按常量处理，否则展开语法树进行分析
-                try {
-                    expValue = Integer.valueOf(expNode.calculateConstExp());
-                } catch (ExpNotConstException e) {
-                    expValue = null;
-                    expNode.makeLLVM();
-                    expInfo = expNode.expInfo;
-                }
+                expNode.makeLLVM();
+                expInfo = expNode.expInfo;
                 break;
             case 2:
-                try {
-                    expValue = Integer.valueOf(expNode.calculateConstExp());
-                } catch (ExpNotConstException e) {
-                    expValue = null;
-                    expNode.makeLLVM();
-                }
+                expNode.makeLLVM();
+                expInfo = expNode.expInfo;
                 for (InitArrayNode initArrayNode : initArrayNodesList) {
-                    try {
-                        initArrayNode.expValue = Integer.valueOf(initArrayNode.expNode.calculateConstExp());
-                    } catch (ExpNotConstException e) {
-                        initArrayNode.expValue = null;
-                        initArrayNode.expNode.makeLLVM();
-                    }
+                    initArrayNode.expNode.makeLLVM();
+                    initArrayNode.expInfo = initArrayNode.expNode.expInfo;
                 }
+                break;
+            case 3:
+                strconTokenNum = llvmGenerator.getStrconTokenNum();
                 break;
             default:
                 break;
@@ -141,14 +131,14 @@ public class InitValNode {//finish maybe some mistake
     private InitValNode() {
         this.lbraceToken = new Token(TokenType.LBRACE, "{");
         this.rbraceToken = new Token(TokenType.RBRACE, "}");
-        this.stringConstToken = new Token(TokenType.STRCON, null);
+        this.strconToken = new Token(TokenType.STRCON, null);
     }
 
     class InitArrayNode {//finish
         // InitArray → ',' ConstExp
         Token commaToken;
         ExpNode expNode;
-        Integer expValue;
+        ExpInfo expInfo;
 
         public static InitArrayNode InitArray() {
             Parser instance = Parser.getInstance();

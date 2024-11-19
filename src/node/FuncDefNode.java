@@ -1,13 +1,18 @@
 package node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import Symbol.FuncParam;
 import Symbol.FuncSymbol;
 import Symbol.FuncType;
+import Symbol.Symbol;
 import Symbol.SymbolTable;
 import Symbol.VarSymbol;
 import Symbol.VarType;
 import error.Error;
 import error.ErrorType;
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import frontend.SymbolHandler;
 import token.Token;
@@ -90,12 +95,16 @@ public class FuncDefNode {//finish
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
-        SymbolHandler instance = SymbolHandler.getInstance();
+    void llvm() {
+        SymbolHandler symbolHandler = SymbolHandler.getInstance();
+
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
+        List<FuncParam> funcParams = new ArrayList<>();
+
         FuncType funcType = SymbolHandler.getFuncType(funcTypeNode.funcTypeToken);
         this.funcSymbol = new FuncSymbol(identToken, funcType);
-        instance.addSymbol(funcSymbol);
-        instance.setCurSymbolTable(new SymbolTable(instance.getCurSymbolTable()));
+        symbolHandler.addSymbol(funcSymbol);
+        symbolHandler.setCurSymbolTable(new SymbolTable(symbolHandler.getCurSymbolTable()));
         if(funcFParamsNode != null) {//有参数
             FuncFParamNode funcFParamNode = funcFParamsNode.funcFParamNode;
             Token identToken = funcFParamNode.identToken;
@@ -103,18 +112,42 @@ public class FuncDefNode {//finish
             boolean isArray = funcFParamNode.lbrackToken != null;
             boolean isConst = false;
             funcSymbol.addFuncParam(new FuncParam(varType, isArray));
-            instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+            symbolHandler.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+
+            funcParams.add(new FuncParam(varType, isArray));
+            
             for (FuncFParamsNode.FuncFParamWithCommaNode funcFParamWithCommaNode : funcFParamsNode.funcFParamWithCommaNodesList) {
                 funcFParamNode = funcFParamWithCommaNode.funcFParamNode;
                 identToken = funcFParamNode.identToken;
                 varType = SymbolHandler.getVarType(funcFParamNode.bTypeNode.intOrCharToken);
                 isArray = funcFParamNode.lbrackToken != null;
                 funcSymbol.addFuncParam(new FuncParam(varType, isArray));
-                instance.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+                symbolHandler.addSymbol(new VarSymbol(identToken, varType, isConst, isArray));
+
+                funcParams.add(new FuncParam(varType, isArray));
+
             }
         }
+
+        llvmGenerator.makeFunctionStmt(funcType, identToken.getWord(), funcParams);
+        //decl
+        for (int i = 0; i < funcParams.size(); i++) {
+            FuncFParamNode funcFParamNode;
+            if (i == 0) {
+                funcFParamNode = funcFParamsNode.funcFParamNode;
+            } else {
+                funcFParamNode = funcFParamsNode.funcFParamWithCommaNodesList.get(i - 1).funcFParamNode;
+            }
+            Symbol symbol = symbolHandler.getCurSymbolTable().findSymbol(funcFParamNode.identToken);
+            llvmGenerator.setVarType(funcFParamNode.bTypeNode.intOrCharToken);
+            symbol.setReg(llvmGenerator.makeDeclStmt(i));
+        }
+
         blockNode.makeLLVM(true);
-        instance.setCurSymbolTable(instance.getCurSymbolTable().getFatherSymbolTable());
+
+        llvmGenerator.makeFunctionEnd();
+
+        symbolHandler.setCurSymbolTable(symbolHandler.getCurSymbolTable().getFatherSymbolTable());
         if (funcSymbol.getFuncType().equals(FuncType.Void)) {// check error.f
             for (BlockItemNode blockItemNode : blockNode.blockItemNodesList) {
                 blockItemNode.checkVoidFuncReturn();

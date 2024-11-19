@@ -4,12 +4,16 @@ import frontend.Parser;
 import token.Token;
 import token.TokenType;
 import java.util.ArrayList;
+import java.util.List;
+
+import Symbol.ExpInfo;
 
 public class FuncRParamsNode {//finish
     // FuncRParams → Exp { ',' Exp } 
 
     ExpNode expNode;
     ArrayList<ParamNode> paramNodesList = new ArrayList<>();
+    List<ExpInfo> expInfos = new ArrayList<>();
 
     public static FuncRParamsNode FuncRParams() {
         Parser instance = Parser.getInstance();
@@ -40,10 +44,12 @@ public class FuncRParamsNode {//finish
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
+    void llvm() {
         expNode.makeLLVM();
+        expInfos.add(expNode.expInfo);
         for (ParamNode paramNode : paramNodesList) {
             paramNode.expNode.makeLLVM();
+            expInfos.add(paramNode.expNode.expInfo);
         }
     }
 

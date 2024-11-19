@@ -52,7 +52,7 @@ public class CompUnitNode {
         }
         llvmGenerator.setIsDeclVarGlobal(false);
         for (FuncDefNode funcDefNode : funcDefNodes) {
-            funcDefNode.setupSymbolTable();
+            funcDefNode.llvm();
         }
         mainFuncDefNode.makeLLVM();
     }

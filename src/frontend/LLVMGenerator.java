@@ -1,12 +1,15 @@
 package frontend;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import Symbol.ExpInfo;
+import Symbol.FuncParam;
+import Symbol.FuncRParam;
 import Symbol.FuncType;
 import Symbol.VarType;
-import Symbol.LLVMToken.LLVMToken;
+import config.Config;
 import token.Token;
 import token.TokenType;
 
@@ -15,6 +18,17 @@ public class LLVMGenerator {
     private LLVMGenerator() {}
     public static LLVMGenerator getInstance() {
         return instance;
+    }
+
+    public void init() {
+        strconTokenNum = 0;
+    }
+
+    private int strconTokenNum = 0;
+    private Map<Integer, Integer> strNum2LengthMap = new HashMap<>();
+
+    public int getStrconTokenNum() {
+        return strconTokenNum++;
     }
 
     private final static Map<TokenType, VarType> tokentype2VarTypeMap = new HashMap<>() {{
@@ -42,25 +56,39 @@ public class LLVMGenerator {
     }};
 
     private int blockDeep = 0;
-    private int regIndex = 1;
+    private int regIndex = 0;
 
     public void enterBlock() {
         blockDeep++;
-        regIndex = 1;
+        regIndex++;
     }
 
     public void exitBlock() {
         blockDeep--;
+        regIndex = 0;
     }
 
-    public void makeFunction(FuncType funcType, String funcName) {
+    public void makeFunctionStmt(FuncType funcType, String funcName, FuncParam... funcParams) {
         String printString = getSpace() + "define dso_local ";
-        printString += funcType2LengthMap.get(funcType) + " ";
-        printString += "@";
-        printString += funcName;
-        printString += "(){";//TOBECONTINUE
+        printString += funcType2LengthMap.get(funcType) + " @" + funcName + "(";
+        for (int i = 0; i < funcParams.length; i++) {
+            FuncParam funcParam = funcParams[i];
+            if (i > 0) {
+                printString += ", ";
+            }
+            printString += varType2LengthMap.get(funcParam.getVarType()) + " " + getReg();
+        }
+        printString += "){";
         System.out.println(printString);
         enterBlock();
+    }
+
+    public void makeFunctionStmt(FuncType funcType, String funcName, List<FuncParam> funcParams) {
+        FuncParam[] funcParams2 = new FuncParam[funcParams.size()];
+        for (int i = 0; i < funcParams.size(); i++) {
+            funcParams2[i] = funcParams.get(i);
+        }
+        makeFunctionStmt(funcType, funcName, funcParams2);
     }
     
     public void makeFunctionEnd() {
@@ -68,37 +96,15 @@ public class LLVMGenerator {
         String printString = getSpace() + "}";
         System.out.println(printString);
     }
-
-    public int makeCalculate(Token calculateToken, LLVMToken llvmToken1, LLVMToken llvmToken2) {
-        TokenType calculateType = calculateToken.getType();
+    
+    public int makeCalculate(Token calculateToken, ExpInfo expInfo1, ExpInfo expInfo2) {
+        TokenType calTokenType = calculateToken.getType();
         int dstReg = regIndex;
-        String printString = getSpace() + getReg() + " = " + tokenType2CalculateTypeMap.get(calculateType) + " i32 " + llvmToken1.toString() + ", " + llvmToken2.toString();
+        String printString = getSpace() + getReg() + " = " + tokenType2CalculateTypeMap.get(calTokenType) + " i32 " + expInfo1.getCalculateParam() + ", " + expInfo2.getCalculateParam();
         System.out.println(printString);
         return dstReg;
     }
 
-    public int makeCalculate(Token calculateToken, boolean isRegPtr1, int param1, boolean isRegPtr2, int param2) {
-        TokenType calculateType = calculateToken.getType();
-        // if (isRegPtr1 == true) {
-        //     param1 = makeLoadStmt(param1, VarType.Int);
-        // }
-        // if (isRegPtr2 == true) {
-        //     param2 = makeLoadStmt(param2, VarType.Int);
-        // }
-        int dstReg = regIndex;
-        String printString = getSpace() + getReg() + " = " + tokenType2CalculateTypeMap.get(calculateType) + " i32 " + (isRegPtr1 ? "%" : "") + param1 + ", " + (isRegPtr2 ? "%" : "") + param2;
-        System.out.println(printString);
-        return dstReg;
-    }
-
-    public int makeStoreImm(int imm, VarType varType) {
-        int dstRegPtr;
-        dstRegPtr = makeAllocaStmt(varType);
-        makeStoreImmStmt(imm, dstRegPtr, varType);
-        return dstRegPtr;
-    }
-
-    //此处中间代码冗余严重 记得进行优化
     /**@return 分配寄存器编号 */
     private int makeAllocaStmt(VarType varType) {
         int srcRegPtr = regIndex;
@@ -112,33 +118,23 @@ public class LLVMGenerator {
         System.out.println(printString);
     }
 
-    public void makeStoreRegStmt(int srcReg, int dstRegPtr, VarType varType) {
-        String printString = getSpace() + "store " + varType2LengthMap.get(varType) + " " + index2Reg(srcReg) + ", " + varType2LengthMap.get(varType) + "* " + index2Reg(dstRegPtr);
-        System.out.println(printString);
-    }
-
-    public void makeStoreRegStmt(int srcReg, String dstRegPtr, VarType varType) {
-        String printString = getSpace() + "store " + varType2LengthMap.get(varType) + " " + index2Reg(srcReg) + ", " + varType2LengthMap.get(varType) + "* " + varName2Reg(dstRegPtr);
-        System.out.println(printString);
-    }
-
-    public void makeStoreRegStmt(int srcReg, ExpInfo dstExpInfo) {
+    private void makeStoreRegStmt(int srcReg, ExpInfo dstExpInfo) {
         VarType varType = dstExpInfo.varType;
         boolean isGlobal = dstExpInfo.globalVarName != null;
         String printString = getSpace() + "store " + varType2LengthMap.get(varType) + " " + index2Reg(srcReg) + ", " + varType2LengthMap.get(varType) + "* " + getRegSymbol(isGlobal) + dstExpInfo.getReg();
         System.out.println(printString);
     }
 
-    public int makeLoadStmt(int srcRegPtr, VarType varType) {
-        int dstReg = regIndex;
-        String printString = getSpace() + getReg() + " = load " + varType2LengthMap.get(varType) + ", " + varType2LengthMap.get(varType) + "* " + index2Reg(srcRegPtr);
+    public void makeStoreStmt(ExpInfo srcExpInfo, ExpInfo dstExpInfo) {
+        VarType varType = dstExpInfo.varType;
+        boolean isGlobal = dstExpInfo.globalVarName != null;
+        String printString = getSpace() + "store " + varType2LengthMap.get(varType) + " " + srcExpInfo.getCalculateParam() + ", " + varType2LengthMap.get(varType) + "* " + getRegSymbol(isGlobal) + dstExpInfo.getReg();
         System.out.println(printString);
-        return dstReg;
     }
 
-    public int makeLoadStmt(String varName, VarType varType) {
+    public int makeLoadStmt(ExpInfo expInfo) {
         int dstReg = regIndex;
-        String printString = getSpace() + getReg() + " = load " + varType2LengthMap.get(varType) + ", " + varType2LengthMap.get(varType) + "* " + varName2Reg(varName);
+        String printString = getSpace() + getReg() + " = load " + varType2LengthMap.get(expInfo.varType) + ", " + varType2LengthMap.get(expInfo.varType) + "* " + (expInfo.isGlobal ? "@" : "%") + expInfo.getReg();
         System.out.println(printString);
         return dstReg;
     }
@@ -150,18 +146,15 @@ public class LLVMGenerator {
     }
 
     //我们在return语句中知晓其是否有返回值，故这一步骤不在此处判断
-    public void makeReturnRegStmt(int srcReg) {
-        
-        String printString = getSpace() + "ret ";
-        printString += funcType2LengthMap.get(funcType) + " ";
-        printString += index2Reg(srcReg);
-        System.out.println(printString);
-    }
-
-    public void makeReturnImmStmt(int imm) {
-        String printString = getSpace() + "ret ";
-        printString += funcType2LengthMap.get(funcType) + " ";
-        printString += imm;
+    public void makeReturnRegStmt(ExpInfo expInfo) {
+        int srcReg;
+        String printString = getSpace() + "ret " + funcType2LengthMap.get(funcType) + " ";
+        if (expInfo.getValue() != null) {
+            printString += expInfo.getValue();
+        } else {
+            srcReg = expInfo.regIndex;
+            printString += index2Reg(srcReg);
+        }
         System.out.println(printString);
     }
 
@@ -193,7 +186,7 @@ public class LLVMGenerator {
 
     public int makeDeclStmt(int srcReg) {
         int dstRegPtr = makeAllocaStmt(declareVarType);
-        makeStoreRegStmt(srcReg, dstRegPtr, declareVarType);
+        makeStoreRegStmt(srcReg,new ExpInfo(declareVarType, dstRegPtr));
         return dstRegPtr;
     }
 
@@ -210,17 +203,88 @@ public class LLVMGenerator {
         return reg;
     }
 
-    public int makeCallFunctionStmt(String funcName, FuncType funcType) {
-        int dstReg = regIndex;
+    public int makeCallFunctionStmt(String funcName, FuncType funcType, FuncRParam... funcRParams) {
+        int dstReg = 0;
         String printString;
         if (funcType.equals(FuncType.Void) == true) {
-            printString = getSpace() + "call void @" + funcName + "()";
-            dstReg = 0;
+            printString = getSpace() + "call void";
         } else {
-            printString = getSpace() + getReg() + " = call " + funcType2LengthMap.get(funcType) + " @" + funcName + "()";
+            dstReg = regIndex;
+            printString = getSpace() + getReg() + " = call " + funcType2LengthMap.get(funcType);
         }
+        printString += " @" + funcName + "(";
+        for (int i = 0; i < funcRParams.length; i++) {
+            if (i > 0) {
+                printString += ", ";
+            }
+            FuncRParam funcRParam = funcRParams[i];
+            printString += varType2LengthMap.get(funcRParam.getVarType()) + " " + funcRParam.getExpInfo().getCalculateParam();
+        }
+        printString += ")";
         System.out.println(printString);
         return dstReg;
+    }
+
+    public void makeCallPutstrStmt(int strNum) {
+        int length = strNum2LengthMap.get(strNum);
+        String printString = getSpace() + "call void @putstr(i8* getelementptr inbounds ([" + length + " x i8], [" + length + " x i8]* @.str." + strNum + ", i64 0, i64 0))";
+        System.out.println(printString);
+    }
+
+    public ExpInfo makeTransStmt(ExpInfo expInfo) {
+        int dstReg = regIndex;
+        VarType srcVarType = expInfo.varType;
+        int srcReg = expInfo.regIndex;
+        VarType dstVarType = srcVarType.equals(VarType.Int) ? VarType.Char : VarType.Int;
+        String printString = getSpace() + getReg() + " = " + (srcVarType.equals(VarType.Int) ? "trunc" : "zext") + " " + varType2LengthMap.get(srcVarType) + " " + index2Reg(srcReg) + " to " + varType2LengthMap.get(dstVarType);
+        System.out.println(printString);
+        expInfo.setReg(dstReg);
+        expInfo.varType = dstVarType;
+        return expInfo;
+    }
+
+    public void makeConstrStmt(String constr, int num, int length) {
+        //不需要缩进
+        String printString = "@.str." +  num + " = private unnamed_addr constant [" + length + " x i8] c\"" + dealConstr(constr, length) + "\"";
+        strNum2LengthMap.put(num, length);
+        Config.llvmData();
+        System.out.println(printString);
+        Config.continueLLVMText();
+    }
+
+    private String dealConstr(String constr, int length) {
+        constr += "\\00".repeat(length - countConstrLength(constr));
+        constr = constr.replace("\\a", "\\07");
+        constr = constr.replace("\\b", "\\08");
+        constr = constr.replace("\\t", "\\09");
+        constr = constr.replace("\\n", "\\0A");
+        constr = constr.replace("\\v", "\\0B");
+        constr = constr.replace("\\f", "\\0C");
+        constr = constr.replace("\\\"", "\\22");
+        constr = constr.replace("\\\'", "\\27");
+        constr = constr.replace("\\\\", "\\5c");
+        return constr;
+    }
+
+    private static int countConstrLength(String constr) {
+        int length = 0;
+        int state = 0;
+        for (char c : constr.toCharArray()) {
+            switch (state) {
+                case 0://common
+                    length++;
+                    if (c == '\\') {
+                        state = 1;
+                    }
+                    break;
+                case 1:// '\\'
+                    state = 0;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return length;
     }
 
     //为了保证读取regIndex时自增
@@ -234,10 +298,6 @@ public class LLVMGenerator {
 
     private String index2Reg(int regIndex) {
         return "%" + regIndex;
-    }
-
-    private String varName2Reg(String varName) {
-        return "@" + varName;
     }
 
     private String getRegSymbol(boolean isGlobal) {

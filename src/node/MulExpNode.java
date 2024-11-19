@@ -12,7 +12,7 @@ public class MulExpNode {//finish
     // change it the same as AddExpNode
     UnaryExpNode unaryExpNode;
     Token mulToken;
-    ExpInfo expInfo;
+    ExpInfo expInfo = new ExpInfo();
     MulExpNode shorterMulExpNode;
 
     static MulExpNode MulExp() {
@@ -53,17 +53,25 @@ public class MulExpNode {//finish
 
     void makeLLVM() {
         LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
-        ExpInfo expInfo2;
+        ExpInfo expInfo2 = new ExpInfo();
         UnaryExpNode innerUnaryExpNode;
         MulExpNode innerMulExpNode = shorterMulExpNode;
         Token innerMulToken = mulToken;
-        unaryExpNode.makeLLVM();
-        expInfo = unaryExpNode.expInfo;
+        try {
+            expInfo.setValue(unaryExpNode.calculateConstExp());
+        } catch (ExpNotConstException e) {
+            unaryExpNode.makeLLVM();
+            expInfo = unaryExpNode.expInfo;
+        }
         innerUnaryExpNode = innerMulExpNode == null ? null : innerMulExpNode.unaryExpNode;
         while (innerUnaryExpNode != null) {
-            innerUnaryExpNode.makeLLVM();
-            expInfo2 = innerUnaryExpNode.expInfo;
-            expInfo.regIndex = llvmGenerator.makeCalculate(innerMulToken, true,  expInfo.regIndex, true, expInfo2.regIndex);
+            try {
+                expInfo2.setValue(innerUnaryExpNode.calculateConstExp());
+            } catch (ExpNotConstException e) {
+                innerUnaryExpNode.makeLLVM();
+                expInfo2 = innerUnaryExpNode.expInfo;
+            }
+            expInfo.setReg(llvmGenerator.makeCalculate(innerMulToken, expInfo, expInfo2));
             innerMulToken = innerMulExpNode == null ? null : innerMulExpNode.mulToken;
             innerMulExpNode = innerMulExpNode.shorterMulExpNode;
             innerUnaryExpNode = innerMulExpNode == null ? null : innerMulExpNode.unaryExpNode;

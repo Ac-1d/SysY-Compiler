@@ -90,7 +90,7 @@ public class SymbolHandler {
         rootSymbolTable = new SymbolTable(null);
         curSymbolTable = rootSymbolTable;
         ErrorHandler.getInstance().init();
-        Config.LLVM();
+        Config.llvmText();
     }
 
     public void analyse() {
