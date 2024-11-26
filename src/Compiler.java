@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class Compiler {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         Lexer lexer = Lexer.getInstace();
         Config.init();
         Config.lexer();
@@ -42,9 +42,9 @@ public class Compiler {
     }
 
     private static void llvm() {
-        String[] inputFiles = {"llvm_ir_import.txt", "llvm_ir_data.txt", "llvm_ir_text.txt"};
+        String[] inputFiles = {"llvm_ir_data.txt", "llvm_ir_text.txt"};
         String outputFile = "llvm_ir.txt";
- 
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
             for (String inputFile : inputFiles) {
                 try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {

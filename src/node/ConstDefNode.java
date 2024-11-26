@@ -18,7 +18,7 @@ public class ConstDefNode {//finish
     Token assignToken;
     ConstInitValNode constInitValNode;
     VarSymbol varSymbol;
-    ExpInfo expInfo;
+    ExpInfo expInfo = new ExpInfo();
     
     public static ConstDefNode ConstDef() {
         Parser instance = Parser.getInstance();

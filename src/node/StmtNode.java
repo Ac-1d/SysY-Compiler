@@ -518,14 +518,6 @@ public class StmtNode {
                 if (expNode != null) {
                     expNode.makeLLVM();
                     llvmGenerator.makeReturnRegStmt(expNode.expInfo);
-                    // try {
-                    //     int expValue = expNode.calculateConstExp();
-                    //     llvmGenerator.makeReturnImmStmt(expValue);
-                    // } catch (ExpNotConstException e) {
-                    //     expNode.makeLLVM();
-                    //     expInfo = expNode.expInfo;
-                    //     llvmGenerator.makeReturnRegStmt(expInfo.regIndex);
-                    // }
                 } else {
                     llvmGenerator.makeReturnStmt();
                 }
@@ -534,6 +526,7 @@ public class StmtNode {
                 lValNode.makeLLVM();
                 lValNodeExpInfo = lValNode.expInfo;
                 funcExpInfo.regIndex = llvmGenerator.makeCallFunctionStmt("getint", FuncType.Int);
+                funcExpInfo.varType = VarType.Int;
                 llvmGenerator.makeStoreStmt(funcExpInfo, lValNodeExpInfo);
                 lValNode.checkIfConst();
                 break;
@@ -542,17 +535,12 @@ public class StmtNode {
                 lValNodeExpInfo = lValNode.expInfo;
                 funcExpInfo.regIndex = llvmGenerator.makeCallFunctionStmt("getchar", FuncType.Int);
                 funcExpInfo.varType = VarType.Int;
-                funcExpInfo = llvmGenerator.makeTransStmt(funcExpInfo);
                 llvmGenerator.makeStoreStmt(funcExpInfo, lValNodeExpInfo);
                 lValNode.checkIfConst();
                 break;
             case 10: // 'printf''('StringConst {','Exp}')'';'
                 strsList = cutConstr(strconToken.getWord().substring(1, strconToken.getWord().length() - 1));
                 checkPrint();
-                // for (String str : strsList) {
-                //     llvmGenerator.makeConstrStmt(str, llvmGenerator.getStrconTokenNum(), str.length() + 1);
-                //     // llvmGenerator.makeCallFunctionStmt("print", FuncType.Void, );
-                // }
                 break;
             default:
                 break;
@@ -628,16 +616,19 @@ public class StmtNode {
             ExpNode expNode = expWithCommaNodesList.get(index++).expNode;
             expNode.makeLLVM();
             ExpInfo expInfo = expNode.expInfo;
-            if (matcher.group().equals("%c") && expInfo.isConst() == false) {//转换条件
+            if (expInfo.varType.equals(VarType.Char)) {//转换条件
                 expInfo = llvmGenerator.makeTransStmt(expInfo);
+                
             }
             FuncRParam funcRParam = new FuncRParam(expInfo, false);
             llvmGenerator.makeCallFunctionStmt(matcher.group().equals("%c") ? "putch" : "putint", FuncType.Void, funcRParam);
             lastEnd = matcher.end();
         }
         if (lastEnd != str.length()) {
+            str = str.substring(lastEnd);
             int strNum = llvmGenerator.getStrconTokenNum();
             llvmGenerator.makeConstrStmt(str, strNum, str.length() + 1);
+            llvmGenerator.makeCallPutstrStmt(strNum);
         }
         return resultList;
     }

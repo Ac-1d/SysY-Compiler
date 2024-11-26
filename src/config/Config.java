@@ -49,11 +49,13 @@ public class Config {
             System.setOut(new PrintStream(symbolOutPath));
         } catch (Exception e) {}
     }
+    public static void clearLLVMData() {
+        try (FileWriter writer = new FileWriter(LLVMConstStringPath)) {} catch (Exception e) {}
+    }
     public static void llvmText() {
         try {
             System.setOut(new PrintStream(LLVMTextPath));
         } catch (Exception e) {}
-        try (FileWriter writer = new FileWriter(LLVMConstStringPath)) {} catch (Exception e) {}
     }
     public static void llvmData() {
         try {

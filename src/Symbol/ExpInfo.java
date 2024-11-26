@@ -13,6 +13,7 @@ public class ExpInfo {
     }
     public ExpInfo(int value) {
         this.value = value;
+        this.varType = VarType.Int;
     }
     public void setExpInfo(Symbol symbol) {
         isGlobal = symbol.isGlobal();
@@ -27,6 +28,7 @@ public class ExpInfo {
 
     public void setValue(Integer value) {
         this.value = value;
+        this.varType = VarType.Int;
     }
 
     public Integer getValue() {

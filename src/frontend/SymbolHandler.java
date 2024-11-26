@@ -90,6 +90,13 @@ public class SymbolHandler {
         rootSymbolTable = new SymbolTable(null);
         curSymbolTable = rootSymbolTable;
         ErrorHandler.getInstance().init();
+        Config.clearLLVMData();
+        Config.llvmData();
+        System.out.println("declare i32 @getint()");
+        System.out.println("declare i32 @getchar()");
+        System.out.println("declare void @putint(i32)");
+        System.out.println("declare void @putch(i32)");
+        System.out.println("declare void @putstr(i8*)");
         Config.llvmText();
     }
 

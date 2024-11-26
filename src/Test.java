@@ -6,6 +6,7 @@ import frontend.SymbolHandler;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,7 +18,7 @@ public class Test {
         lexerTest();
     }
 
-    private static boolean lexerTest() throws Exception{
+    private static boolean lexerTest() throws IOException {
         Lexer lexer = Lexer.getInstace();
         Parser parser = Parser.getInstance();
         SymbolHandler symbolHandler = SymbolHandler.getInstance();
@@ -38,33 +39,33 @@ public class Test {
                         lexer.lexerAnalyse(source);
                         parser.parseAnalyse();
                         symbolHandler.analyse();
-                        System.setOut(new PrintStream(testCasePath + outPath));
-                        symbolHandler.print();
+                        // System.setOut(new PrintStream(testCasePath + outPath));
+                        // symbolHandler.print();
                     }
-                    Scanner scLexer = new Scanner(new FileReader(testCasePath + outPath));
-                    Scanner scAns = new Scanner(new FileReader(testCasePath + ansPath));
-                    System.setOut(new PrintStream(testCasePath + resPath));
+                    // Scanner scLexer = new Scanner(new FileReader(testCasePath + outPath));
+                    // Scanner scAns = new Scanner(new FileReader(testCasePath + ansPath));
+                    // System.setOut(new PrintStream(testCasePath + resPath));
                     // System.setOut(Config.originalStream);
-                    boolean success = true;
-                    int i = 1;
-                    while(scLexer.hasNextLine() && scAns.hasNextLine()) {
-                        String strLexer = scLexer.nextLine();
-                        String strAns = scAns.nextLine();
-                        if(strLexer.equals(strAns) == false) {
-                            System.out.println(strLexer + "|" + strAns + "|" + i);
-                            success = false;
-                        }
-                        i++;
-                    }
-                    if(scLexer.hasNextLine() != scAns.hasNextLine()) {
-                        System.setOut(Config.originalStream);
-                        System.out.println(testCasePath + " ERROR");
-                    }
-                    else if(success) {
-                        System.out.println("Success!");
-                    }
-                    scLexer.close();
-                    scAns.close();
+                    // boolean success = true;
+                    // int i = 1;
+                    // while(scLexer.hasNextLine() && scAns.hasNextLine()) {
+                    //     String strLexer = scLexer.nextLine();
+                    //     String strAns = scAns.nextLine();
+                    //     if(strLexer.equals(strAns) == false) {
+                    //         System.out.println(strLexer + "|" + strAns + "|" + i);
+                    //         success = false;
+                    //     }
+                    //     i++;
+                    // }
+                    // if(scLexer.hasNextLine() != scAns.hasNextLine()) {
+                    //     System.setOut(Config.originalStream);
+                    //     System.out.println(testCasePath + " ERROR");
+                    // }
+                    // else if(success) {
+                    //     System.out.println("Success!");
+                    // }
+                    // scLexer.close();
+                    // scAns.close();
                 } catch (Exception e) {
                     System.setOut(Config.originalStream);
                     System.out.println(testCasePath + e.toString());

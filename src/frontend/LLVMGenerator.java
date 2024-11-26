@@ -69,6 +69,7 @@ public class LLVMGenerator {
     }
 
     public void makeFunctionStmt(FuncType funcType, String funcName, FuncParam... funcParams) {
+        setFuncType(funcType);
         String printString = getSpace() + "define dso_local ";
         printString += funcType2LengthMap.get(funcType) + " @" + funcName + "(";
         for (int i = 0; i < funcParams.length; i++) {
@@ -99,6 +100,12 @@ public class LLVMGenerator {
     
     public int makeCalculate(Token calculateToken, ExpInfo expInfo1, ExpInfo expInfo2) {
         TokenType calTokenType = calculateToken.getType();
+        if (expInfo1.varType != VarType.Int) {
+            expInfo1 = makeTransStmt(expInfo1);
+        }
+        if (expInfo2.varType != VarType.Int) {
+            expInfo2 = makeTransStmt(expInfo2);
+        }
         int dstReg = regIndex;
         String printString = getSpace() + getReg() + " = " + tokenType2CalculateTypeMap.get(calTokenType) + " i32 " + expInfo1.getCalculateParam() + ", " + expInfo2.getCalculateParam();
         System.out.println(printString);
@@ -127,6 +134,9 @@ public class LLVMGenerator {
 
     public void makeStoreStmt(ExpInfo srcExpInfo, ExpInfo dstExpInfo) {
         VarType varType = dstExpInfo.varType;
+        if (srcExpInfo.varType != varType) {
+            srcExpInfo = makeTransStmt(srcExpInfo);
+        }
         boolean isGlobal = dstExpInfo.globalVarName != null;
         String printString = getSpace() + "store " + varType2LengthMap.get(varType) + " " + srcExpInfo.getCalculateParam() + ", " + varType2LengthMap.get(varType) + "* " + getRegSymbol(isGlobal) + dstExpInfo.getReg();
         System.out.println(printString);
@@ -141,7 +151,7 @@ public class LLVMGenerator {
 
     private FuncType funcType = FuncType.Int;
 
-    public void setFuncType(FuncType funcType) {
+    private void setFuncType(FuncType funcType) {
         this.funcType = funcType;
     }
 
@@ -149,6 +159,9 @@ public class LLVMGenerator {
     public void makeReturnRegStmt(ExpInfo expInfo) {
         int srcReg;
         String printString = getSpace() + "ret " + funcType2LengthMap.get(funcType) + " ";
+        if (expInfo.varType.toString() != funcType.toString() && expInfo.isConst() == false) {
+            expInfo = makeTransStmt(expInfo);
+        }
         if (expInfo.getValue() != null) {
             printString += expInfo.getValue();
         } else {
@@ -156,11 +169,13 @@ public class LLVMGenerator {
             printString += index2Reg(srcReg);
         }
         System.out.println(printString);
+        getReg();
     }
 
     public void makeReturnStmt() {
         String printString = getSpace() + "ret void";
         System.out.println(printString);
+        getReg();
     }
 
     //需要保证在每次调用makeVarDeclareStmt前调用setVarType
@@ -211,6 +226,7 @@ public class LLVMGenerator {
         } else {
             dstReg = regIndex;
             printString = getSpace() + getReg() + " = call " + funcType2LengthMap.get(funcType);
+
         }
         printString += " @" + funcName + "(";
         for (int i = 0; i < funcRParams.length; i++) {
@@ -231,7 +247,7 @@ public class LLVMGenerator {
         System.out.println(printString);
     }
 
-    public ExpInfo makeTransStmt(ExpInfo expInfo) {
+    public ExpInfo makeTransStmt(ExpInfo expInfo) {//要修改 还有i1😅
         int dstReg = regIndex;
         VarType srcVarType = expInfo.varType;
         int srcReg = expInfo.regIndex;

@@ -5,8 +5,10 @@ import Symbol.ExpInfo;
 import Symbol.FuncParam;
 import Symbol.FuncRParam;
 import Symbol.FuncSymbol;
+import Symbol.FuncType;
 import Symbol.Symbol;
 import Symbol.SymbolTable;
+import Symbol.VarType;
 import error.Error;
 import error.ErrorType;
 import frontend.ErrorHandler;
@@ -146,10 +148,15 @@ public class UnaryExpNode {//finish
                         funcRParams[i] = new FuncRParam(expInfo, funcParam);
                     }
                     expInfo.setReg(llvmGenerator.makeCallFunctionStmt(identToken.getWord(), funcSymbol.getFuncType(), funcRParams));
-                    expInfo.setVarType(funcSymbol.getFuncType());;
+                    if (funcSymbol.getFuncType().equals(FuncType.Int)) {
+                        expInfo.varType = VarType.Int;
+                    } else if (funcSymbol.getFuncType().equals(FuncType.Char)) {
+                        expInfo.varType = VarType.Char;
+                    }
                 } else {
                     expInfo.setReg(llvmGenerator.makeCallFunctionStmt(identToken.getWord(), funcSymbol.getFuncType()));
                 }
+                expInfo.setVarType(funcSymbol.getFuncType());
 
                 checkRParamNumError();
                 checkRParamTypeError();
