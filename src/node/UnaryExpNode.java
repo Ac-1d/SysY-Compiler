@@ -164,7 +164,7 @@ public class UnaryExpNode {//finish
             case 3://此处未考虑unaryOp为!的情况
                 shortreUnaryExpNode.makeLLVM();
                 expInfo = shortreUnaryExpNode.expInfo;
-                expInfo.setReg(llvmGenerator.makeCalculate(unaryOpNode.unaryOpToken, new ExpInfo(0), expInfo));
+                expInfo.setReg(llvmGenerator.makeCalculateStmt(unaryOpNode.unaryOpToken, new ExpInfo(0), expInfo));
             default:
                 break;
         }

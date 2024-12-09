@@ -74,7 +74,7 @@ public class EqExpNode {//finish
                 innerRelExpNode.makeLLVM();
                 expInfo2 = innerRelExpNode.expInfo;
             }
-            expInfo.setReg(llvmGenerator.makeCalculate(innerToken, expInfo2, expInfo2));
+            expInfo.setReg(llvmGenerator.makeCalculateStmt(innerToken, expInfo2, expInfo2));
             innerToken = innerEqExpNode.eqlOrNeqToken;
             innerEqExpNode = innerEqExpNode.shorterEqExpNode;
             innerRelExpNode = innerEqExpNode == null ? null : innerEqExpNode.relExpNode;

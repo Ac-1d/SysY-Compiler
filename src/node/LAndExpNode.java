@@ -70,7 +70,7 @@ public class LAndExpNode {//finish
                 innerEqExpNode.makeLLVM();
                 expInfo2 = innerEqExpNode.expInfo;
             }
-            expInfo.setReg(llvmGenerator.makeCalculate(innerToken, expInfo2, expInfo2));
+            expInfo.setReg(llvmGenerator.makeCalculateStmt(innerToken, expInfo2, expInfo2));
             innerToken = innerLAndExpNode.andToken;
             innerLAndExpNode = innerLAndExpNode.shorterLAndExpNode;
             innerEqExpNode = innerLAndExpNode == null ? null : innerLAndExpNode.eqExpNode;

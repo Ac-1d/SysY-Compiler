@@ -74,7 +74,7 @@ public class AddExpNode {//finish
                 innerMulExpNode.makeLLVM();
                 expInfo2 = innerMulExpNode.expInfo;
             }
-            expInfo.setReg(llvmGenerator.makeCalculate(innerAddToken, expInfo, expInfo2));
+            expInfo.setReg(llvmGenerator.makeCalculateStmt(innerAddToken, expInfo, expInfo2));
             innerAddToken = innerAddExpNode == null ? null : innerAddExpNode.addToken;
             innerAddExpNode = innerAddExpNode.shorterAddExpNode;
             innerMulExpNode = innerAddExpNode == null ? null : innerAddExpNode.mulExpNode;

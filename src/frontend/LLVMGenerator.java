@@ -69,7 +69,7 @@ public class LLVMGenerator {
     }
 
     public void makeFunctionStmt(FuncType funcType, String funcName, FuncParam... funcParams) {
-        setFuncType(funcType);
+        this.funcType = funcType;
         String printString = getSpace() + "define dso_local ";
         printString += funcType2LengthMap.get(funcType) + " @" + funcName + "(";
         for (int i = 0; i < funcParams.length; i++) {
@@ -98,7 +98,7 @@ public class LLVMGenerator {
         System.out.println(printString);
     }
     
-    public int makeCalculate(Token calculateToken, ExpInfo expInfo1, ExpInfo expInfo2) {
+    public int makeCalculateStmt(Token calculateToken, ExpInfo expInfo1, ExpInfo expInfo2) {
         TokenType calTokenType = calculateToken.getType();
         if (expInfo1.varType != VarType.Int) {
             expInfo1 = makeTransStmt(expInfo1);
@@ -150,10 +150,6 @@ public class LLVMGenerator {
     }
 
     private FuncType funcType = FuncType.Int;
-
-    private void setFuncType(FuncType funcType) {
-        this.funcType = funcType;
-    }
 
     //我们在return语句中知晓其是否有返回值，故这一步骤不在此处判断
     public void makeReturnRegStmt(ExpInfo expInfo) {
@@ -304,7 +300,7 @@ public class LLVMGenerator {
     }
 
     //为了保证读取regIndex时自增
-    private String getReg() {
+    public String getReg() {
         return "%" + regIndex++;
     }
 
