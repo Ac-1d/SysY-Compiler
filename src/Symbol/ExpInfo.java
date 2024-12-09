@@ -31,6 +31,11 @@ public class ExpInfo {
         this.varType = VarType.Int;
     }
 
+    public void setValue(boolean value) {
+        this.value = value ? 1 : 0;
+        this.varType = VarType.Int;
+    }
+
     public Integer getValue() {
         return value;
     }

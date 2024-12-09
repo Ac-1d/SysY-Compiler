@@ -1,9 +1,13 @@
 package node;
 
+import Exception.ExpNotConstException;
+import Symbol.ExpInfo;
+
 public class CondNode {//finish
     // Cond → LOrExp 
 
     LOrExpNode lOrExpNode;
+    ExpInfo expInfo = new ExpInfo();
 
     public static CondNode Cond() {
         CondNode condNode = new CondNode();
@@ -21,8 +25,17 @@ public class CondNode {//finish
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
-        lOrExpNode.setupSymbolTable();
+    void makeLLVM() {
+        try {
+            expInfo.setValue(calculateConstExp());
+        } catch (Exception e) {
+            lOrExpNode.makeLLVM();
+            
+        }
+    }
+
+    int calculateConstExp() throws ExpNotConstException {
+        return lOrExpNode.calculateConstExp() == true ? 1 : 0;
     }
 
     public String toString() {

@@ -1,5 +1,8 @@
 package node;
 
+import Exception.ExpNotConstException;
+import Symbol.ExpInfo;
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -10,6 +13,7 @@ public class RelExpNode {//finish
     AddExpNode addExpNode;
     Token token;
     RelExpNode shorterRelExpNode;
+    ExpInfo expInfo = new ExpInfo();
 
     public static RelExpNode RelExp() {
         Parser instance = Parser.getInstance();
@@ -47,11 +51,60 @@ public class RelExpNode {//finish
         }
     }
 
-    void setupSymbolTable() {
-        addExpNode.makeLLVM();
-        if (shorterRelExpNode != null) {
-            shorterRelExpNode.setupSymbolTable();
+    void makeLLVM() {
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
+        ExpInfo expInfo2 = new ExpInfo();
+        RelExpNode innerRelExpNode = shorterRelExpNode;
+        AddExpNode innerAddExpNode = innerRelExpNode == null ? null : innerRelExpNode.addExpNode;
+        Token innerToken = token;
+        try {
+            expInfo.setValue(addExpNode.calculateConstExp());
+        } catch (ExpNotConstException e) {
+            addExpNode.makeLLVM();
+            expInfo = addExpNode.expInfo;
         }
+        while (innerAddExpNode != null) {
+            try {
+                expInfo2.setValue(innerAddExpNode.calculateConstExp());
+            } catch (ExpNotConstException e) {
+                innerAddExpNode.makeLLVM();
+                expInfo2 = innerAddExpNode.expInfo;
+            }
+            expInfo.setReg(llvmGenerator.makeCalculate(innerToken, expInfo2, expInfo2));
+            innerToken = innerRelExpNode.token;
+            innerRelExpNode = innerRelExpNode.shorterRelExpNode;
+            innerAddExpNode = innerRelExpNode == null ? null : innerRelExpNode.addExpNode;
+        }
+    }
+
+    int calculateConstExp() throws ExpNotConstException {
+        int ans = addExpNode.calculateConstExp();
+        AddExpNode innerAddExpNode;
+        RelExpNode innerRelExpNode = shorterRelExpNode;
+        Token token = this.token;
+        innerAddExpNode = innerRelExpNode == null ? null : innerRelExpNode.addExpNode;
+        while (innerAddExpNode != null) {
+            switch (token.getType()) {
+                case LSS:
+                    ans = ans < innerAddExpNode.calculateConstExp() ? 1 : 0;
+                    break;
+                case LEQ:
+                    ans = ans <= innerAddExpNode.calculateConstExp() ? 1 : 0;
+                    break;
+                case GRE:
+                    ans = ans > innerAddExpNode.calculateConstExp() ? 1 : 0;
+                    break;
+                case GEQ:
+                    ans = ans <= innerAddExpNode.calculateConstExp() ? 1 : 0;
+                    break;
+                default:
+                    break;
+            }
+            token = innerRelExpNode.token;
+            innerRelExpNode = innerRelExpNode.shorterRelExpNode;
+            innerAddExpNode = innerRelExpNode == null ? null : innerRelExpNode.addExpNode;
+        }
+        return ans;
     }
 
     @Override

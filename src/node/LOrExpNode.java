@@ -1,5 +1,6 @@
 package node;
 
+import Exception.ExpNotConstException;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -47,11 +48,23 @@ public class LOrExpNode {//finish
         }
     }
 
-    void setupSymbolTable() {
-        lAndExpNode.setupSymbolTable();
+    void makeLLVM() {
+        lAndExpNode.makeLLVM();
         if (shorterLOrExpNode != null) {
-            shorterLOrExpNode.setupSymbolTable();
+            shorterLOrExpNode.makeLLVM();
         }
+    }
+
+    boolean calculateConstExp() throws ExpNotConstException {
+        boolean ans = lAndExpNode.calculateConstExp();
+        LOrExpNode innerOrExpNode = shorterLOrExpNode;
+        LAndExpNode innerAndExpNode = innerOrExpNode == null ? null : innerOrExpNode.lAndExpNode;
+        while (innerAndExpNode != null) {
+            ans = ans || innerAndExpNode.calculateConstExp();
+            innerOrExpNode = innerOrExpNode.shorterLOrExpNode;
+            innerAndExpNode = innerOrExpNode == null ? null : innerOrExpNode.lAndExpNode;
+        }
+        return ans;
     }
 
     @Override

@@ -493,8 +493,8 @@ public class StmtNode {
             case 3:
                 blockNode.makeLLVM(false);
                 break;
-            case 4:
-                condNode.setupSymbolTable();
+            case 4:// if
+                condNode.makeLLVM();
                 stmtNode1.makeLLVM();
                 if(stmtNode2 != null) {
                     stmtNode2.makeLLVM();
@@ -506,7 +506,7 @@ public class StmtNode {
                     forStmtNode1.setupSymbolTable();
                 }
                 if (condNode != null) {
-                    condNode.setupSymbolTable(); 
+                    condNode.makeLLVM(); 
                 }
                 if (forStmtNode2 != null) {
                     forStmtNode2.setupSymbolTable();
