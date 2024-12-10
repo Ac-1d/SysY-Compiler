@@ -1,4 +1,5 @@
 import config.Config;
+import frontend.LLVMGenerator;
 import frontend.Lexer;
 import frontend.Parser;
 import frontend.SymbolHandler;
@@ -38,6 +39,7 @@ public class Compiler {
         }
         SymbolHandler symbolHandler = SymbolHandler.getInstance();
         symbolHandler.analyse();
+        LLVMGenerator.getInstance().print();
         llvm();
     }
 

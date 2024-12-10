@@ -1,6 +1,8 @@
 package node;
 
 import Exception.ExpNotConstException;
+import Symbol.ExpInfo;
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -11,6 +13,7 @@ public class LOrExpNode {//finish
     LAndExpNode lAndExpNode;
     LOrExpNode shorterLOrExpNode;
     Token orToken;
+    ExpInfo expInfo = new ExpInfo();
 
     public static LOrExpNode LOrExp() {
         Parser instance = Parser.getInstance();
@@ -49,9 +52,28 @@ public class LOrExpNode {//finish
     }
 
     void makeLLVM() {
-        lAndExpNode.makeLLVM();
-        if (shorterLOrExpNode != null) {
-            shorterLOrExpNode.makeLLVM();
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
+        ExpInfo expInfo2 = new ExpInfo();
+        LOrExpNode innerLOrExpNode = shorterLOrExpNode;
+        LAndExpNode innerLAndExpNode = shorterLOrExpNode == null ? null : innerLOrExpNode.lAndExpNode;
+        Token innerToken = orToken;
+        try {
+            expInfo.setValue(lAndExpNode.calculateConstExp());
+        } catch (ExpNotConstException e) {
+            lAndExpNode.makeLLVM();
+            expInfo = lAndExpNode.expInfo;
+        }
+        while (innerLAndExpNode != null) {
+            try {
+                expInfo2.setValue(innerLOrExpNode.calculateConstExp());
+            } catch (ExpNotConstException e) {
+                innerLOrExpNode.makeLLVM();
+                expInfo2 = innerLOrExpNode.expInfo;
+            }
+            expInfo.setReg(llvmGenerator.makeCalculateStmt(innerToken, expInfo2, expInfo2));
+            innerToken = innerLOrExpNode.orToken;
+            innerLOrExpNode = innerLOrExpNode.shorterLOrExpNode;
+            innerLAndExpNode = innerLOrExpNode == null ? null : innerLOrExpNode.lAndExpNode;
         }
     }
 

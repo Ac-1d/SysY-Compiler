@@ -27,15 +27,11 @@ public class CondNode {//finish
 
     void makeLLVM() {
         try {
-            expInfo.setValue(calculateConstExp());
-        } catch (Exception e) {
+            expInfo.setValue(lOrExpNode.calculateConstExp());
+        } catch (ExpNotConstException e) {
             lOrExpNode.makeLLVM();
-            
+            expInfo = lOrExpNode.expInfo;
         }
-    }
-
-    int calculateConstExp() throws ExpNotConstException {
-        return lOrExpNode.calculateConstExp() == true ? 1 : 0;
     }
 
     public String toString() {

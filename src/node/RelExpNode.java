@@ -95,7 +95,7 @@ public class RelExpNode {//finish
                     ans = ans > innerAddExpNode.calculateConstExp() ? 1 : 0;
                     break;
                 case GEQ:
-                    ans = ans <= innerAddExpNode.calculateConstExp() ? 1 : 0;
+                    ans = ans >= innerAddExpNode.calculateConstExp() ? 1 : 0;
                     break;
                 default:
                     break;

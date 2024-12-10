@@ -494,11 +494,20 @@ public class StmtNode {
                 blockNode.makeLLVM(false);
                 break;
             case 4:// if
+                int label1, label2;
                 condNode.makeLLVM();
+                llvmGenerator.makeIfStmt(condNode.expInfo);
+                label1 = llvmGenerator.setLabel();
                 stmtNode1.makeLLVM();
+                llvmGenerator.quitIfStmt();
                 if(stmtNode2 != null) {
+                    label2 = llvmGenerator.setLabel();
                     stmtNode2.makeLLVM();
+                    llvmGenerator.quitIfStmt();
+                    llvmGenerator.setBr(label1, label2);
+                    break;
                 }
+                llvmGenerator.setBr(label1);
                 break;
             case 5:
                 ErrorHandler.loopNum++;

@@ -1,5 +1,8 @@
 package frontend;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +21,14 @@ public class LLVMGenerator {
     private LLVMGenerator() {}
     public static LLVMGenerator getInstance() {
         return instance;
+    }
+
+    private List<String> printStrings = new ArrayList<>();
+
+    public void print() {
+        for (String string : printStrings) {
+            System.out.println(string);
+        }
     }
 
     public void init() {
@@ -53,6 +64,9 @@ public class LLVMGenerator {
         put(TokenType.MULT, "mul nsw");
         put(TokenType.DIV, "sdiv");
         put(TokenType.MOD, "srem");
+        put(TokenType.AND, "and");
+        put(TokenType.OR, "or");
+
     }};
 
     private int blockDeep = 0;
@@ -80,7 +94,10 @@ public class LLVMGenerator {
             printString += varType2LengthMap.get(funcParam.getVarType()) + " " + getReg();
         }
         printString += "){";
-        System.out.println(printString);
+        printStrings.add(printString);
+        // for label
+        currentLabel.clear();
+        currentLabel.push(regIndex);
         enterBlock();
     }
 
@@ -95,7 +112,7 @@ public class LLVMGenerator {
     public void makeFunctionEnd() {
         exitBlock();
         String printString = getSpace() + "}";
-        System.out.println(printString);
+        printStrings.add(printString);
     }
     
     public int makeCalculateStmt(Token calculateToken, ExpInfo expInfo1, ExpInfo expInfo2) {
@@ -108,7 +125,19 @@ public class LLVMGenerator {
         }
         int dstReg = regIndex;
         String printString = getSpace() + getReg() + " = " + tokenType2CalculateTypeMap.get(calTokenType) + " i32 " + expInfo1.getCalculateParam() + ", " + expInfo2.getCalculateParam();
-        System.out.println(printString);
+        printStrings.add(printString);
+        return dstReg;
+    }
+
+    public int makeLogicCalculateStmt(Token calculateToken, ExpInfo expInfo1, ExpInfo expInfo2) {
+        if (expInfo1.varType != VarType.Int) {
+            expInfo1 = makeTransStmt(expInfo1);
+        }
+        if (expInfo2.varType != VarType.Int) {
+            expInfo2 = makeTransStmt(expInfo2);
+        }
+        int dstReg = regIndex;
+        
         return dstReg;
     }
 
@@ -116,20 +145,20 @@ public class LLVMGenerator {
     private int makeAllocaStmt(VarType varType) {
         int srcRegPtr = regIndex;
         String printString = getSpace() + getReg() + " = alloca " + varType2LengthMap.get(varType);
-        System.out.println(printString);
+        printStrings.add(printString);
         return srcRegPtr;
     }
 
     private void makeStoreImmStmt(int imm, int dstReg, VarType varType) {
         String printString = getSpace() + "store " + varType2LengthMap.get(varType) + " " + imm + ", " + varType2LengthMap.get(varType) + "* " + index2Reg(dstReg);
-        System.out.println(printString);
+        printStrings.add(printString);
     }
 
     private void makeStoreRegStmt(int srcReg, ExpInfo dstExpInfo) {
         VarType varType = dstExpInfo.varType;
         boolean isGlobal = dstExpInfo.globalVarName != null;
         String printString = getSpace() + "store " + varType2LengthMap.get(varType) + " " + index2Reg(srcReg) + ", " + varType2LengthMap.get(varType) + "* " + getRegSymbol(isGlobal) + dstExpInfo.getReg();
-        System.out.println(printString);
+        printStrings.add(printString);
     }
 
     public void makeStoreStmt(ExpInfo srcExpInfo, ExpInfo dstExpInfo) {
@@ -139,13 +168,13 @@ public class LLVMGenerator {
         }
         boolean isGlobal = dstExpInfo.globalVarName != null;
         String printString = getSpace() + "store " + varType2LengthMap.get(varType) + " " + srcExpInfo.getCalculateParam() + ", " + varType2LengthMap.get(varType) + "* " + getRegSymbol(isGlobal) + dstExpInfo.getReg();
-        System.out.println(printString);
+        printStrings.add(printString);
     }
 
     public int makeLoadStmt(ExpInfo expInfo) {
         int dstReg = regIndex;
         String printString = getSpace() + getReg() + " = load " + varType2LengthMap.get(expInfo.varType) + ", " + varType2LengthMap.get(expInfo.varType) + "* " + (expInfo.isGlobal ? "@" : "%") + expInfo.getReg();
-        System.out.println(printString);
+        printStrings.add(printString);
         return dstReg;
     }
 
@@ -164,13 +193,13 @@ public class LLVMGenerator {
             srcReg = expInfo.regIndex;
             printString += index2Reg(srcReg);
         }
-        System.out.println(printString);
+        printStrings.add(printString);
         getReg();
     }
 
     public void makeReturnStmt() {
         String printString = getSpace() + "ret void";
-        System.out.println(printString);
+        printStrings.add(printString);
         getReg();
     }
 
@@ -203,7 +232,7 @@ public class LLVMGenerator {
 
     private void makeGlobalDeclStmt(String name, int value) {
         String printString = getSpace() + "@" + name + " = dso_local global " + varType2LengthMap.get(declareVarType) + " " + value;
-        System.out.println(printString);
+        printStrings.add(printString);
     }
 
     private int makeLocalDeclStmt(Integer value) {
@@ -233,14 +262,14 @@ public class LLVMGenerator {
             printString += varType2LengthMap.get(funcRParam.getVarType()) + " " + funcRParam.getExpInfo().getCalculateParam();
         }
         printString += ")";
-        System.out.println(printString);
+        printStrings.add(printString);
         return dstReg;
     }
 
     public void makeCallPutstrStmt(int strNum) {
         int length = strNum2LengthMap.get(strNum);
         String printString = getSpace() + "call void @putstr(i8* getelementptr inbounds ([" + length + " x i8], [" + length + " x i8]* @.str." + strNum + ", i64 0, i64 0))";
-        System.out.println(printString);
+        printStrings.add(printString);
     }
 
     public ExpInfo makeTransStmt(ExpInfo expInfo) {//要修改 还有i1😅
@@ -249,7 +278,7 @@ public class LLVMGenerator {
         int srcReg = expInfo.regIndex;
         VarType dstVarType = srcVarType.equals(VarType.Int) ? VarType.Char : VarType.Int;
         String printString = getSpace() + getReg() + " = " + (srcVarType.equals(VarType.Int) ? "trunc" : "zext") + " " + varType2LengthMap.get(srcVarType) + " " + index2Reg(srcReg) + " to " + varType2LengthMap.get(dstVarType);
-        System.out.println(printString);
+        printStrings.add(printString);
         expInfo.setReg(dstReg);
         expInfo.varType = dstVarType;
         return expInfo;
@@ -262,6 +291,86 @@ public class LLVMGenerator {
         Config.llvmData();
         System.out.println(printString);
         Config.continueLLVMText();
+    }
+
+    public int makeIfStmt(ExpInfo expInfo) {
+        int dstReg = regIndex;
+        String printString = getSpace() + getReg() + " = icmp ne " + varType2LengthMap.get(expInfo.varType) + " " + expInfo.getCalculateParam() + ", 0";
+        printStrings.add(printString);
+        printString = "br in" + dstReg;
+        printStrings.add(printString);
+        return dstReg;
+    }
+
+    private Deque<Integer> currentLabel = new ArrayDeque<>();
+
+    public int setLabel() {
+        int label = regIndex;
+        // currentLabel.add(label);
+        String printString = regIndex + ":  ; preds = %";
+        getReg();
+        printString += currentLabel.peek();
+        currentLabel.push(label);
+        printStrings.add(printString);
+        return label;
+    }
+
+    public void quitIfStmt() {
+        String printString = "br out";
+        printStrings.add(printString);
+        currentLabel.pop();
+    }
+
+    public void setBr(int label1, int label2) {
+        for(int i = printStrings.size() - 1; i >= 0; i--) {
+            String str = printStrings.get(i);
+            String tag = "br in";
+            if (str.startsWith(tag)) {
+                String reg = str.substring(tag.length());
+                printStrings.set(i, getSpace() + "br i1 %" + reg + ", label %" + label1 + ", label %" + label2);
+                break;
+            }
+        }
+        int num = 2;
+        for(int i = printStrings.size() - 1; i >= 0; i--) {
+            String str = printStrings.get(i);
+            String tag = "br out";
+            if (str.startsWith(tag)) {
+                printStrings.set(i, getSpace() + "br label %" + regIndex);
+                num--;
+                if (num == 0) {
+                    break;
+                }
+            }
+        }
+        printStrings.add(regIndex + ":  ; preds = %" + label1 + ", %" + label2);
+        getReg();
+    }
+
+    public void setBr(int label) {
+        for(int i = printStrings.size() - 1; i >= 0; i--) {
+            String str = printStrings.get(i);
+            String tag = "br in";
+            if (str.startsWith(tag)) {
+                String reg = str.substring(tag.length());
+                printStrings.set(i, getSpace() + "br i1 %" + reg + ", label %" + label + ", label %" + regIndex);
+                break;
+            }
+        }
+        int num = 1;
+        for(int i = printStrings.size() - 1; i >= 0; i--) {
+            String str = printStrings.get(i);
+            String tag = "br out";
+            if (str.startsWith(tag)) {
+                printStrings.set(i, getSpace() + "br label %" + regIndex);
+                num--;
+                if (num == 0) {
+                    break;
+                }
+            }
+        }
+        printStrings.add(regIndex + ":  ; preds = %" + label + ", %" + currentLabel.peek());
+        getReg();
     }
 
     private String dealConstr(String constr, int length) {

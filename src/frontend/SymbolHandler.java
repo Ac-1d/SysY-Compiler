@@ -98,6 +98,7 @@ public class SymbolHandler {
         System.out.println("declare void @putch(i32)");
         System.out.println("declare void @putstr(i8*)");
         Config.llvmText();
+        LLVMGenerator.getInstance().init();
     }
 
     public void analyse() {
