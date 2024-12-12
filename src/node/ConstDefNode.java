@@ -77,12 +77,13 @@ public class ConstDefNode {//finish
                 expInfo = new ExpInfo(null, reg);
                 break;
             case 2:
+                expInfo.setReg(llvmGenerator.makeArrayDeclStmt(identToken.getWord(), defArrayNode.constExpValue, constInitValNode.expInfos));
+                expInfo.length = defArrayNode.constExpValue;
                 break;
             case 3:
                 String str = constInitValNode.strconToken.getWord();
-                llvmGenerator.makeConstrStmt(str.substring(1, str.length() - 1), constInitValNode.strconTokenNum, defArrayNode.constExpValue);
-                expInfo = new ExpInfo();
-                expInfo.globalVarName = ".str." + constInitValNode.strconTokenNum;
+                expInfo.setReg(llvmGenerator.makeStrDeclStmt(str, identToken.getWord(), defArrayNode.constExpValue));
+                expInfo.length = defArrayNode.constExpValue;
                 break;
         }
     }

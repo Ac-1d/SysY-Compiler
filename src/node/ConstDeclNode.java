@@ -84,6 +84,7 @@ public class ConstDeclNode {//finish
         constDefNode.varSymbol = varSymbol;
         constDefNode.makeLLVM();
         varSymbol.setReg(constDefNode.expInfo.regIndex);
+        varSymbol.setLength(constDefNode.expInfo.length);
         //solve '{, ConstDef}'
         for (MultipleDeclNode multipleDeclNode : multipleDeclNodesList) {
             identToken = multipleDeclNode.constDefNode.identToken;
@@ -93,6 +94,7 @@ public class ConstDeclNode {//finish
             multipleDeclNode.constDefNode.varSymbol = varSymbol;
             multipleDeclNode.constDefNode.makeLLVM();
             varSymbol.setReg(multipleDeclNode.constDefNode.expInfo.regIndex);
+            varSymbol.setLength(constDefNode.expInfo.length);
         }
 
     }

@@ -3,10 +3,10 @@ package node;
 import java.util.ArrayList;
 import java.util.List;
 
+import Symbol.ExpInfo;
 import Symbol.FuncParam;
 import Symbol.FuncSymbol;
 import Symbol.FuncType;
-import Symbol.Symbol;
 import Symbol.SymbolTable;
 import Symbol.VarSymbol;
 import Symbol.VarType;
@@ -138,9 +138,13 @@ public class FuncDefNode {//finish
             } else {
                 funcFParamNode = funcFParamsNode.funcFParamWithCommaNodesList.get(i - 1).funcFParamNode;
             }
-            Symbol symbol = symbolHandler.getCurSymbolTable().findSymbol(funcFParamNode.identToken);
+            VarSymbol symbol = (VarSymbol) symbolHandler.getCurSymbolTable().findSymbol(funcFParamNode.identToken);
             llvmGenerator.setVarType(funcFParamNode.bTypeNode.intOrCharToken);
-            symbol.setReg(llvmGenerator.makeDeclStmt(i));
+            if (symbol.isArray() == false) {
+                symbol.setReg(llvmGenerator.makeDeclStmt(new ExpInfo(funcFParamNode.bTypeNode.intOrCharToken.getType().equals(TokenType.CHARTK) ? VarType.Char : VarType.Int, i), symbol.isArray()));
+            } else {
+                symbol.setReg(i);
+            }
         }
 
         blockNode.makeLLVM(true);

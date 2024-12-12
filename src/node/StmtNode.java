@@ -619,7 +619,7 @@ public class StmtNode {
             if (lastEnd != matcher.start()) {
                 String cuttedString = str.substring(lastEnd, matcher.start());
                 int strNum = llvmGenerator.getStrconTokenNum();
-                llvmGenerator.makeConstrStmt(cuttedString, strNum, cuttedString.length() + 1);
+                llvmGenerator.makeConstrStmt(cuttedString, strNum);
                 llvmGenerator.makeCallPutstrStmt(strNum);
             }
             ExpNode expNode = expWithCommaNodesList.get(index++).expNode;
@@ -636,7 +636,7 @@ public class StmtNode {
         if (lastEnd != str.length()) {
             str = str.substring(lastEnd);
             int strNum = llvmGenerator.getStrconTokenNum();
-            llvmGenerator.makeConstrStmt(str, strNum, str.length() + 1);
+            llvmGenerator.makeConstrStmt(str, strNum);
             llvmGenerator.makeCallPutstrStmt(strNum);
         }
         return resultList;

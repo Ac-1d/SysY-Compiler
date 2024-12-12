@@ -70,7 +70,7 @@ public class RelExpNode {//finish
                 innerAddExpNode.makeLLVM();
                 expInfo2 = innerAddExpNode.expInfo;
             }
-            expInfo.setReg(llvmGenerator.makeCalculateStmt(innerToken, expInfo2, expInfo2));
+            expInfo.setReg(llvmGenerator.makeCalculateStmt(innerToken, expInfo, expInfo2));
             innerToken = innerRelExpNode.token;
             innerRelExpNode = innerRelExpNode.shorterRelExpNode;
             innerAddExpNode = innerRelExpNode == null ? null : innerRelExpNode.addExpNode;

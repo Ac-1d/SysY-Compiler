@@ -8,7 +8,7 @@ public class FuncRParam extends FuncParam{
     }
 
     public FuncRParam(ExpInfo expInfo, FuncParam funcParam) {
-        super(funcParam.getVarType(), funcParam.getIsArray());
+        super(funcParam.getVarType(), funcParam.isArray());
         this.expInfo = expInfo;
     }
 

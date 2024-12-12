@@ -74,6 +74,7 @@ public class VarDeclNode {//finish
         varDefNode.varSymbol = varSymbol;
         varDefNode.makeLLVM();
         varSymbol.setReg(varDefNode.expInfo.regIndex);
+        varSymbol.setLength(varDefNode.expInfo.length);
         // solve '{ ',' VarDef }'
         for (MultifyVarDefNode multifyVarDefNode : multifyVarDefNodesList) {
             identToken = multifyVarDefNode.varDefNode.identToken;
@@ -83,6 +84,7 @@ public class VarDeclNode {//finish
             multifyVarDefNode.varDefNode.varSymbol = varSymbol;
             multifyVarDefNode.varDefNode.makeLLVM();
             varSymbol.setReg(multifyVarDefNode.varDefNode.expInfo.regIndex);
+            varSymbol.setLength(varDefNode.expInfo.length);
         }
     }
 

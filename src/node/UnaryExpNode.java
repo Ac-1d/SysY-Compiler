@@ -211,11 +211,11 @@ public class UnaryExpNode {//finish
             FuncParam funcParam = funcSymbol.getFuncParamsList().get(i);
             ExpNode expNode;
             if (i == 0) {//exp
-                if (funcParam.getIsArray() != funcRParamsNode.expNode.isArray) {//数组与变量
+                if (funcParam.isArray() != funcRParamsNode.expNode.isArray) {//数组与变量
                     errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.e));
                     break;
                 }
-                if (funcParam.getIsArray() == true) {
+                if (funcParam.isArray() == true) {
                     if (funcParam.getVarType().equals(funcRParamsNode.expNode.varType) == false) {//数组，但是类型不同
                         errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.e));
                         break;
@@ -223,11 +223,11 @@ public class UnaryExpNode {//finish
                 }
             } else {
                 expNode = funcRParamsNode.paramNodesList.get(i - 1).expNode;
-                if (funcParam.getIsArray() != expNode.isArray) {//数组与变量
+                if (funcParam.isArray() != expNode.isArray) {//数组与变量
                     errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.e));
                     break;
                 }
-                if (funcParam.getIsArray() == true) {
+                if (funcParam.isArray() == true) {
                     if (funcParam.getVarType().equals(expNode.varType) == false) {//数组，但是类型不同
                         errorHandler.addError(new Error(identToken.getLineNum(), ErrorType.e));
                         break;

@@ -1,7 +1,9 @@
 package node;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import Symbol.ExpInfo;
 import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
@@ -18,6 +20,7 @@ public class ConstInitValNode {//finish
     int strconTokenNum;
     int state;
     int constExpValue;
+    List<ExpInfo> expInfos = new ArrayList<>();
     
     public static ConstInitValNode ConstInitVal() {
         Parser instance = Parser.getInstance();
@@ -110,10 +113,12 @@ public class ConstInitValNode {//finish
                 if (constExpNode != null) {
                     // constExpNode.setupSymbolTable();
                     constExpValue = constExpNode.calculateConstExp();
+                    expInfos.add(new ExpInfo(constExpValue));
                 }
                 for (InitArrayNode initArrayNode : initArrayNodesList) {
                     // initArrayNode.constExpNode.setupSymbolTable();
                     initArrayNode.constExpValue = initArrayNode.constExpNode.calculateConstExp();
+                    expInfos.add(new ExpInfo(initArrayNode.constExpValue));
                 }
                 break;
             case 3:

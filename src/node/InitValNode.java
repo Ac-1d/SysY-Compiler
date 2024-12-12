@@ -1,11 +1,12 @@
 package node;
 
-import frontend.LLVMGenerator;
+// import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import Symbol.ExpInfo;
 
@@ -18,9 +19,10 @@ public class InitValNode {//finish maybe some mistake
     ArrayList<InitArrayNode> initArrayNodesList = new ArrayList<>();
     Token rbraceToken;
     Token strconToken;
-    int strconTokenNum;
+    // int strconTokenNum;
     int state;
     ExpInfo expInfo = new ExpInfo();
+    List<ExpInfo> expInfos = new ArrayList<>();
     
     public static InitValNode InitVal() {
         Parser instance = Parser.getInstance();
@@ -101,7 +103,7 @@ public class InitValNode {//finish maybe some mistake
     }
 
     void makeLLVM() {
-        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
+        // LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
         switch (state) {
             case 1:
                 expNode.makeLLVM();
@@ -110,13 +112,15 @@ public class InitValNode {//finish maybe some mistake
             case 2:
                 expNode.makeLLVM();
                 expInfo = expNode.expInfo;
+                expInfos.add(expInfo);
                 for (InitArrayNode initArrayNode : initArrayNodesList) {
                     initArrayNode.expNode.makeLLVM();
                     initArrayNode.expInfo = initArrayNode.expNode.expInfo;
+                    expInfos.add(initArrayNode.expInfo);
                 }
                 break;
             case 3:
-                strconTokenNum = llvmGenerator.getStrconTokenNum();
+                // strconTokenNum = llvmGenerator.getStrconTokenNum();
                 break;
             default:
                 break;

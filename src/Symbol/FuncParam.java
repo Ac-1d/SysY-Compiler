@@ -13,7 +13,7 @@ public class FuncParam {
         return varType;
     }
 
-    public boolean getIsArray() {
+    public boolean isArray() {
         return isArray;
     }
 }

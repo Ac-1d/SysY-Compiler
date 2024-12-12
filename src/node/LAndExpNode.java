@@ -59,21 +59,28 @@ public class LAndExpNode {//finish
         Token innerToken = andToken;
         try {
             expInfo.setValue(eqExpNode.calculateConstExp());
+            if (expInfo.getValue() == 1) {
+                // return;
+            }
         } catch (ExpNotConstException e) {
             eqExpNode.makeLLVM();
             expInfo = eqExpNode.expInfo;
         }
         while (innerEqExpNode != null) {
+            llvmGenerator.makeAndIfStmt(expInfo);
+            int label = llvmGenerator.setLabel();
             try {
                 expInfo2.setValue(innerEqExpNode.calculateConstExp());
             } catch (ExpNotConstException e) {
                 innerEqExpNode.makeLLVM();
                 expInfo2 = innerEqExpNode.expInfo;
             }
-            expInfo.setReg(llvmGenerator.makeCalculateStmt(innerToken, expInfo2, expInfo2));
+            expInfo.setReg(llvmGenerator.makeCalculateStmt(innerToken, expInfo, expInfo2));
             innerToken = innerLAndExpNode.andToken;
             innerLAndExpNode = innerLAndExpNode.shorterLAndExpNode;
             innerEqExpNode = innerLAndExpNode == null ? null : innerLAndExpNode.eqExpNode;
+            llvmGenerator.quitIfStmt();
+            llvmGenerator.setBr(label);
         }
     }
 

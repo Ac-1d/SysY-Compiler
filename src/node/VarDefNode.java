@@ -4,6 +4,9 @@ import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
+
+import java.util.ArrayList;
+
 import Symbol.ExpInfo;
 import Symbol.VarSymbol;
 import error.Error;
@@ -78,21 +81,30 @@ public class VarDefNode {//finish
             expInfo = initValNode.expInfo;
         }
         if (initValNode == null) {//无初始化
-            expInfo.regIndex = llvmGenerator.makeDeclStmt(identToken.getWord(), null);
+            if (defArrayNode == null) {
+                expInfo.regIndex = llvmGenerator.makeDeclStmt(identToken.getWord(), null);
+            } else {// case 2
+                expInfo.setReg(llvmGenerator.makeArrayDeclStmt(identToken.getWord(), defArrayNode.constExpValue, new ArrayList<>()));
+                expInfo.length = defArrayNode.constExpValue;
+            }
         } else {
             switch (initValNode.state) {
                 case 1:
                     if (initValNode.expNode.expInfo.getValue() != null) {//有初始化 编译期可计算
                         expInfo.regIndex = llvmGenerator.makeDeclStmt(identToken.getWord(), initValNode.expNode.expInfo.getValue());
                     } else {//有初始化 编译期不可计算
-                        expInfo.regIndex = llvmGenerator.makeDeclStmt(expInfo.regIndex);
+                        
+                        expInfo.regIndex = llvmGenerator.makeDeclStmt(expInfo);
                     }
                     break;
                 case 2:
+                    expInfo.setReg(llvmGenerator.makeArrayDeclStmt(identToken.getWord(), defArrayNode.constExpValue, initValNode.expInfos));
+                    expInfo.length = defArrayNode.constExpValue;
                     break;
                 case 3:
                     String str = initValNode.strconToken.getWord();
-                    llvmGenerator.makeConstrStmt(str.substring(1, str.length() - 1), initValNode.strconTokenNum, defArrayNode.constExpValue);
+                    expInfo.setReg(llvmGenerator.makeStrDeclStmt(str, identToken.getWord(), defArrayNode.constExpValue));
+                    expInfo.length = defArrayNode.constExpValue;
                     break;
                 default:
                     break;

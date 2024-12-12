@@ -3,6 +3,8 @@ package Symbol;
 /**存储变量类型、寄存器编号/全局变量名称 */
 public class ExpInfo {
     public VarType varType;
+    public boolean isArray;
+    public int length;
     public int regIndex;
     public String globalVarName;
     public boolean isGlobal = false;
@@ -15,14 +17,22 @@ public class ExpInfo {
         this.value = value;
         this.varType = VarType.Int;
     }
-    public void setExpInfo(Symbol symbol) {
+    public ExpInfo(int value, VarType varType) {
+        this.value = value;
+        this.varType = varType;
+    }
+    public void setExpInfo(VarSymbol symbol) {
         isGlobal = symbol.isGlobal();
         if (symbol.isGlobal() == true) {
             globalVarName = symbol.getWord();
         } else {
             regIndex = symbol.getReg();
         }
-        varType = ((VarSymbol) symbol).getVarType();
+        varType = symbol.getVarType();
+        isArray = symbol.isArray();
+        if (isArray) {
+            length = symbol.getLength();
+        }
     }
     public ExpInfo() {}
 
@@ -41,7 +51,7 @@ public class ExpInfo {
     }
 
     public String getCalculateParam() {
-        return value == null ? "%" + getReg() : value + "";
+        return value == null ? (isGlobal ? "@" : "%") + getReg() : value + "";
     }
 
     public String getReg() {

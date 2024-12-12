@@ -7,6 +7,7 @@ public class VarSymbol extends Symbol {
     private VarType varType;
     private boolean isConst;
     private boolean isArray;
+    private int length = 0;
     /**数组维数，非数组可设为0 */
     private int dim;
 
@@ -27,6 +28,14 @@ public class VarSymbol extends Symbol {
 
     public boolean isConst() {
         return isConst;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public int getLength() {
+        return length;
     }
 
     @Override
