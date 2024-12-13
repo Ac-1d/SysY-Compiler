@@ -496,7 +496,7 @@ public class StmtNode {
             case 4:// if
                 int exit;
                 condNode.makeLLVM();
-                llvmGenerator.lockBrIn();
+                llvmGenerator.lockIF();
                 llvmGenerator.setLabel("node1");
                 stmtNode1.makeLLVM();
                 llvmGenerator.makeBrOutStmt();;
@@ -506,36 +506,55 @@ public class StmtNode {
                     llvmGenerator.makeBrOutStmt();
                 }
                 exit = llvmGenerator.setLabel("exit");
-                llvmGenerator.unlockBrIn();
+                llvmGenerator.unlockIf();
                 llvmGenerator.setBrIn();
                 llvmGenerator.setBrOut(exit);
                 break;
             case 5: // for
                 ErrorHandler.loopNum++;
+                
                 if (forStmtNode1 != null) {
                     forStmtNode1.makeLLVM();
                 }
                 if (condNode != null) {
                     condNode.makeLLVM(); 
+                } else {
+                    llvmGenerator.makeIfStmt(new ExpInfo(0, VarType.Int));
                 }
-                llvmGenerator.lockBrIn();
-                llvmGenerator.setLabel("node1");
+                llvmGenerator.lockIF();
+                llvmGenerator.lockFor("br exit", "br before check");
+                int labelNode1 = llvmGenerator.setLabel("node1");
+                stmtNode1.makeLLVM();
+                
+                llvmGenerator.makeBrStmt();
+                int labelBeforeCheck = llvmGenerator.setLabel("before check");
                 if (forStmtNode2 != null) {
                     forStmtNode2.makeLLVM();
                 }
-                stmtNode1.makeLLVM();
 
                 // for llvm
                 if (condNode != null) {
                     condNode.makeLLVM(); 
+                } else {
+                    llvmGenerator.makeIfStmt(new ExpInfo(0, VarType.Int));
                 }
 
-                llvmGenerator.makeBrOutStmt();
                 exit = llvmGenerator.setLabel("exit");
-                llvmGenerator.unlockBrIn();
-                // llvmGenerator.setBrIn();
-                // llvmGenerator.setBrOut(exit);
+                llvmGenerator.unlockIf();
+                llvmGenerator.unlockFor();
+                llvmGenerator.setBrIn(labelNode1, exit);
+                llvmGenerator.setBr("br exit", exit);
+                llvmGenerator.setBr("br before check", labelBeforeCheck);
                 ErrorHandler.loopNum--;
+                break;
+            case 6:
+                if (breakToken != null) {
+                    llvmGenerator.makeBrStmt("exit");
+                    llvmGenerator.setLabel();
+                } else {
+                    llvmGenerator.makeBrStmt("before check");
+                    llvmGenerator.setLabel();
+                }
                 break;
             case 7: // 'return' [Exp] ';'
                 if (expNode != null) {

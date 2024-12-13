@@ -444,6 +444,11 @@ public class LLVMGenerator {
         printStrings.add(printString);
     }
 
+    public void makeBrStmt(String text) {
+        String printString = "br " + text;
+        printStrings.add(printString);
+    }
+
     public int setLabel() {
         return setLabel("");
     }
@@ -535,6 +540,28 @@ public class LLVMGenerator {
         }
     }
 
+    public void setBrIn(int labelNode, int exitNode) {
+        int index = 0;
+        for (int i = 0; i < printStrings.size() && index < 2; i++) {
+            String string = printStrings.get(i);
+            String tag = "if br in";
+            if (string.startsWith(tag)) {
+                int reg = Integer.valueOf(string.substring(tag.length()));
+                printStrings.set(i, getSpace() + String.format("br i1 %%%d, label %%%d, label %%%d", reg, labelNode, exitNode));
+                index++;
+            }
+        }
+    }
+
+    public void setBr(String text, int label) {
+        for (int i = 0; i < printStrings.size(); i++) {
+            String string = printStrings.get(i);
+            if (string.startsWith(text)) {
+                printStrings.set(i, getSpace() + String.format("br label %%%d", label));
+            }
+        }
+    }
+
     public void setBrOut(int label) {
         for (int i = 0; i < printStrings.size(); i++) {
             String string = printStrings.get(i);
@@ -545,20 +572,41 @@ public class LLVMGenerator {
         }
     }
 
-    public void lockBrIn() {
+    public void lockIF() {
         for (int i = 0; i < printStrings.size(); i++) {
             String string = printStrings.get(i);
             String tag = "if br in";
             if (string.contains(tag)) {
-                printStrings.set(i, "lock" + string);
+                printStrings.set(i, "lockif" + string);
             }
         }
     }
 
-    public void unlockBrIn() {
+    public void lockFor(String... strings) {
         for (int i = 0; i < printStrings.size(); i++) {
             String string = printStrings.get(i);
-            String tag = "lock";
+            for (String tag : strings) {
+                if (string.contains(tag)) {
+                    printStrings.set(i, "lockfor" + string);
+                }
+            }
+        }
+    }
+
+    public void unlockIf() {
+        for (int i = 0; i < printStrings.size(); i++) {
+            String string = printStrings.get(i);
+            String tag = "lockif";
+            if (string.startsWith(tag)) {
+                printStrings.set(i, string.substring(tag.length()));
+            }
+        }
+    }
+
+    public void unlockFor() {
+        for (int i = 0; i < printStrings.size(); i++) {
+            String string = printStrings.get(i);
+            String tag = "lockfor";
             if (string.startsWith(tag)) {
                 printStrings.set(i, string.substring(tag.length()));
             }

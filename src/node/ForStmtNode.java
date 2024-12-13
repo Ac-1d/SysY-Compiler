@@ -1,5 +1,7 @@
 package node;
 
+import Symbol.ExpInfo;
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -43,9 +45,14 @@ public class ForStmtNode {//finish
     }
 
     void makeLLVM() {
+        ExpInfo expNodeExpInfo, lValNodeExpInfo;
+        LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
         lValNode.makeLLVM();
+        lValNodeExpInfo = lValNode.expInfo;
         lValNode.checkIfConst();
         expNode.makeLLVM();
+        expNodeExpInfo = expNode.expInfo;
+        llvmGenerator.makeStoreStmt(expNodeExpInfo, lValNodeExpInfo);
     }
 
     @Override
