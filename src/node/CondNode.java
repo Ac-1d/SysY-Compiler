@@ -2,6 +2,7 @@ package node;
 
 import Exception.ExpNotConstException;
 import Symbol.ExpInfo;
+import frontend.LLVMGenerator;
 
 public class CondNode {//finish
     // Cond → LOrExp 
@@ -28,6 +29,7 @@ public class CondNode {//finish
     void makeLLVM() {
         try {
             expInfo.setValue(lOrExpNode.calculateConstExp());
+            LLVMGenerator.getInstance().makeIfStmt(expInfo);
         } catch (ExpNotConstException e) {
             lOrExpNode.makeLLVM();
             expInfo = lOrExpNode.expInfo;

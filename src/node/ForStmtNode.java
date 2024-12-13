@@ -42,7 +42,7 @@ public class ForStmtNode {//finish
         System.out.println(toString());
     }
 
-    void setupSymbolTable() {
+    void makeLLVM() {
         lValNode.makeLLVM();
         lValNode.checkIfConst();
         expNode.makeLLVM();

@@ -494,33 +494,47 @@ public class StmtNode {
                 blockNode.makeLLVM(false);
                 break;
             case 4:// if
-                int label1, label2;
+                int exit;
                 condNode.makeLLVM();
-                llvmGenerator.makeIfStmt(condNode.expInfo);
-                label1 = llvmGenerator.setLabel();
+                llvmGenerator.lockBrIn();
+                llvmGenerator.setLabel("node1");
                 stmtNode1.makeLLVM();
-                llvmGenerator.quitIfStmt();
+                llvmGenerator.makeBrOutStmt();;
                 if(stmtNode2 != null) {
-                    label2 = llvmGenerator.setLabel();
+                    llvmGenerator.setLabel("node2");
                     stmtNode2.makeLLVM();
-                    llvmGenerator.quitIfStmt();
-                    llvmGenerator.setBr(label1, label2);
-                    break;
+                    llvmGenerator.makeBrOutStmt();
                 }
-                llvmGenerator.setBr(label1);
+                exit = llvmGenerator.setLabel("exit");
+                llvmGenerator.unlockBrIn();
+                llvmGenerator.setBrIn();
+                llvmGenerator.setBrOut(exit);
                 break;
-            case 5:
+            case 5: // for
                 ErrorHandler.loopNum++;
                 if (forStmtNode1 != null) {
-                    forStmtNode1.setupSymbolTable();
+                    forStmtNode1.makeLLVM();
                 }
                 if (condNode != null) {
                     condNode.makeLLVM(); 
                 }
+                llvmGenerator.lockBrIn();
+                llvmGenerator.setLabel("node1");
                 if (forStmtNode2 != null) {
-                    forStmtNode2.setupSymbolTable();
+                    forStmtNode2.makeLLVM();
                 }
                 stmtNode1.makeLLVM();
+
+                // for llvm
+                if (condNode != null) {
+                    condNode.makeLLVM(); 
+                }
+
+                llvmGenerator.makeBrOutStmt();
+                exit = llvmGenerator.setLabel("exit");
+                llvmGenerator.unlockBrIn();
+                // llvmGenerator.setBrIn();
+                // llvmGenerator.setBrOut(exit);
                 ErrorHandler.loopNum--;
                 break;
             case 7: // 'return' [Exp] ';'

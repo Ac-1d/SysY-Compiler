@@ -56,33 +56,41 @@ public class LOrExpNode {//finish
         ExpInfo expInfo2 = new ExpInfo();
         LOrExpNode innerLOrExpNode = shorterLOrExpNode;
         LAndExpNode innerLAndExpNode = shorterLOrExpNode == null ? null : innerLOrExpNode.lAndExpNode;
-        Token innerToken = orToken;
         try {
             expInfo.setValue(lAndExpNode.calculateConstExp());
         } catch (ExpNotConstException e) {
             lAndExpNode.makeLLVM();
             expInfo = lAndExpNode.expInfo;
+            // llvmGenerator.makeIfStmt(expInfo);
+            // label = llvmGenerator.setLabel("or");
         }
         while (innerLAndExpNode != null) {
             try {
-                expInfo2.setValue(innerLOrExpNode.calculateConstExp());
+                expInfo2.setValue(innerLAndExpNode.calculateConstExp());
             } catch (ExpNotConstException e) {
-                innerLOrExpNode.makeLLVM();
-                expInfo2 = innerLOrExpNode.expInfo;
+                innerLAndExpNode.makeLLVM();
+                expInfo2 = innerLAndExpNode.expInfo;
+                // llvmGenerator.makeIfStmt(expInfo);
+                // label = llvmGenerator.setLabel("or");
             }
-            expInfo.setReg(llvmGenerator.makeCalculateStmt(innerToken, expInfo, expInfo2));
-            innerToken = innerLOrExpNode.orToken;
             innerLOrExpNode = innerLOrExpNode.shorterLOrExpNode;
             innerLAndExpNode = innerLOrExpNode == null ? null : innerLOrExpNode.lAndExpNode;
         }
+        llvmGenerator.removeLastOr();
     }
 
     boolean calculateConstExp() throws ExpNotConstException {
         boolean ans = lAndExpNode.calculateConstExp();
+        if (ans == true) {
+            return ans;
+        }
         LOrExpNode innerOrExpNode = shorterLOrExpNode;
         LAndExpNode innerAndExpNode = innerOrExpNode == null ? null : innerOrExpNode.lAndExpNode;
         while (innerAndExpNode != null) {
             ans = ans || innerAndExpNode.calculateConstExp();
+            if (ans == true) {
+                return ans;
+            }
             innerOrExpNode = innerOrExpNode.shorterLOrExpNode;
             innerAndExpNode = innerOrExpNode == null ? null : innerOrExpNode.lAndExpNode;
         }

@@ -1,8 +1,6 @@
 package frontend;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,9 +65,12 @@ public class LLVMGenerator {
         put(TokenType.MULT, "mul nsw");
         put(TokenType.DIV, "sdiv");
         put(TokenType.MOD, "srem");
-        put(TokenType.AND, "and");
-        put(TokenType.OR, "or");
-
+        put(TokenType.LSS, "icmp slt");
+        put(TokenType.LEQ, "icmp sle");
+        put(TokenType.GRE, "icmp sgt");
+        put(TokenType.GEQ, "icmp sge");
+        put(TokenType.EQL, "icmp eq");
+        put(TokenType.NEQ, "icmp ne");
     }};
 
     private int blockDeep = 0;
@@ -98,9 +99,6 @@ public class LLVMGenerator {
         }
         printString += "){";
         printStrings.add(printString);
-        // for label
-        currentLabel.clear();
-        currentLabel.push(regIndex);
         enterBlock();
     }
 
@@ -139,8 +137,12 @@ public class LLVMGenerator {
         if (expInfo2.varType != VarType.Int) {
             expInfo2 = makeTransStmt(expInfo2);
         }
+        int tmpReg = regIndex;
+        String printString = getSpace() + getReg() + " = " + tokenType2CalculateTypeMap.get(calculateToken.getType()) + " i32 " + expInfo1.getCalculateParam() + ", " + expInfo2.getCalculateParam();
+        printStrings.add(printString);
         int dstReg = regIndex;
-
+        printString = getSpace() + getReg() + " = zext i1 %" + tmpReg + " to i32";
+        printStrings.add(printString);
         return dstReg;
     }
 
@@ -429,93 +431,174 @@ public class LLVMGenerator {
         return dstReg;
     }
 
-    public int makeIfStmt(ExpInfo expInfo) {
+    public void makeIfStmt(ExpInfo expInfo) {
         int dstReg = regIndex;
         String printString = getSpace() + getReg() + " = icmp ne " + varType2LengthMap.get(expInfo.varType) + " " + expInfo.getCalculateParam() + ", 0";
         printStrings.add(printString);
-        printString = "br in" + dstReg;
+        printString = "if br in" + dstReg;
         printStrings.add(printString);
-        return dstReg;
     }
 
-    public int makeAndIfStmt(ExpInfo expInfo) {
-        int dstReg = regIndex;
-        String printString = getSpace() + getReg() + " = icmp ne " + varType2LengthMap.get(expInfo.varType) + " " + expInfo.getCalculateParam() + ", 0";
+    public void makeBrStmt() {
+        String printString = String.format(getSpace() + "br label %%%d", regIndex);
         printStrings.add(printString);
-        printString = "br and" + dstReg;
-        printStrings.add(printString);
-        return dstReg;
     }
-
-    private Deque<Integer> currentLabel = new ArrayDeque<>();
 
     public int setLabel() {
+        return setLabel("");
+    }
+
+    public int setLabel(String text) {
         int label = regIndex;
-        // currentLabel.add(label);
-        String printString = regIndex + ":  ; preds = %";
+        String printString = regIndex + ":  ; " + text;
         getReg();
-        printString += currentLabel.peek();
-        currentLabel.push(label);
         printStrings.add(printString);
         return label;
     }
 
-    public void quitIfStmt() {
-        String printString = "br out";
+    public void makeBrOutStmt() {
+        String printString = "if br out";
         printStrings.add(printString);
-        currentLabel.pop();
     }
 
-    public void setBr(int label1, int label2) {
-        for(int i = printStrings.size() - 1; i >= 0; i--) {
-            String str = printStrings.get(i);
-            String tag = "br in";
-            if (str.startsWith(tag)) {
-                String reg = str.substring(tag.length());
-                printStrings.set(i, getSpace() + "br i1 %" + reg + ", label %" + label1 + ", label %" + label2);
-                break;
-            }
-        }
-        int num = 2;
-        for(int i = printStrings.size() - 1; i >= 0; i--) {
-            String str = printStrings.get(i);
-            String tag = "br out";
-            if (str.startsWith(tag)) {
-                printStrings.set(i, getSpace() + "br label %" + regIndex);
-                num--;
-                if (num == 0) {
-                    break;
+    public void setBrIn() {
+        for (int i = 0; i < printStrings.size(); i++) {
+            String string = printStrings.get(i);
+            String tag = "if br in";
+            if (string.startsWith(tag)) {
+                int reg = Integer.valueOf(string.substring(tag.length()));
+                String tagAnd = "; and", tagOr = "; or", tagNode1 = "; node1", tagNode2 = "; node2", tagExit = "; exit";
+                int labelAnd = -1, labelOr = -1, labelNode1 = -1, labelNode2 = -1, labelExit = -1;
+                for(int j = i; j < printStrings.size(); j++) {
+                    String string2 = printStrings.get(j);
+                    if (string2.endsWith(tagAnd)) {
+                        int index = string2.indexOf(':');
+                        labelAnd = Integer.valueOf(string2.substring(0, index));
+                        break;
+                    }
+                    if (string2.endsWith(tagNode1) && string2.endsWith(tagOr)) {
+                        break;
+                    }
+                }
+                for(int j = i; j < printStrings.size(); j++) {
+                    String string2 = printStrings.get(j);
+                    if (string2.endsWith(tagOr)) {
+                        int index = string2.indexOf(':');
+                        labelOr = Integer.valueOf(string2.substring(0, index));
+                        break;
+                    }
+                    if (string2.endsWith(tagNode1)) {
+                        break;
+                    }
+                }
+                for(int j = i; j < printStrings.size(); j++) {
+                    String string2 = printStrings.get(j);
+                    if (string2.endsWith(tagNode1)) {
+                        int index = string2.indexOf(':');
+                        labelNode1 = Integer.valueOf(string2.substring(0, index));
+                        break;
+                    }
+                }
+                for(int j = i; j < printStrings.size(); j++) {
+                    String string2 = printStrings.get(j);
+                    if (string2.endsWith(tagNode2)) {
+                        int index = string2.indexOf(':');
+                        labelNode2 = Integer.valueOf(string2.substring(0, index));
+                        break;
+                    }
+                }
+                for(int j = i; j < printStrings.size(); j++) {
+                    String string2 = printStrings.get(j);
+                    if (string2.endsWith(tagExit)) {
+                        int index = string2.indexOf(':');
+                        labelExit = Integer.valueOf(string2.substring(0, index));
+                        break;
+                    }
+                }
+                if (labelAnd != -1) {
+                    if (labelOr != -1) {
+                        printStrings.set(i, getSpace() + "br i1 %" + reg + ", label %" + labelAnd + ", label %" + labelOr);
+                    }
+                    else if (labelNode2 != -1) {
+                        printStrings.set(i, getSpace() + String.format("br i1 %%%d, label %%%d, label %%%d", reg, labelAnd, labelNode2));
+                    } else {
+                        printStrings.set(i, getSpace() + String.format("br i1 %%%d, label %%%d, label %%%d", reg, labelAnd, labelExit));
+                    }
+                } else if (labelOr != -1) {
+                    printStrings.set(i, getSpace() + String.format("br i1 %%%d, label %%%d, label %%%d", reg, labelNode1, labelOr));
+                } else if (labelNode2 != -1) {
+                    printStrings.set(i, getSpace() + String.format("br i1 %%%d, label %%%d, label %%%d", reg, labelNode1, labelNode2));
+                } else {
+                    printStrings.set(i, getSpace() + String.format("br i1 %%%d, label %%%d, label %%%d", reg, labelNode1, labelExit));
                 }
             }
         }
-        printStrings.add(regIndex + ":  ; preds = %" + label1 + ", %" + label2);
-        getReg();
     }
 
-    public void setBr(int label) {
-        for(int i = printStrings.size() - 1; i >= 0; i--) {
-            String str = printStrings.get(i);
-            String tag = "br in";
-            if (str.startsWith(tag)) {
-                String reg = str.substring(tag.length());
-                printStrings.set(i, getSpace() + "br i1 %" + reg + ", label %" + label + ", label %" + regIndex);
+    public void setBrOut(int label) {
+        for (int i = 0; i < printStrings.size(); i++) {
+            String string = printStrings.get(i);
+            String tag = "if br out";
+            if (string.startsWith(tag)) {
+                printStrings.set(i, getSpace() + "br label %" + label);
+            }
+        }
+    }
+
+    public void lockBrIn() {
+        for (int i = 0; i < printStrings.size(); i++) {
+            String string = printStrings.get(i);
+            String tag = "if br in";
+            if (string.contains(tag)) {
+                printStrings.set(i, "lock" + string);
+            }
+        }
+    }
+
+    public void unlockBrIn() {
+        for (int i = 0; i < printStrings.size(); i++) {
+            String string = printStrings.get(i);
+            String tag = "lock";
+            if (string.startsWith(tag)) {
+                printStrings.set(i, string.substring(tag.length()));
+            }
+        }
+    }
+
+    public void setAnd2Or() {
+        for (int i = printStrings.size() - 1; i >= 0; i--) {
+            String string = printStrings.get(i);
+            String tag = "; and";
+            if (string.endsWith(tag)) {
+                int index = string.indexOf(';');
+                printStrings.set(i, string.substring(0, index - 1) + "; or");
                 break;
             }
         }
-        int num = 1;
-        for(int i = printStrings.size() - 1; i >= 0; i--) {
-            String str = printStrings.get(i);
-            String tag = "br out";
-            if (str.startsWith(tag)) {
-                printStrings.set(i, getSpace() + "br label %" + regIndex);
-                num--;
-                if (num == 0) {
-                    break;
-                }
+    }
+
+    public void setOr2Null() {
+        for (int i = printStrings.size() - 1; i >= 0; i--) {
+            String string = printStrings.get(i);
+            String tag = "; or";
+            if (string.endsWith(tag)) {
+                printStrings.remove(i);
+                break;
             }
         }
-        printStrings.add(regIndex + ":  ; preds = %" + label + ", %" + currentLabel.peek());
-        getReg();
+    }
+
+    public void removeLastOr() {
+        for (int i = printStrings.size() - 1; i >= 0; i--) {
+            String string = printStrings.get(i);
+            String tag = "; or";
+            if (string.endsWith(tag)) {
+                printStrings.set(i, string.substring(0, string.length() - tag.length()));
+                break;
+            }
+        }
+        String printString = getSpace() + String.format("br label %%%d", regIndex);
+        printStrings.add(printString);
     }
 
     private String dealConstr(String constr, int length) {

@@ -56,40 +56,52 @@ public class LAndExpNode {//finish
         ExpInfo expInfo2 = new ExpInfo();
         LAndExpNode innerLAndExpNode = shorterLAndExpNode;
         EqExpNode innerEqExpNode = shorterLAndExpNode == null ? null : innerLAndExpNode.eqExpNode;
-        Token innerToken = andToken;
+        int label = 0;
+        int num = 0;
         try {
             expInfo.setValue(eqExpNode.calculateConstExp());
             if (expInfo.getValue() == 1) {
-                // return;
+                return;
             }
         } catch (ExpNotConstException e) {
             eqExpNode.makeLLVM();
             expInfo = eqExpNode.expInfo;
+            llvmGenerator.makeIfStmt(expInfo);
+            label = llvmGenerator.setLabel("and");
+            num++;
         }
         while (innerEqExpNode != null) {
-            llvmGenerator.makeAndIfStmt(expInfo);
-            int label = llvmGenerator.setLabel();
             try {
                 expInfo2.setValue(innerEqExpNode.calculateConstExp());
+                if (expInfo2.getValue() == 1) {
+                    break;
+                }
             } catch (ExpNotConstException e) {
                 innerEqExpNode.makeLLVM();
                 expInfo2 = innerEqExpNode.expInfo;
+                llvmGenerator.makeIfStmt(expInfo2);
+                label = llvmGenerator.setLabel("and");
+                num++;
             }
-            expInfo.setReg(llvmGenerator.makeCalculateStmt(innerToken, expInfo, expInfo2));
-            innerToken = innerLAndExpNode.andToken;
             innerLAndExpNode = innerLAndExpNode.shorterLAndExpNode;
             innerEqExpNode = innerLAndExpNode == null ? null : innerLAndExpNode.eqExpNode;
-            llvmGenerator.quitIfStmt();
-            llvmGenerator.setBr(label);
         }
+        // llvmGenerator.setBrIn(label, num);
+        llvmGenerator.setAnd2Or();
     }
 
     boolean calculateConstExp() throws ExpNotConstException {
         boolean ans = eqExpNode.calculateConstExp();
+        if (ans == false) {
+            return ans;
+        }
         LAndExpNode innerLAndExpNode = shorterLAndExpNode;
         EqExpNode innerEqExpNode = innerLAndExpNode == null ? null : innerLAndExpNode.eqExpNode;
         while (innerEqExpNode != null) {
             ans = ans && innerEqExpNode.calculateConstExp();
+            if (ans == false) {
+                return ans;
+            }
             innerLAndExpNode = innerLAndExpNode.shorterLAndExpNode;
             innerEqExpNode = innerLAndExpNode == null ? null : innerLAndExpNode.eqExpNode;
         }
