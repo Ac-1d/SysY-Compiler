@@ -49,6 +49,9 @@ public class ForStmtNode {//finish
         LLVMGenerator llvmGenerator = LLVMGenerator.getInstance();
         lValNode.makeLLVM();
         lValNodeExpInfo = lValNode.expInfo;
+        if (lValNodeExpInfo.isArray == true) {
+            lValNodeExpInfo.setReg(llvmGenerator.makeGetelementptrStmt(lValNodeExpInfo, lValNode.arrayNode.expNode.expInfo));
+        }
         lValNode.checkIfConst();
         expNode.makeLLVM();
         expNodeExpInfo = expNode.expInfo;

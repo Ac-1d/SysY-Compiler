@@ -1,5 +1,8 @@
 package node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import Symbol.ExpInfo;
 import Symbol.VarSymbol;
 import error.Error;
@@ -68,20 +71,28 @@ public class ConstDefNode {//finish
         if (defArrayNode != null) {
             // defArrayNode.constExpNode.setupSymbolTable();
             defArrayNode.constExpValue = defArrayNode.constExpNode.calculateConstExp();
+            varSymbol.setLength(defArrayNode.constExpValue);
         }
         constInitValNode.makeLLVM();
-        int reg;
         switch (constInitValNode.state) {
             case 1:
-                reg = llvmGenerator.makeDeclStmt(identToken.getWord(), constInitValNode.constExpValue);
-                expInfo = new ExpInfo(null, reg);
+                varSymbol.setValue(constInitValNode.constExpValue);
+                if (constInitValNode.expInfos.size() == 1 && defArrayNode != null) {
+                    List<ExpInfo> expInfosList = new ArrayList<>();
+                    expInfosList.add(new ExpInfo(constInitValNode.constExpValue));
+                    expInfo.setReg(llvmGenerator.makeArrayDeclStmt(identToken.getWord(), defArrayNode.constExpValue, expInfosList));
+                } else {
+                    expInfo.setReg(llvmGenerator.makeDeclStmt(identToken.getWord(), constInitValNode.constExpValue));
+                }
                 break;
             case 2:
+                varSymbol.setValue(constInitValNode.expInfos);
                 expInfo.setReg(llvmGenerator.makeArrayDeclStmt(identToken.getWord(), defArrayNode.constExpValue, constInitValNode.expInfos));
                 expInfo.length = defArrayNode.constExpValue;
                 break;
             case 3:
                 String str = constInitValNode.strconToken.getWord();
+                varSymbol.setValue(str);
                 expInfo.setReg(llvmGenerator.makeStrDeclStmt(str, identToken.getWord(), defArrayNode.constExpValue));
                 expInfo.length = defArrayNode.constExpValue;
                 break;

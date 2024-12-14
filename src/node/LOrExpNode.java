@@ -58,20 +58,22 @@ public class LOrExpNode {//finish
         LAndExpNode innerLAndExpNode = shorterLOrExpNode == null ? null : innerLOrExpNode.lAndExpNode;
         try {
             expInfo.setValue(lAndExpNode.calculateConstExp());
+            if (expInfo.getValue() == 1) {
+                return;
+            }
         } catch (ExpNotConstException e) {
             lAndExpNode.makeLLVM();
             expInfo = lAndExpNode.expInfo;
-            // llvmGenerator.makeIfStmt(expInfo);
-            // label = llvmGenerator.setLabel("or");
         }
         while (innerLAndExpNode != null) {
             try {
                 expInfo2.setValue(innerLAndExpNode.calculateConstExp());
+                if (expInfo2.getValue() == 1) {
+                    break;
+                }
             } catch (ExpNotConstException e) {
                 innerLAndExpNode.makeLLVM();
                 expInfo2 = innerLAndExpNode.expInfo;
-                // llvmGenerator.makeIfStmt(expInfo);
-                // label = llvmGenerator.setLabel("or");
             }
             innerLOrExpNode = innerLOrExpNode.shorterLOrExpNode;
             innerLAndExpNode = innerLOrExpNode == null ? null : innerLOrExpNode.lAndExpNode;

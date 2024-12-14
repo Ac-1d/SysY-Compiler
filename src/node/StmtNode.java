@@ -480,6 +480,19 @@ public class StmtNode {
             case 1: // LVal '=' Exp ';'
                 lValNode.makeLLVM();
                 lValNodeExpInfo = lValNode.expInfo;
+                // if (lValNode.arrayNode == null) {
+                //     if (expInfo.isArray == false) {
+                //         expInfo.setReg(instance.makeLoadStmt(expInfo));
+                //     } else if (expInfo.isGlobal == true) {
+                //         expInfo.setReg(instance.makeGetelementptrStmt(expInfo));
+                //     }
+                // } else {
+                //     expInfo.setReg(instance.makeLoadStmt(expInfo, lValNode.arrayNode.expNode.expInfo));
+                // }
+
+                if (lValNodeExpInfo.isArray == true ) {
+                    lValNodeExpInfo.setReg(llvmGenerator.makeGetelementptrStmt(lValNodeExpInfo, lValNode.arrayNode.expNode.expInfo));
+                }
                 lValNode.checkIfConst();
                 expNode.makeLLVM();
                 expNodeExpInfo = expNode.expInfo;
@@ -495,13 +508,15 @@ public class StmtNode {
                 break;
             case 4:// if
                 int exit;
+                llvmGenerator.newIfLabelsList();
                 condNode.makeLLVM();
                 llvmGenerator.lockIF();
-                llvmGenerator.setLabel("node1");
+                int labelNode1 = llvmGenerator.setLabel("node1");
                 stmtNode1.makeLLVM();
-                llvmGenerator.makeBrOutStmt();;
+                llvmGenerator.makeBrOutStmt();
+                int labelNode2 = -1;
                 if(stmtNode2 != null) {
-                    llvmGenerator.setLabel("node2");
+                    labelNode2 = llvmGenerator.setLabel("node2");
                     stmtNode2.makeLLVM();
                     llvmGenerator.makeBrOutStmt();
                 }
@@ -509,6 +524,8 @@ public class StmtNode {
                 llvmGenerator.unlockIf();
                 llvmGenerator.setBrIn();
                 llvmGenerator.setBrOut(exit);
+                {llvmGenerator.lockLabel(labelNode1);llvmGenerator.lockLabel(labelNode2);llvmGenerator.lockLabel(exit);}
+                llvmGenerator.lockIfLabel();
                 break;
             case 5: // for
                 ErrorHandler.loopNum++;
@@ -519,12 +536,12 @@ public class StmtNode {
                 if (condNode != null) {
                     condNode.makeLLVM(); 
                 } else {
-                    llvmGenerator.makeIfStmt(new ExpInfo(0, VarType.Int));
+                    llvmGenerator.makeIfStmt(new ExpInfo(1, VarType.Int));
                 }
                 llvmGenerator.lockIF();
-                llvmGenerator.lockFor("br exit", "br before check");
-                int labelNode1 = llvmGenerator.setLabel("node1");
+                int labelNode1_for = llvmGenerator.setLabel("node1");
                 stmtNode1.makeLLVM();
+                llvmGenerator.lockFor("br exit", "br before check");
                 
                 llvmGenerator.makeBrStmt();
                 int labelBeforeCheck = llvmGenerator.setLabel("before check");
@@ -536,15 +553,17 @@ public class StmtNode {
                 if (condNode != null) {
                     condNode.makeLLVM(); 
                 } else {
-                    llvmGenerator.makeIfStmt(new ExpInfo(0, VarType.Int));
+                    llvmGenerator.makeIfStmt(new ExpInfo(1, VarType.Int));
                 }
 
-                exit = llvmGenerator.setLabel("exit");
+                int exit_for = llvmGenerator.setLabel("exit");
                 llvmGenerator.unlockIf();
                 llvmGenerator.unlockFor();
-                llvmGenerator.setBrIn(labelNode1, exit);
-                llvmGenerator.setBr("br exit", exit);
+                llvmGenerator.setBrInFor();
+                // llvmGenerator.setBrIn(labelNode1_for, exit_for);
+                llvmGenerator.setBr("br exit", exit_for);
                 llvmGenerator.setBr("br before check", labelBeforeCheck);
+                llvmGenerator.lockLabel(labelNode1_for); llvmGenerator.lockLabel(labelBeforeCheck); llvmGenerator.lockLabel(exit_for);
                 ErrorHandler.loopNum--;
                 break;
             case 6:
@@ -567,6 +586,9 @@ public class StmtNode {
             case 8: // LVal '=' 'getint''('')'';'
                 lValNode.makeLLVM();
                 lValNodeExpInfo = lValNode.expInfo;
+                if (lValNodeExpInfo.isArray == true ) {
+                    lValNodeExpInfo.setReg(llvmGenerator.makeGetelementptrStmt(lValNodeExpInfo, lValNode.arrayNode.expNode.expInfo));
+                }
                 funcExpInfo.regIndex = llvmGenerator.makeCallFunctionStmt("getint", FuncType.Int);
                 funcExpInfo.varType = VarType.Int;
                 llvmGenerator.makeStoreStmt(funcExpInfo, lValNodeExpInfo);
@@ -575,6 +597,9 @@ public class StmtNode {
             case 9: // LVal '=' 'getchar''('')'';'
                 lValNode.makeLLVM();
                 lValNodeExpInfo = lValNode.expInfo;
+                if (lValNodeExpInfo.isArray == true ) {
+                    lValNodeExpInfo.setReg(llvmGenerator.makeGetelementptrStmt(lValNodeExpInfo, lValNode.arrayNode.expNode.expInfo));
+                }
                 funcExpInfo.regIndex = llvmGenerator.makeCallFunctionStmt("getchar", FuncType.Int);
                 funcExpInfo.varType = VarType.Int;
                 llvmGenerator.makeStoreStmt(funcExpInfo, lValNodeExpInfo);

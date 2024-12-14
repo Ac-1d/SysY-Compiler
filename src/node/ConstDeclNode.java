@@ -94,7 +94,7 @@ public class ConstDeclNode {//finish
             multipleDeclNode.constDefNode.varSymbol = varSymbol;
             multipleDeclNode.constDefNode.makeLLVM();
             varSymbol.setReg(multipleDeclNode.constDefNode.expInfo.regIndex);
-            varSymbol.setLength(constDefNode.expInfo.length);
+            varSymbol.setLength(multipleDeclNode.constDefNode.expInfo.length);
         }
 
     }

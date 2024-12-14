@@ -1,6 +1,8 @@
 package frontend;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +73,7 @@ public class LLVMGenerator {
         put(TokenType.GEQ, "icmp sge");
         put(TokenType.EQL, "icmp eq");
         put(TokenType.NEQ, "icmp ne");
+        put(TokenType.NOT, "icmp eq");
     }};
 
     private int blockDeep = 0;
@@ -118,27 +121,33 @@ public class LLVMGenerator {
     
     public int makeCalculateStmt(Token calculateToken, ExpInfo expInfo1, ExpInfo expInfo2) {
         TokenType calTokenType = calculateToken.getType();
-        if (expInfo1.varType != VarType.Int) {
-            expInfo1 = makeTransStmt(expInfo1);
+        if (expInfo1.varType != expInfo2.varType) {
+            if (expInfo1.varType != VarType.Int && expInfo1.getValue() == null) {
+                expInfo1 = makeTransStmt(expInfo1);
+            }
+            if (expInfo2.varType != VarType.Int && expInfo2.getValue() == null) {
+                expInfo2 = makeTransStmt(expInfo2);
+            }
         }
-        if (expInfo2.varType != VarType.Int) {
-            expInfo2 = makeTransStmt(expInfo2);
-        }
+        VarType varType = expInfo1.getValue() == null ? expInfo2.varType : expInfo1.varType;
         int dstReg = regIndex;
-        String printString = getSpace() + getReg() + " = " + tokenType2CalculateTypeMap.get(calTokenType) + " i32 " + expInfo1.getCalculateParam() + ", " + expInfo2.getCalculateParam();
+        String printString = getSpace() + getReg() + " = " + tokenType2CalculateTypeMap.get(calTokenType) + " " + varType2LengthMap.get(varType) + " " + expInfo1.getCalculateParam() + ", " + expInfo2.getCalculateParam();
         printStrings.add(printString);
         return dstReg;
     }
 
     public int makeLogicCalculateStmt(Token calculateToken, ExpInfo expInfo1, ExpInfo expInfo2) {
-        if (expInfo1.varType != VarType.Int) {
-            expInfo1 = makeTransStmt(expInfo1);
+        if (expInfo1.varType != expInfo2.varType) {
+            if (expInfo1.varType != VarType.Int && expInfo1.getValue() == null) {
+                expInfo1 = makeTransStmt(expInfo1);
+            }
+            if (expInfo2.varType != VarType.Int && expInfo2.getValue() == null) {
+                expInfo2 = makeTransStmt(expInfo2);
+            }
         }
-        if (expInfo2.varType != VarType.Int) {
-            expInfo2 = makeTransStmt(expInfo2);
-        }
+        VarType varType = expInfo1.getValue() == null ? expInfo2.varType : expInfo1.varType;
         int tmpReg = regIndex;
-        String printString = getSpace() + getReg() + " = " + tokenType2CalculateTypeMap.get(calculateToken.getType()) + " i32 " + expInfo1.getCalculateParam() + ", " + expInfo2.getCalculateParam();
+        String printString = getSpace() + getReg() + " = " + tokenType2CalculateTypeMap.get(calculateToken.getType()) + " " + varType2LengthMap.get(varType) +  " " + expInfo1.getCalculateParam() + ", " + expInfo2.getCalculateParam();
         printStrings.add(printString);
         int dstReg = regIndex;
         printString = getSpace() + getReg() + " = zext i1 %" + tmpReg + " to i32";
@@ -188,16 +197,16 @@ public class LLVMGenerator {
     // }
 
     public void makeStoreStmt(ExpInfo srcExpInfo, ExpInfo dstExpInfo) {
-        makeStoreStmt(srcExpInfo, dstExpInfo, false);
+        makeStoreStmt(srcExpInfo, dstExpInfo, dstExpInfo.isArray);
     }
 
     public void makeStoreStmt(ExpInfo srcExpInfo, ExpInfo dstExpInfo, boolean isArray) {
         VarType varType = dstExpInfo.varType;
-        if (srcExpInfo.varType != varType) {
+        if (srcExpInfo.varType != varType && srcExpInfo.getValue() == null) {
             srcExpInfo = makeTransStmt(srcExpInfo);
         }
-        boolean isGlobal = dstExpInfo.globalVarName != null;
-        String printString = getSpace() + "store " + varType2LengthMap.get(varType) + " " + srcExpInfo.getCalculateParam() + ", " + varType2LengthMap.get(varType) + "* " + getRegSymbol(isGlobal) + dstExpInfo.getReg();
+        String printString;
+        printString = getSpace() + String.format("store %s %s, %s* %s", varType2LengthMap.get(varType), srcExpInfo.getCalculateParam(), varType2LengthMap.get(varType), dstExpInfo.getCalculateParam());
         printStrings.add(printString);
     }
 
@@ -252,6 +261,11 @@ public class LLVMGenerator {
     public void setIsDeclVarGlobal(boolean isGlobal) {
         isDeclVarGlobal = isGlobal;
     }
+
+    public boolean isDeclVarGlobal() {
+        return isDeclVarGlobal;
+    }
+
     private VarType declareVarType;
     
     public void setVarType(Token token) {
@@ -367,7 +381,7 @@ public class LLVMGenerator {
                         }
                         break;
                     case 1:
-                        expInfos.add(new ExpInfo(tranCharacter(c), declareVarType));
+                        expInfos.add(new ExpInfo(tranCharacter(c), VarType.Char));
                         state = 0;
                     default:
                         break;
@@ -381,7 +395,12 @@ public class LLVMGenerator {
     public int makeArrayDeclStmt(String name, int length, List<ExpInfo> expInfos) {
         if (isDeclVarGlobal == true) {
             if (declareVarType.equals(VarType.Char)) {
-                return makeStrDeclStmt("\"\"", name, length);
+                String str = "";
+                for (ExpInfo expInfo : expInfos) {
+                    str +=  tranCharacter(expInfo.getValue());
+                }
+                str = "\"" + str + "\"";
+                return makeStrDeclStmt(str, name, length);
             }
             String printString = "@" + name + " = dso_local global [" + length + " x " + varType2LengthMap.get(declareVarType) + "]";
             if (expInfos == null || expInfos.isEmpty()) {
@@ -426,7 +445,19 @@ public class LLVMGenerator {
 
     public int makeGetelementptrStmt(ExpInfo expInfo) {
         int dstReg = regIndex;
-        String printString = getSpace() + getReg() + " = getelementptr inbounds [" + expInfo.length +" x " + varType2LengthMap.get(declareVarType) + "], [" + expInfo.length + " x " + varType2LengthMap.get(expInfo.varType) + "]* @" + expInfo.globalVarName + ", i32 0, i32 0";
+        String printString = getSpace() + getReg() + " = getelementptr inbounds [" + expInfo.length +" x " + varType2LengthMap.get(expInfo.varType) + "], [" + expInfo.length + " x " + varType2LengthMap.get(expInfo.varType) + "]* @" + expInfo.globalVarName + ", i32 0, i32 0";
+        printStrings.add(printString);
+        return dstReg;
+    }
+
+    public int makeGetelementptrStmt(ExpInfo expInfo, ExpInfo indexExpInfo) {
+        int dstReg = regIndex;
+        String printString;
+        if (expInfo.isGlobal) {
+            printString = getSpace() + getReg() + " = getelementptr inbounds [" + expInfo.length +" x " + varType2LengthMap.get(expInfo.varType) + "], [" + expInfo.length + " x " + varType2LengthMap.get(expInfo.varType) + "]* @" + expInfo.globalVarName + ", i32 0, i32 " + indexExpInfo.getCalculateParam();
+        } else {
+            printString = getSpace() + String.format("%s = getelementptr inbounds %s, %s* %s, i32 %s", getReg(), varType2LengthMap.get(expInfo.varType), varType2LengthMap.get(expInfo.varType), expInfo.getCalculateParam(), indexExpInfo.getCalculateParam());
+        }
         printStrings.add(printString);
         return dstReg;
     }
@@ -449,6 +480,14 @@ public class LLVMGenerator {
         printStrings.add(printString);
     }
 
+    List<Integer> currentIfLabelsList = new ArrayList<>();
+    Deque<List<Integer>> ifLabelsListsStack = new ArrayDeque<>();
+
+    public void newIfLabelsList() {
+        currentIfLabelsList = new ArrayList<>();
+        ifLabelsListsStack.push(currentIfLabelsList);
+    }
+
     public int setLabel() {
         return setLabel("");
     }
@@ -458,6 +497,9 @@ public class LLVMGenerator {
         String printString = regIndex + ":  ; " + text;
         getReg();
         printStrings.add(printString);
+        if (text.equals("and")) {
+            currentIfLabelsList.add(label);
+        }
         return label;
     }
 
@@ -474,6 +516,81 @@ public class LLVMGenerator {
                 int reg = Integer.valueOf(string.substring(tag.length()));
                 String tagAnd = "; and", tagOr = "; or", tagNode1 = "; node1", tagNode2 = "; node2", tagExit = "; exit";
                 int labelAnd = -1, labelOr = -1, labelNode1 = -1, labelNode2 = -1, labelExit = -1;
+                for(int j = i; j < printStrings.size(); j++) {
+                    String string2 = printStrings.get(j);
+                    if (string2.endsWith(tagAnd)) {
+                        int index = string2.indexOf(':');
+                        labelAnd = Integer.valueOf(string2.substring(0, index));
+                        break;
+                    }
+                    if (string2.endsWith(tagNode1) && string2.endsWith(tagOr)) {
+                        break;
+                    }
+                }
+                for(int j = i; j < printStrings.size(); j++) {
+                    String string2 = printStrings.get(j);
+                    if (string2.endsWith(tagOr)) {
+                        int index = string2.indexOf(':');
+                        labelOr = Integer.valueOf(string2.substring(0, index));
+                        break;
+                    }
+                    if (string2.endsWith(tagNode1)) {
+                        break;
+                    }
+                }
+                for(int j = i; j < printStrings.size(); j++) {
+                    String string2 = printStrings.get(j);
+                    if (string2.endsWith(tagNode1)) {
+                        int index = string2.indexOf(':');
+                        labelNode1 = Integer.valueOf(string2.substring(0, index));
+                        break;
+                    }
+                }
+                for(int j = i; j < printStrings.size(); j++) {
+                    String string2 = printStrings.get(j);
+                    if (string2.endsWith(tagNode2)) {
+                        int index = string2.indexOf(':');
+                        labelNode2 = Integer.valueOf(string2.substring(0, index));
+                        break;
+                    }
+                }
+                for(int j = i; j < printStrings.size(); j++) {
+                    String string2 = printStrings.get(j);
+                    if (string2.endsWith(tagExit)) {
+                        int index = string2.indexOf(':');
+                        labelExit = Integer.valueOf(string2.substring(0, index));
+                        break;
+                    }
+                }
+                if (labelAnd != -1) {
+                    if (labelOr != -1) {
+                        printStrings.set(i, getSpace() + "br i1 %" + reg + ", label %" + labelAnd + ", label %" + labelOr);
+                    }
+                    else if (labelNode2 != -1) {
+                        printStrings.set(i, getSpace() + String.format("br i1 %%%d, label %%%d, label %%%d", reg, labelAnd, labelNode2));
+                    } else {
+                        printStrings.set(i, getSpace() + String.format("br i1 %%%d, label %%%d, label %%%d", reg, labelAnd, labelExit));
+                    }
+                } else if (labelOr != -1) {
+                    printStrings.set(i, getSpace() + String.format("br i1 %%%d, label %%%d, label %%%d", reg, labelNode1, labelOr));
+                } else if (labelNode2 != -1) {
+                    printStrings.set(i, getSpace() + String.format("br i1 %%%d, label %%%d, label %%%d", reg, labelNode1, labelNode2));
+                } else {
+                    printStrings.set(i, getSpace() + String.format("br i1 %%%d, label %%%d, label %%%d", reg, labelNode1, labelExit));
+                }
+            }
+        }
+    }
+
+    public void setBrInFor() {
+        int labelNode1 = -1;
+        for (int i = 0; i < printStrings.size(); i++) {
+            String string = printStrings.get(i);
+            String tag = "if br in";
+            if (string.startsWith(tag)) {
+                int reg = Integer.valueOf(string.substring(tag.length()));
+                String tagAnd = "; and", tagOr = "; or", tagNode1 = "; node1", tagNode2 = "; node2", tagExit = "; exit";
+                int labelAnd = -1, labelOr = -1, /*labelNode1 = -1,*/ labelNode2 = -1, labelExit = -1;
                 for(int j = i; j < printStrings.size(); j++) {
                     String string2 = printStrings.get(j);
                     if (string2.endsWith(tagAnd)) {
@@ -613,6 +730,23 @@ public class LLVMGenerator {
         }
     }
 
+    public void lockLabel(int label) {
+        for (int i = 0; i < printStrings.size(); i++) {
+            String string = printStrings.get(i);
+            if (string.startsWith(label + ": ") && string.endsWith("lock") == false) {
+                printStrings.set(i, string + ";lock");
+                break;
+            }
+        }
+    }
+
+    public void lockIfLabel() {
+        currentIfLabelsList = ifLabelsListsStack.pop();
+        for (Integer integer : currentIfLabelsList) {
+            lockLabel(integer);
+        }
+    }
+
     public void setAnd2Or() {
         for (int i = printStrings.size() - 1; i >= 0; i--) {
             String string = printStrings.get(i);
@@ -650,7 +784,7 @@ public class LLVMGenerator {
     }
 
     private String dealConstr(String constr, int length) {
-        constr += "\\00".repeat(length - countConstrLength(constr));
+        constr = constr.replace("\\0", "\\00");
         constr = constr.replace("\\a", "\\07");
         constr = constr.replace("\\b", "\\08");
         constr = constr.replace("\\t", "\\09");
@@ -660,11 +794,14 @@ public class LLVMGenerator {
         constr = constr.replace("\\\"", "\\22");
         constr = constr.replace("\\\'", "\\27");
         constr = constr.replace("\\\\", "\\5c");
+        constr += "\\00".repeat(length - countConstrLengthForDealed(constr));
         return constr;
     }
     
-    private int tranCharacter(char c) {
+    public int tranCharacter(char c) {
         switch (c) {
+            case '0':
+                return 0;
             case 'a':
                 return 7;
             case 'b':
@@ -683,8 +820,60 @@ public class LLVMGenerator {
                 return 0x27;
             case '\\':
                 return 0x5c;
+            default:
+                return c;
         }
-        return 0;
+    }
+
+    public String tranCharacter(int c) {
+        switch (c) {
+            case '\0':
+                return "\\0";
+            case 7:
+                return "\\a";
+            case '\b':
+                return "\\b";
+            case '\t':
+                return "\\t";
+            case '\n':
+                return "\\n";
+            case 11:
+                return "\\v";
+            case '\f':
+                return "\\f";
+            case '\"':
+                return "\\\"";
+            case '\'':
+                return "\\\'";
+            case '\\':
+                return "\\\\";
+            default:
+                return ((char) c ) + "";
+        }
+    }
+
+    private static int countConstrLengthForDealed(String constr) {
+        int length = 0;
+        int state = 0;
+        for (char c : constr.toCharArray()) {
+            switch (state) {
+                case 0://common
+                    length++;
+                    if (c == '\\') {
+                        state = 1;
+                    }
+                    break;
+                case 1:// '\\'
+                    state = 2;
+                    break;
+                case 2:
+                    state = 0;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return length;
     }
 
     private static int countConstrLength(String constr) {
@@ -719,10 +908,6 @@ public class LLVMGenerator {
 
     private String index2Reg(int regIndex) {
         return "%" + regIndex;
-    }
-
-    private String getRegSymbol(boolean isGlobal) {
-        return isGlobal ? "@" : "%";
     }
 
 }

@@ -4,6 +4,7 @@ package Symbol;
 public class ExpInfo {
     public VarType varType;
     public boolean isArray;
+    public boolean isConst;
     public int length;
     public int regIndex;
     public String globalVarName;
@@ -30,8 +31,12 @@ public class ExpInfo {
         }
         varType = symbol.getVarType();
         isArray = symbol.isArray();
+        isConst = symbol.isConst();
         if (isArray) {
             length = symbol.getLength();
+        }
+        if (symbol.hasValue()) {
+            
         }
     }
     public ExpInfo() {}

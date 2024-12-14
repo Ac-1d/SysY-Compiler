@@ -1,5 +1,6 @@
 package node;
 
+import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
 import token.TokenType;
@@ -27,7 +28,12 @@ public class CharacterNode {
     }
 
     int getValue() {
-        return charConstToken.getWord().charAt(1);
+        String word = charConstToken.getWord();
+        if (word.length() == 3) {
+            return charConstToken.getWord().charAt(1);
+        } else {
+            return LLVMGenerator.getInstance().tranCharacter(word.charAt(2));
+        }
     }
 
     public String toString() {

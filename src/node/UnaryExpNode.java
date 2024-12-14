@@ -164,7 +164,12 @@ public class UnaryExpNode {//finish
             case 3://此处未考虑unaryOp为!的情况
                 shortreUnaryExpNode.makeLLVM();
                 expInfo = shortreUnaryExpNode.expInfo;
-                expInfo.setReg(llvmGenerator.makeCalculateStmt(unaryOpNode.unaryOpToken, new ExpInfo(0), expInfo));
+                if (unaryOpNode.unaryOpToken.getType().equals(TokenType.NOT) == false) {
+                    expInfo.setReg(llvmGenerator.makeCalculateStmt(unaryOpNode.unaryOpToken, new ExpInfo(0, expInfo.varType), expInfo));
+                } else {
+                    expInfo.setReg(llvmGenerator.makeLogicCalculateStmt(unaryOpNode.unaryOpToken, new ExpInfo(0, expInfo.varType), expInfo));
+                    expInfo.varType = VarType.Int;
+                }
             default:
                 break;
         }
@@ -179,8 +184,8 @@ public class UnaryExpNode {//finish
                     return shortreUnaryExpNode.calculateConstExp();
                 } else if (unaryOpNode.unaryOpToken.getType().equals(TokenType.MINU) == true) {
                     return - shortreUnaryExpNode.calculateConstExp();
-                } else {//todo
-                    return 0;
+                } else {
+                    return shortreUnaryExpNode.calculateConstExp() == 0 ? 1 : 0;
                 }
             default:
                 throw new ExpNotConstException();

@@ -2,6 +2,7 @@ package node;
 
 import Exception.ExpNotConstException;
 import Symbol.ExpInfo;
+import Symbol.VarType;
 import frontend.LLVMGenerator;
 import frontend.Parser;
 import token.Token;
@@ -71,6 +72,7 @@ public class RelExpNode {//finish
                 expInfo2 = innerAddExpNode.expInfo;
             }
             expInfo.setReg(llvmGenerator.makeLogicCalculateStmt(innerToken, expInfo, expInfo2));
+            expInfo.varType = VarType.Int;
             innerToken = innerRelExpNode.token;
             innerRelExpNode = innerRelExpNode.shorterRelExpNode;
             innerAddExpNode = innerRelExpNode == null ? null : innerRelExpNode.addExpNode;

@@ -56,37 +56,32 @@ public class LAndExpNode {//finish
         ExpInfo expInfo2 = new ExpInfo();
         LAndExpNode innerLAndExpNode = shorterLAndExpNode;
         EqExpNode innerEqExpNode = shorterLAndExpNode == null ? null : innerLAndExpNode.eqExpNode;
-        int label = 0;
-        int num = 0;
         try {
             expInfo.setValue(eqExpNode.calculateConstExp());
-            if (expInfo.getValue() == 1) {
+            if (expInfo.getValue() == 0) {
                 return;
             }
         } catch (ExpNotConstException e) {
             eqExpNode.makeLLVM();
             expInfo = eqExpNode.expInfo;
             llvmGenerator.makeIfStmt(expInfo);
-            label = llvmGenerator.setLabel("and");
-            num++;
+            llvmGenerator.setLabel("and");
         }
         while (innerEqExpNode != null) {
             try {
                 expInfo2.setValue(innerEqExpNode.calculateConstExp());
-                if (expInfo2.getValue() == 1) {
+                if (expInfo2.getValue() == 0) {
                     break;
                 }
             } catch (ExpNotConstException e) {
                 innerEqExpNode.makeLLVM();
                 expInfo2 = innerEqExpNode.expInfo;
                 llvmGenerator.makeIfStmt(expInfo2);
-                label = llvmGenerator.setLabel("and");
-                num++;
+                llvmGenerator.setLabel("and");
             }
             innerLAndExpNode = innerLAndExpNode.shorterLAndExpNode;
             innerEqExpNode = innerLAndExpNode == null ? null : innerLAndExpNode.eqExpNode;
         }
-        // llvmGenerator.setBrIn(label, num);
         llvmGenerator.setAnd2Or();
     }
 

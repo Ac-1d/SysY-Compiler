@@ -6,6 +6,7 @@ import token.Token;
 import token.TokenType;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import Symbol.ExpInfo;
 import Symbol.VarSymbol;
@@ -75,12 +76,14 @@ public class VarDefNode {//finish
         if (defArrayNode != null) {
             // defArrayNode.constExpNode.setupSymbolTable();
             defArrayNode.constExpValue = defArrayNode.constExpNode.calculateConstExp();
+            varSymbol.setLength(defArrayNode.constExpValue);
         }
         if (initValNode != null) {
             initValNode.makeLLVM();
             expInfo = initValNode.expInfo;
         }
         if (initValNode == null) {//无初始化
+            varSymbol.setValue();
             if (defArrayNode == null) {
                 expInfo.regIndex = llvmGenerator.makeDeclStmt(identToken.getWord(), null);
             } else {// case 2
@@ -91,18 +94,32 @@ public class VarDefNode {//finish
             switch (initValNode.state) {
                 case 1:
                     if (initValNode.expNode.expInfo.getValue() != null) {//有初始化 编译期可计算
-                        expInfo.regIndex = llvmGenerator.makeDeclStmt(identToken.getWord(), initValNode.expNode.expInfo.getValue());
+                        if (defArrayNode == null) {
+                            expInfo.regIndex = llvmGenerator.makeDeclStmt(identToken.getWord(), initValNode.expNode.expInfo.getValue());
+                        } else {
+                            List<ExpInfo> expInfos = new ArrayList<>();
+                            expInfos.add(new ExpInfo(initValNode.expNode.expInfo.getValue()));
+                            expInfo.setReg(llvmGenerator.makeArrayDeclStmt(identToken.getWord(), defArrayNode.constExpValue, expInfos));
+                        }
+                        varSymbol.setValue(initValNode.expNode.expInfo.getValue());
                     } else {//有初始化 编译期不可计算
-                        
-                        expInfo.regIndex = llvmGenerator.makeDeclStmt(expInfo);
+                        if (defArrayNode == null) {
+                            expInfo.regIndex = llvmGenerator.makeDeclStmt(expInfo);
+                        } else {
+                            List<ExpInfo> expInfos = new ArrayList<>();
+                            expInfos.add(expInfo);
+                            expInfo.setReg(llvmGenerator.makeArrayDeclStmt(identToken.getWord(), defArrayNode.constExpValue, expInfos));
+                        }
                     }
                     break;
                 case 2:
+                    varSymbol.setValue(initValNode.expInfos);
                     expInfo.setReg(llvmGenerator.makeArrayDeclStmt(identToken.getWord(), defArrayNode.constExpValue, initValNode.expInfos));
                     expInfo.length = defArrayNode.constExpValue;
                     break;
                 case 3:
-                    String str = initValNode.strconToken.getWord();
+                String str = initValNode.strconToken.getWord();
+                varSymbol.setValue(str);
                     expInfo.setReg(llvmGenerator.makeStrDeclStmt(str, identToken.getWord(), defArrayNode.constExpValue));
                     expInfo.length = defArrayNode.constExpValue;
                     break;

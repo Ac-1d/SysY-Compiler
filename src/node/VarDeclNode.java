@@ -84,7 +84,7 @@ public class VarDeclNode {//finish
             multifyVarDefNode.varDefNode.varSymbol = varSymbol;
             multifyVarDefNode.varDefNode.makeLLVM();
             varSymbol.setReg(multifyVarDefNode.varDefNode.expInfo.regIndex);
-            varSymbol.setLength(varDefNode.expInfo.length);
+            varSymbol.setLength(multifyVarDefNode.varDefNode.expInfo.length);
         }
     }
 
