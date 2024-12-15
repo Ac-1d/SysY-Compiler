@@ -70,9 +70,9 @@ public class RelExpNode {//finish
             } catch (ExpNotConstException e) {
                 innerAddExpNode.makeLLVM();
                 expInfo2 = innerAddExpNode.expInfo;
-                expInfo.setReg(llvmGenerator.makeLogicCalculateStmt(innerToken, expInfo, expInfo2));
-                expInfo.varType = VarType.Int;
             }
+            expInfo.setReg(llvmGenerator.makeLogicCalculateStmt(innerToken, expInfo, expInfo2));
+            expInfo.varType = VarType.Int;
             innerToken = innerRelExpNode.token;
             innerRelExpNode = innerRelExpNode.shorterRelExpNode;
             innerAddExpNode = innerRelExpNode == null ? null : innerRelExpNode.addExpNode;
