@@ -149,7 +149,7 @@ public class FuncDefNode {//finish
 
         blockNode.makeLLVM(true);
 
-        llvmGenerator.makeFunctionEnd();
+        llvmGenerator.makeFunctionEnd(funcType);
 
         symbolHandler.setCurSymbolTable(symbolHandler.getCurSymbolTable().getFatherSymbolTable());
         if (funcSymbol.getFuncType().equals(FuncType.Void)) {// check error.f

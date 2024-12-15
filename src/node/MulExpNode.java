@@ -58,7 +58,7 @@ public class MulExpNode {//finish
         MulExpNode innerMulExpNode = shorterMulExpNode;
         Token innerMulToken = mulToken;
         try {
-            expInfo.setValue(unaryExpNode.calculateConstExp());
+            expInfo.setValue(unaryExpNode.calculateConstExp(false));
         } catch (ExpNotConstException e) {
             unaryExpNode.makeLLVM();
             expInfo = unaryExpNode.expInfo;
@@ -66,7 +66,7 @@ public class MulExpNode {//finish
         innerUnaryExpNode = innerMulExpNode == null ? null : innerMulExpNode.unaryExpNode;
         while (innerUnaryExpNode != null) {
             try {
-                expInfo2.setValue(innerUnaryExpNode.calculateConstExp());
+                expInfo2.setValue(innerUnaryExpNode.calculateConstExp(false));
             } catch (ExpNotConstException e) {
                 innerUnaryExpNode.makeLLVM();
                 expInfo2 = innerUnaryExpNode.expInfo;
@@ -78,19 +78,19 @@ public class MulExpNode {//finish
         }
     }
 
-    int calculateConstExp() throws ExpNotConstException {
-        int ans = unaryExpNode.calculateConstExp();
+    int calculateConstExp(boolean isConst) throws ExpNotConstException {
+        int ans = unaryExpNode.calculateConstExp(isConst);
         UnaryExpNode innerUnaryExpNode;
         MulExpNode innerMulExpNode = shorterMulExpNode;
         Token innerMulToken = mulToken;
         innerUnaryExpNode = innerMulExpNode == null ? null : innerMulExpNode.unaryExpNode;
         while (innerUnaryExpNode != null) {
             if (innerMulToken.getType().equals(TokenType.MULT) == true) {
-                ans *= innerUnaryExpNode.calculateConstExp();
+                ans *= innerUnaryExpNode.calculateConstExp(isConst);
             } else if (innerMulToken.getType().equals(TokenType.DIV) == true) {
-                ans /= innerUnaryExpNode.calculateConstExp();
+                ans /= innerUnaryExpNode.calculateConstExp(isConst);
             } else {
-                ans %= innerUnaryExpNode.calculateConstExp();
+                ans %= innerUnaryExpNode.calculateConstExp(isConst);
             }
             innerMulToken = innerMulExpNode == null ? null : innerMulExpNode.mulToken;
             innerMulExpNode = innerMulExpNode.shorterMulExpNode;

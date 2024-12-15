@@ -32,7 +32,7 @@ public class ExpNode {//finish
     void makeLLVM() {
         setVarType();
         try {
-            expInfo.setValue(calculateConstExp());
+            expInfo.setValue(calculateConstExp(false));
         } catch (ExpNotConstException e) {
             addExpNode.makeLLVM();
             expInfo = addExpNode.expInfo;
@@ -41,8 +41,8 @@ public class ExpNode {//finish
     }
 
     //调用者需要知晓该异常的发生
-    int calculateConstExp() throws ExpNotConstException {
-        return addExpNode.calculateConstExp();
+    int calculateConstExp(boolean isConst) throws ExpNotConstException {
+        return addExpNode.calculateConstExp(isConst);
     }
 
     //为判断函数的形参服务

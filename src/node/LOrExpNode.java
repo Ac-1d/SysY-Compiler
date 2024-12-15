@@ -83,16 +83,10 @@ public class LOrExpNode {//finish
 
     boolean calculateConstExp() throws ExpNotConstException {
         boolean ans = lAndExpNode.calculateConstExp();
-        if (ans == true) {
-            return ans;
-        }
         LOrExpNode innerOrExpNode = shorterLOrExpNode;
         LAndExpNode innerAndExpNode = innerOrExpNode == null ? null : innerOrExpNode.lAndExpNode;
         while (innerAndExpNode != null) {
             ans = ans || innerAndExpNode.calculateConstExp();
-            if (ans == true) {
-                return ans;
-            }
             innerOrExpNode = innerOrExpNode.shorterLOrExpNode;
             innerAndExpNode = innerOrExpNode == null ? null : innerOrExpNode.lAndExpNode;
         }

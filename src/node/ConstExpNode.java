@@ -25,7 +25,7 @@ public class ConstExpNode {//finish
     //ConstExpNode不会出现该异常，故不做处理
     int calculateConstExp() {
         try {
-            return addExpNode.calculateConstExp();
+            return addExpNode.calculateConstExp(true);
         } catch (ExpNotConstException e) {
             return 0;
         }

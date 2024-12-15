@@ -13,7 +13,7 @@ public class VarSymbol extends Symbol {
     private int length = 1;
     private List<Integer> valueList = new ArrayList<>();
     /**数组维数，非数组可设为0 */
-    private int dim;
+    // private int dim;
 
     public VarSymbol(Token identToken, VarType varType, boolean isConst, boolean isArray) {
         super(identToken);
@@ -45,7 +45,7 @@ public class VarSymbol extends Symbol {
     public boolean hasValue() {
         return !valueList.isEmpty();
     }
-    
+
     public void setValue() {
         for (int i = 0; i < length; i++) {
             valueList.add(0);

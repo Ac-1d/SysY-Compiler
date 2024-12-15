@@ -113,7 +113,10 @@ public class LLVMGenerator {
         makeFunctionStmt(funcType, funcName, funcParams2);
     }
     
-    public void makeFunctionEnd() {
+    public void makeFunctionEnd(FuncType funcType) {
+        if (funcType.equals(FuncType.Void)) {
+            makeReturnStmt();
+        }
         exitBlock();
         String printString = getSpace() + "}";
         printStrings.add(printString);

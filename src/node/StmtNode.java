@@ -480,16 +480,6 @@ public class StmtNode {
             case 1: // LVal '=' Exp ';'
                 lValNode.makeLLVM();
                 lValNodeExpInfo = lValNode.expInfo;
-                // if (lValNode.arrayNode == null) {
-                //     if (expInfo.isArray == false) {
-                //         expInfo.setReg(instance.makeLoadStmt(expInfo));
-                //     } else if (expInfo.isGlobal == true) {
-                //         expInfo.setReg(instance.makeGetelementptrStmt(expInfo));
-                //     }
-                // } else {
-                //     expInfo.setReg(instance.makeLoadStmt(expInfo, lValNode.arrayNode.expNode.expInfo));
-                // }
-
                 if (lValNodeExpInfo.isArray == true ) {
                     lValNodeExpInfo.setReg(llvmGenerator.makeGetelementptrStmt(lValNodeExpInfo, lValNode.arrayNode.expNode.expInfo));
                 }

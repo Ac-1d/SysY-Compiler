@@ -61,7 +61,7 @@ public class AddExpNode {//finish
         AddExpNode innerAddExpNode = shorterAddExpNode;
         Token innerAddToken = addToken;
         try {
-            expInfo.setValue(mulExpNode.calculateConstExp());
+            expInfo.setValue(mulExpNode.calculateConstExp(false));
         } catch (ExpNotConstException e) {
             mulExpNode.makeLLVM();
             expInfo = mulExpNode.expInfo;
@@ -69,7 +69,7 @@ public class AddExpNode {//finish
         innerMulExpNode = innerAddExpNode == null ? null : innerAddExpNode.mulExpNode;
         while (innerMulExpNode != null) {
             try {
-                expInfo2.setValue(innerMulExpNode.calculateConstExp());
+                expInfo2.setValue(innerMulExpNode.calculateConstExp(false));
             } catch (ExpNotConstException e) {
                 innerMulExpNode.makeLLVM();
                 expInfo2 = innerMulExpNode.expInfo;
@@ -81,17 +81,17 @@ public class AddExpNode {//finish
         }
     }
 
-    int calculateConstExp() throws ExpNotConstException {
-        int ans = mulExpNode.calculateConstExp();
+    int calculateConstExp(boolean isConst) throws ExpNotConstException {
+        int ans = mulExpNode.calculateConstExp(isConst);
         MulExpNode innerMulExpNode;
         AddExpNode innerAddExpNode = shorterAddExpNode;
         Token innerAddToken = addToken;
         innerMulExpNode = innerAddExpNode == null ? null : innerAddExpNode.mulExpNode;
         while (innerMulExpNode != null) {
             if (innerAddToken.getType().equals(TokenType.PLUS) == true) {
-                ans += innerMulExpNode.calculateConstExp();
+                ans += innerMulExpNode.calculateConstExp(isConst);
             } else {
-                ans -= innerMulExpNode.calculateConstExp();
+                ans -= innerMulExpNode.calculateConstExp(isConst);
             }
             innerAddToken = innerAddExpNode == null ? null : innerAddExpNode.addToken;
             innerAddExpNode = innerAddExpNode.shorterAddExpNode;

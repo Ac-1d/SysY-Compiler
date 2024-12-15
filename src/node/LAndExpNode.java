@@ -87,16 +87,10 @@ public class LAndExpNode {//finish
 
     boolean calculateConstExp() throws ExpNotConstException {
         boolean ans = eqExpNode.calculateConstExp();
-        if (ans == false) {
-            return ans;
-        }
         LAndExpNode innerLAndExpNode = shorterLAndExpNode;
         EqExpNode innerEqExpNode = innerLAndExpNode == null ? null : innerLAndExpNode.eqExpNode;
         while (innerEqExpNode != null) {
             ans = ans && innerEqExpNode.calculateConstExp();
-            if (ans == false) {
-                return ans;
-            }
             innerLAndExpNode = innerLAndExpNode.shorterLAndExpNode;
             innerEqExpNode = innerLAndExpNode == null ? null : innerLAndExpNode.eqExpNode;
         }

@@ -128,13 +128,13 @@ public class PrimaryExpNode {//finish
         }
     }
 
-    int calculateConstExp() throws ExpNotConstException {
+    int calculateConstExp(boolean isConst) throws ExpNotConstException {
         switch (state) {
             case 1:
-                return expNode.calculateConstExp();
+                return expNode.calculateConstExp(isConst);
             case 2:
                 lValNode.makeLLVM();
-                if (LLVMGenerator.getInstance().isDeclVarGlobal()) {
+                if (LLVMGenerator.getInstance().isDeclVarGlobal() || isConst) {
                     if (lValNode.arrayNode != null) {
                         return lValNode.varSymbol.getValue(lValNode.arrayNode.expNode.expInfo.getValue());
                     } else {

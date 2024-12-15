@@ -59,20 +59,20 @@ public class RelExpNode {//finish
         AddExpNode innerAddExpNode = innerRelExpNode == null ? null : innerRelExpNode.addExpNode;
         Token innerToken = token;
         try {
-            expInfo.setValue(addExpNode.calculateConstExp());
+            expInfo.setValue(addExpNode.calculateConstExp(false));
         } catch (ExpNotConstException e) {
             addExpNode.makeLLVM();
             expInfo = addExpNode.expInfo;
         }
         while (innerAddExpNode != null) {
             try {
-                expInfo2.setValue(innerAddExpNode.calculateConstExp());
+                expInfo2.setValue(innerAddExpNode.calculateConstExp(false));
             } catch (ExpNotConstException e) {
                 innerAddExpNode.makeLLVM();
                 expInfo2 = innerAddExpNode.expInfo;
+                expInfo.setReg(llvmGenerator.makeLogicCalculateStmt(innerToken, expInfo, expInfo2));
+                expInfo.varType = VarType.Int;
             }
-            expInfo.setReg(llvmGenerator.makeLogicCalculateStmt(innerToken, expInfo, expInfo2));
-            expInfo.varType = VarType.Int;
             innerToken = innerRelExpNode.token;
             innerRelExpNode = innerRelExpNode.shorterRelExpNode;
             innerAddExpNode = innerRelExpNode == null ? null : innerRelExpNode.addExpNode;
@@ -80,7 +80,7 @@ public class RelExpNode {//finish
     }
 
     int calculateConstExp() throws ExpNotConstException {
-        int ans = addExpNode.calculateConstExp();
+        int ans = addExpNode.calculateConstExp(false);
         AddExpNode innerAddExpNode;
         RelExpNode innerRelExpNode = shorterRelExpNode;
         Token token = this.token;
@@ -88,16 +88,16 @@ public class RelExpNode {//finish
         while (innerAddExpNode != null) {
             switch (token.getType()) {
                 case LSS:
-                    ans = ans < innerAddExpNode.calculateConstExp() ? 1 : 0;
+                    ans = ans < innerAddExpNode.calculateConstExp(false) ? 1 : 0;
                     break;
                 case LEQ:
-                    ans = ans <= innerAddExpNode.calculateConstExp() ? 1 : 0;
+                    ans = ans <= innerAddExpNode.calculateConstExp(false) ? 1 : 0;
                     break;
                 case GRE:
-                    ans = ans > innerAddExpNode.calculateConstExp() ? 1 : 0;
+                    ans = ans > innerAddExpNode.calculateConstExp(false) ? 1 : 0;
                     break;
                 case GEQ:
-                    ans = ans >= innerAddExpNode.calculateConstExp() ? 1 : 0;
+                    ans = ans >= innerAddExpNode.calculateConstExp(false) ? 1 : 0;
                     break;
                 default:
                     break;

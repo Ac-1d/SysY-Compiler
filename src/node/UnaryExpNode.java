@@ -175,17 +175,17 @@ public class UnaryExpNode {//finish
         }
     }
 
-    int calculateConstExp() throws ExpNotConstException {
+    int calculateConstExp(boolean isConst) throws ExpNotConstException {
         switch (state) {
             case 1:
-                return primaryExpNode.calculateConstExp();
+                return primaryExpNode.calculateConstExp(isConst);
             case 3:
                 if (unaryOpNode.unaryOpToken.getType().equals(TokenType.PLUS) == true) {
-                    return shortreUnaryExpNode.calculateConstExp();
+                    return shortreUnaryExpNode.calculateConstExp(isConst);
                 } else if (unaryOpNode.unaryOpToken.getType().equals(TokenType.MINU) == true) {
-                    return - shortreUnaryExpNode.calculateConstExp();
+                    return - shortreUnaryExpNode.calculateConstExp(isConst);
                 } else {
-                    return shortreUnaryExpNode.calculateConstExp() == 0 ? 1 : 0;
+                    return shortreUnaryExpNode.calculateConstExp(isConst) == 0 ? 1 : 0;
                 }
             default:
                 throw new ExpNotConstException();
